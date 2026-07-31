@@ -1,0 +1,22 @@
+azure-storage-blob
+azure-search-documents
+beautifulsoup4
+requests
+pandas
+pyarrow
+openai
+azure-identity
+playwright
+wikipedia
+
+# Following for Fast API 
+fastapi
+uvicorn
+
+# Neo 4j
+neo4j
+
+streamlit
+python-dotenv
+gunicorn
+

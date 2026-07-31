@@ -1,0 +1,50 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python environments and caches
+.venv/
+.venv_old/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Generated GraphRAG and Neo4j data
+input/
+input_enriched/
+input_test/
+datasets/
+test_data/
+output/
+cache/
+logs/
+*.parquet
+
+# Runtime progress and logs
+*_progress.json
+*_log.txt
+*.log
+
+# Notebook and editor metadata
+.ipynb_checkpoints/
+.vscode/
+.idea/
+
+# Azure and deployment tooling
+.azure/
+.deployment
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+Desktop.ini
