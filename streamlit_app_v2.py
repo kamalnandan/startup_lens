@@ -12,14 +12,14 @@ from app_config import get_required_setting, get_setting
 
 API_URL = get_required_setting("STARTUPLENS_API_URL").rstrip("/")
 
-st.sidebar.info(f"Connecting to: {API_URL}")
+# st.sidebar.info(f"Connecting to: {API_URL}")
 
-try:
-    r = requests.get(f"{API_URL}/health", timeout=5)
-    st.sidebar.success(f"Health check: {r.status_code}")
-    st.sidebar.json(r.json())
-except Exception as e:
-    st.sidebar.error(f"Connection error: {type(e).__name__}: {e}")
+# try:
+#     r = requests.get(f"{API_URL}/health", timeout=5)
+#     st.sidebar.success(f"Health check: {r.status_code}")
+#     st.sidebar.json(r.json())
+# except Exception as e:
+#     st.sidebar.error(f"Connection error: {type(e).__name__}: {e}")
 
 st.set_page_config(
     page_title="StartupLens",
