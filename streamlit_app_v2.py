@@ -8,9 +8,9 @@ import time
 
 import requests
 import streamlit as st
-from app_config import get_setting
+from app_config import get_required_setting, get_setting
 
-API_URL = get_setting("STARTUPLENS_API_URL", "http://localhost:8000").rstrip("/")
+API_URL = get_required_setting("STARTUPLENS_API_URL").rstrip("/")
 
 st.set_page_config(
     page_title="StartupLens",
