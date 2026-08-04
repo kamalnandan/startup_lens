@@ -10,6 +10,43 @@ import requests
 import streamlit as st
 from app_config import get_required_setting, get_setting
 
+
+
+#####
+# ── Access Control ─────────────────────────────────────────────────────────────
+
+def check_access():
+    if "authenticated" not in st.session_state:
+        st.session_state.authenticated = False
+
+    if not st.session_state.authenticated:
+        st.markdown(
+            """
+            <div style="max-width: 400px; margin: 100px auto; text-align: center;">
+                <h1>🔭 StartupLens</h1>
+                <p style="color: #666;">Intelligence over the global startup ecosystem</p>
+                <p style="color: #888; font-size: 0.9rem;">Enter your access code to continue</p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            code = st.text_input("Access code", type="password", placeholder="staruplens2025")
+            if st.button("Continue", type="primary", use_container_width=True):
+                if code == "startuplens2025":
+                    st.session_state.authenticated = True
+                    st.rerun()
+                else:
+                    st.error("Invalid access code. DM Kamal on LinkedIn for access.")
+        st.stop()
+
+check_access()
+#####
+
+
+
+
 API_URL = get_required_setting("STARTUPLENS_API_URL").rstrip("/")
 
 # st.sidebar.info(f"Connecting to: {API_URL}")
