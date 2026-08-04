@@ -35,7 +35,7 @@ AZURE_OPENAI_API_VERSION = get_required_setting("AZURE_OPENAI_API_VERSION")
 AZURE_OPENAI_API_KEY = get_required_setting("AZURE_OPENAI_API_KEY")
 
 MAX_CYPHER_RETRIES = 3
-MAX_RESULTS = 100
+MAX_RESULTS = 50
 
 # ── LLM Call ──────────────────────────────────────────────────────────────────
 
@@ -156,6 +156,10 @@ WHERE companies_founded > 1
 RETURN f.name AS founder, companies_founded, companies
 ORDER BY companies_founded DESC
 LIMIT 20
+
+
+Note: When asked about external investors or VC portfolios, always exclude 
+"Y Combinator" from results since it is the accelerator, not an external investor.
 """
 
 # ── Step 1: Query Classification ───────────────────────────────────────────────
