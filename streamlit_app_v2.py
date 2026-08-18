@@ -8,9 +8,13 @@ import time
 
 import requests
 import streamlit as st
-from app_config import get_required_setting, get_setting
+from app_config import get_required_setting
 
 
+
+# ── Configuration ──────────────────────────────────────────────────────────────
+ACCESS_CODE = get_required_setting("ACCESS_CODE")
+ADMIN_CODE = get_required_setting("ADMIN_CODE")
 
 #####
 # ── Access Control ─────────────────────────────────────────────────────────────
@@ -18,6 +22,7 @@ from app_config import get_required_setting, get_setting
 def check_access():
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
+        st.session_state.is_admin = False
 
     if not st.session_state.authenticated:
         st.markdown(
@@ -32,18 +37,23 @@ def check_access():
         )
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            code = st.text_input("Access code", type="password", placeholder="staruplens2025")
+            code = st.text_input("Access code", type="password", placeholder="Enter access code")
             if st.button("Continue", type="primary", use_container_width=True):
-                if code == "startuplens2025":
+                if code == ADMIN_CODE:
                     st.session_state.authenticated = True
+                    st.session_state.is_admin = True
+                    st.rerun()
+                elif code == ACCESS_CODE:
+                    st.session_state.authenticated = True
+                    st.session_state.is_admin = False
                     st.rerun()
                 else:
                     st.error("Invalid access code. DM Kamal on LinkedIn for access.")
         st.stop()
 
 check_access()
-#####
 
+#####
 
 
 
@@ -57,6 +67,9 @@ API_URL = get_required_setting("STARTUPLENS_API_URL").rstrip("/")
 #     st.sidebar.json(r.json())
 # except Exception as e:
 #     st.sidebar.error(f"Connection error: {type(e).__name__}: {e}")
+
+
+
 
 st.set_page_config(
     page_title="StartupLens",
@@ -347,7 +360,11 @@ def render_result(result: dict) -> None:
     )
     st.markdown(result.get("answer", "No answer returned."))
 
-    if result.get("cypher"):
+    # if result.get("cypher"):
+    #     with st.expander("🔧 View generated Cypher", expanded=False):
+    #         st.code(result["cypher"], language="cypher")
+
+    if result.get("cypher") and st.session_state.get("is_admin", False):
         with st.expander("🔧 View generated Cypher", expanded=False):
             st.code(result["cypher"], language="cypher")
 
@@ -489,5 +506,7 @@ if len(st.session_state.history) > 1:
             detail_columns[0].caption(f"Method: {item['method'].title()}")
             detail_columns[1].caption(f"Records: {item['result_count']:,}")
             detail_columns[2].caption(f"Time: {item['duration']:.2f}s")
-            if item.get("cypher"):
+            # if item.get("cypher"):
+            #     st.code(item["cypher"], language="cypher")
+            if item.get("cypher") and st.session_state.get("is_admin", False):
                 st.code(item["cypher"], language="cypher")

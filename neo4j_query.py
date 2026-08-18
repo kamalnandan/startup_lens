@@ -157,6 +157,38 @@ RETURN f.name AS founder, companies_founded, companies
 ORDER BY companies_founded DESC
 LIMIT 20
 
+Question: How many funding rounds did GoCardless have?
+Cypher:
+MATCH (c:Company)-[:RAISED]->(fe:FundingEvent)
+WHERE toLower(c.name) CONTAINS toLower("gocardless")
+RETURN c.name AS company, count(fe) AS funding_rounds,
+       collect(fe.round) AS rounds, collect(fe.year) AS years
+
+Question: What is Stripe's funding history?
+Cypher:
+MATCH (c:Company)-[:RAISED]->(fe:FundingEvent)
+WHERE toLower(c.name) CONTAINS toLower("stripe")
+RETURN c.name AS company, fe.round AS round, 
+       fe.year AS year, fe.amount AS amount
+ORDER BY fe.year
+
+Question: Which companies raised a Series B?
+Cypher:
+MATCH (c:Company)-[:RAISED]->(fe:FundingEvent)
+WHERE toLower(fe.round) CONTAINS "series b"
+RETURN c.name AS company, fe.year AS year, fe.amount AS amount
+ORDER BY fe.year DESC
+LIMIT 50
+
+Question: Which companies raised the most funding rounds?
+Cypher:
+MATCH (c:Company)-[:RAISED]->(fe:FundingEvent)
+WITH c, count(fe) AS rounds
+WHERE rounds > 2
+RETURN c.name AS company, rounds
+ORDER BY rounds DESC
+LIMIT 20
+
 
 Note: When asked about external investors or VC portfolios, always exclude 
 "Y Combinator" from results since it is the accelerator, not an external investor.
@@ -213,16 +245,29 @@ def execute_cypher(cypher: str, driver) -> list:
 
 # ── Step 4: Answer Synthesis ───────────────────────────────────────────────────
 
-SYNTHESIS_SYSTEM = """You are an expert analyst of the startup ecosystem.
-You are given a user question and raw data from a knowledge graph of YC startups.
-Synthesize a comprehensive, insightful answer from the data.
+# SYNTHESIS_SYSTEM = """You are an expert analyst of the startup ecosystem.
+# You are given a user question and raw data from a knowledge graph of YC startups.
+# Synthesize a comprehensive, insightful answer from the data.
 
-Rules:
-- Be specific — name actual companies, founders, investors from the data
-- Identify patterns and trends where relevant
-- Be concise but thorough
-- If data is empty, say so honestly
-- Do not make up information not present in the data
+# Rules:
+# - Be specific — name actual companies, founders, investors from the data
+# - Identify patterns and trends where relevant
+# - Be concise but thorough
+# - If data is empty, say so honestly
+# - Do not make up information not present in the data
+# """
+
+SYNTHESIS_SYSTEM = """You are an analyst of the startup ecosystem.
+You are given a user question and raw data from a knowledge graph.
+Synthesize an answer STRICTLY from the provided data only.
+
+CRITICAL RULES:
+- ONLY use information present in the data provided
+- If the data is insufficient, say so explicitly
+- Do NOT supplement with your own knowledge about companies or founders
+- Do NOT make assumptions about data not present
+- If a company's funding amount is unknown, say "amount not available"
+- Never invent or estimate figures not in the data
 """
 
 def synthesize_answer(question: str, results: list) -> str:
@@ -230,12 +275,20 @@ def synthesize_answer(question: str, results: list) -> str:
         return "No results found for this query. The data may not contain enough information to answer this question."
 
     results_text = json.dumps(results[:MAX_RESULTS], indent=2)
+#     user_prompt = f"""Question: {question}
+
+# Data from knowledge graph:
+# {results_text}
+
+# Provide a comprehensive answer based on this data."""
     user_prompt = f"""Question: {question}
 
 Data from knowledge graph:
 {results_text}
 
-Provide a comprehensive answer based on this data."""
+IMPORTANT: Base your answer STRICTLY on the data above. 
+If the data doesn't contain enough information, say so explicitly.
+Do not use any external knowledge."""
 
     return call_llm(SYNTHESIS_SYSTEM, user_prompt, max_tokens=2000)
 
