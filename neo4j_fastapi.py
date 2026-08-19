@@ -91,6 +91,8 @@ def query(request: QueryRequest, raw_request: Request):
         raise HTTPException(status_code=400, detail="Query too short")
 
     ip_address = raw_request.headers.get("x-forwarded-for", raw_request.client.host or "unknown")
+    # Strip port number if present (e.g. "9.223.52.251:8386" → "9.223.52.251")
+    ip_address = ip_address.split(",")[0].strip().split(":")[0]
     start_time = time.time()
 
     try:
@@ -114,6 +116,8 @@ def query(request: QueryRequest, raw_request: Request):
         question=request.query,
         method=result.get("method", ""),
         cypher=result.get("cypher", ""),
+        cypher_result=str(result.get("cypher_result", "")),
+        answer=result.get("answer", ""),
         result_count=result.get("result_count", 0),
         duration=duration,
         status="success",
