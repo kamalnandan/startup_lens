@@ -90,7 +90,8 @@ def query(request: QueryRequest, raw_request: Request):
     if not request.query or len(request.query.strip()) < 5:
         raise HTTPException(status_code=400, detail="Query too short")
 
-    ip_address = raw_request.headers.get("x-forwarded-for", raw_request.client.host or "unknown")
+    # Prefer X-Real-IP (forwarded by Streamlit) over x-forwarded-for (Azure infra)
+    ip_address = raw_request.headers.get("x-real-ip") or raw_request.headers.get("x-forwarded-for", raw_request.client.host or "unknown")
     # Strip port number if present (e.g. "9.223.52.251:8386" → "9.223.52.251")
     ip_address = ip_address.split(",")[0].strip().split(":")[0]
     start_time = time.time()

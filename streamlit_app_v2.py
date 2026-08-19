@@ -468,9 +468,12 @@ if search_clicked:
         with st.spinner("Exploring the startup knowledge graph..."):
             started_at = time.time()
             try:
+                # Forward end-user IP to FastAPI
+                user_ip = st.context.headers.get("X-Forwarded-For", "unknown").split(",")[0].strip()
                 response = requests.post(
                     f"{API_URL}/query",
                     json={"query": query.strip()},
+                    headers={"X-Real-IP": user_ip},
                     timeout=120,
                 )
                 response.raise_for_status()
