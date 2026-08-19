@@ -24,8 +24,8 @@ logger = logging.getLogger(__name__)
 # ── App ────────────────────────────────────────────────────────────────────────
 
 app = FastAPI(
-    title="Global Startup Intelligence Graph API",
-    description="Neo4j-powered query API over 6000+ YC startup profiles",
+    title="StartupLens API",
+    description="AI-powered query API over 5,700+ Y Combinator company profiles",
     version="2.0.0"
 )
 
@@ -55,7 +55,7 @@ class QueryResponse(BaseModel):
 def health_check():
     return {
         "status": "healthy",
-        "service": "Global Startup Intelligence Graph API",
+        "service": "StartupLens API",
         "version": "2.0.0"
     }
 

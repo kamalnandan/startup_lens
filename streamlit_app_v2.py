@@ -29,7 +29,7 @@ def check_access():
             """
             <div style="max-width: 400px; margin: 100px auto; text-align: center;">
                 <h1>🔭 StartupLens</h1>
-                <p style="color: #666;">Intelligence over the global startup ecosystem</p>
+                <p style="color: #666;">The YC ecosystem explorer</p>
                 <p style="color: #888; font-size: 0.9rem;">Enter your access code to continue</p>
             </div>
             """,
@@ -72,7 +72,7 @@ API_URL = get_required_setting("STARTUPLENS_API_URL").rstrip("/")
 
 
 st.set_page_config(
-    page_title="StartupLens",
+    page_title="StartupLens — YC Ecosystem Explorer",
     page_icon="🔭",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -278,23 +278,25 @@ st.markdown(
 
 
 EXAMPLE_QUERIES = {
-    "🏢 Companies": [
-        "Who founded Stripe and what does it do?",
-        "Which companies were acquired and by whom?",
+    "🎯 YC Research": [
         "Which YC batches produced the most fintech companies?",
+        "What industries are trending in the most recent YC batches?",
+        "What is the survival rate of YC companies by industry?",
     ],
-    "💰 Investors": [
-        "Which investors backed both Stripe and Airbnb?",
-        "Which investors have the largest YC portfolios?",
-    ],
-    "🌍 Markets": [
+    "🌍 Founders": [
         "Which YC founders from India built fintech companies?",
         "Which countries outside the US produce the most YC companies?",
-        "Which industries are most represented across YC companies?",
-    ],
-    "📈 Trends": [
         "Who are the most connected founders across YC?",
+    ],
+    "💰 Fundraising": [
+        "Which investors backed both Stripe and Airbnb?",
+        "Which investors have the largest YC portfolios?",
+        "What are the most common Series A investors for YC companies?",
+    ],
+    "📈 Patterns": [
         "What are common patterns among failed YC startups?",
+        "Which companies were acquired and by whom?",
+        "What technologies are most used by successful YC companies?",
     ],
 }
 
@@ -371,7 +373,7 @@ def render_result(result: dict) -> None:
 
 with st.sidebar:
     st.markdown("## 🔭 StartupLens")
-    st.caption("Intelligence over the global startup ecosystem")
+    st.caption("The YC ecosystem explorer")
     st.divider()
 
     st.markdown("### Live graph")
@@ -406,11 +408,12 @@ with st.sidebar:
 st.markdown(
     """
     <section class="hero">
-        <div class="hero-kicker">Global Startup Intelligence Graph</div>
-        <h1>Discover what connects<br>the startup world.</h1>
+        <div class="hero-kicker">5,700+ YC Companies · 20 Years of Data · One Knowledge Graph</div>
+        <h1>Research Y Combinator<br>like never before.</h1>
         <p>
-            Explore founders, companies, investors, industries, and ecosystem
-            trends through a knowledge graph powered by AI.
+            Explore every YC batch, founder, investor, and industry trend
+            through an AI-powered knowledge graph. Ask complex questions,
+            get instant answers.
         </p>
     </section>
     """,
@@ -424,7 +427,7 @@ except requests.RequestException:
 
 st.markdown(metric_cards(graph_stats), unsafe_allow_html=True)
 
-st.markdown('<div class="section-title">✨ Explore popular questions</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-title">✨ Questions founders actually ask</div>', unsafe_allow_html=True)
 tabs = st.tabs(list(EXAMPLE_QUERIES))
 for tab, questions in zip(tabs, EXAMPLE_QUERIES.values()):
     with tab:
@@ -441,8 +444,8 @@ for tab, questions in zip(tabs, EXAMPLE_QUERIES.values()):
 
 st.markdown('<div class="section-title">🔎 Ask StartupLens</div>', unsafe_allow_html=True)
 query = st.text_area(
-    "Ask about companies, founders, investors, markets, or trends",
-    placeholder="For example: Which investors backed both Stripe and Airbnb?",
+"Ask about YC companies, founders, investors, batches, or trends",
+placeholder="For example: What industries are trending in recent YC batches?",
     height=105,
     key="query_text",
 )

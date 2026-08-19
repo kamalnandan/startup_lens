@@ -1,24 +1,33 @@
 # 🔭 StartupLens
 
-> Knowledge graph-powered intelligence over the global startup ecosystem — built on Neo4j, GPT-4.1, and Azure AI.
+> The YC ecosystem explorer — research 20 years of Y Combinator through an AI-powered knowledge graph.
 
 ---
 
 ## What is StartupLens?
 
-StartupLens is a startup intelligence platform that answers complex, multi-hop questions about the global startup ecosystem — questions that no search engine or standard RAG system can answer.
+StartupLens helps founders, YC applicants, and investors research the Y Combinator ecosystem like never before. Ask complex, multi-hop questions about 5,700+ YC companies — questions that no search engine or spreadsheet can answer.
 
-Built over 6,000+ Y Combinator company profiles enriched with Wikipedia data, StartupLens extracts entities and relationships into a Neo4j knowledge graph. A natural language query layer powered by GPT-4.1 converts user questions into Cypher queries, executes them against the graph, and synthesizes insightful answers.
+Built on a Neo4j knowledge graph with a natural language query layer powered by GPT-4.1, StartupLens converts your questions into graph queries, executes them, and synthesizes insightful answers.
+
+---
+
+## Who is this for?
+
+- **YC applicants** — Research batches, industries, and trends before applying
+- **Aspiring founders** — Learn from patterns across 20 years of YC companies
+- **Angel investors & scouts** — Discover YC companies by industry, location, or founder background
+- **Startup ecosystem researchers** — Study patterns, failure rates, and ecosystem trends
 
 ---
 
 ## Example Questions
 
-- *"Which investors backed both Stripe and Airbnb — and what does that tell us about their strategy?"*
+- *"What industries are trending in recent YC batches?"*
 - *"Which YC founders from India built fintech companies?"*
-- *"What are common patterns between YC startups that failed versus those that survived?"*
-- *"Who are the most connected founders across the YC ecosystem?"*
-- *"Which technologies that seemed niche in 2010 became the foundation of billion-dollar companies by 2020?"*
+- *"What is the survival rate of YC companies by industry?"*
+- *"Which investors have the largest YC portfolios?"*
+- *"What are common patterns among failed YC startups?"*
 - *"Which countries outside the US produce the most YC companies?"*
 
 ---
@@ -215,10 +224,10 @@ Natural language answer
 
 ## Roadmap
 
-- [ ] Add Crunchbase data for non-YC companies
-- [ ] Add TechCrunch articles for narrative enrichment
+- [ ] Enrich all 5,700 companies with Crunchbase data (funding, investors, valuations)
+- [ ] Batch trend analysis and visualizations
+- [ ] "Companies like yours" feature for YC applicants
 - [ ] Neo4j vector index for semantic search
-- [ ] Deploy to Azure (Web Apps + managed Neo4j)
 - [ ] Export answers to PDF/Excel
 - [ ] Multi-turn conversation support
 
