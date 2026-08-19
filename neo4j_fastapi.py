@@ -10,10 +10,11 @@ import logging
 from typing import Optional
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from neo4j_query import query as neo4j_query
+from query_logger import log_query
 
 # ── Logging ────────────────────────────────────────────────────────────────────
 
@@ -80,7 +81,7 @@ def index_status():
 
 
 @app.post("/query", response_model=QueryResponse)
-def query(request: QueryRequest):
+def query(request: QueryRequest, raw_request: Request):
     """
     Main query endpoint.
     Automatically classifies query, generates Cypher,
@@ -89,15 +90,34 @@ def query(request: QueryRequest):
     if not request.query or len(request.query.strip()) < 5:
         raise HTTPException(status_code=400, detail="Query too short")
 
+    ip_address = raw_request.headers.get("x-forwarded-for", raw_request.client.host or "unknown")
     start_time = time.time()
 
     try:
         result = neo4j_query(request.query)
     except Exception as e:
         logger.error(f"Query failed: {e}")
+        duration = round(time.time() - start_time, 2)
+        log_query(
+            ip_address=ip_address,
+            question=request.query,
+            duration=duration,
+            status="error",
+            error=str(e),
+        )
         raise HTTPException(status_code=500, detail=str(e))
 
     duration = round(time.time() - start_time, 2)
+
+    log_query(
+        ip_address=ip_address,
+        question=request.query,
+        method=result.get("method", ""),
+        cypher=result.get("cypher", ""),
+        result_count=result.get("result_count", 0),
+        duration=duration,
+        status="success",
+    )
 
     return QueryResponse(
         query=request.query,
