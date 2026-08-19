@@ -334,6 +334,7 @@ def query(question: str) -> dict:
             "question": question,
             "method": method,
             "cypher": cypher,
+            "cypher_result": results,
             "result_count": len(results),
             "answer": answer
         }
