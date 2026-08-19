@@ -1,12 +1,13 @@
 """
 Query Logger — Azure Table Storage
-Logs every query request with IP, question, method, cypher, results, and duration.
+Logs every query request with IP, location, question, method, cypher, results, and duration.
 """
 
 import uuid
 import logging
 from datetime import datetime, timezone
 
+import requests
 from azure.data.tables import TableServiceClient
 from app_config import get_required_setting
 
@@ -28,6 +29,27 @@ def _get_table_client():
     return _table_client
 
 
+def _lookup_location(ip_address: str) -> dict:
+    """Resolve IP to location using ip-api.com (free, no key needed)."""
+    try:
+        resp = requests.get(
+            f"http://ip-api.com/json/{ip_address}?fields=country,regionName,city,lat,lon",
+            timeout=3,
+        )
+        if resp.status_code == 200:
+            data = resp.json()
+            return {
+                "country": data.get("country", ""),
+                "region": data.get("regionName", ""),
+                "city": data.get("city", ""),
+                "latitude": data.get("lat", 0.0),
+                "longitude": data.get("lon", 0.0),
+            }
+    except Exception as e:
+        logger.debug(f"Geo-IP lookup failed for {ip_address}: {e}")
+    return {"country": "", "region": "", "city": "", "latitude": 0.0, "longitude": 0.0}
+
+
 def log_query(
     ip_address: str,
     question: str,
@@ -41,10 +63,16 @@ def log_query(
     """Log a query to Azure Table Storage. Fails silently to not break the API."""
     try:
         now = datetime.now(timezone.utc)
+        location = _lookup_location(ip_address)
         entity = {
             "PartitionKey": now.strftime("%Y-%m-%d"),
             "RowKey": str(uuid.uuid4()),
             "ip_address": ip_address,
+            "country": location["country"],
+            "region": location["region"],
+            "city": location["city"],
+            "latitude": location["latitude"],
+            "longitude": location["longitude"],
             "question": question,
             "method": method,
             "cypher": cypher or "",
