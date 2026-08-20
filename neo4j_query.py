@@ -126,7 +126,7 @@ Question: Which YC founders from India built fintech companies?
 Cypher:
 MATCH (f:Founder)-[:FOUNDED]->(c:Company)-[:HEADQUARTERED_IN]->(l:Location {country: "India"})
 MATCH (c)-[:OPERATES_IN]->(ind:Industry)
-WHERE toLower(ind.name) CONTAINS "fintech" OR toLower(ind.name) CONTAINS "finance" OR toLower(ind.name) CONTAINS "payments"
+WHERE toLower(ind.name) IN ["fintech", "finance", "payments"]
 RETURN f.name AS founder, c.name AS company, c.yc_batch AS batch, ind.name AS industry
 ORDER BY c.yc_batch
 
@@ -157,7 +157,7 @@ Cypher:
 MATCH (c:Company)-[:USES]->(t:Technology)
 WHERE toLower(t.name) = "python"
 MATCH (c)-[:OPERATES_IN]->(ind:Industry)
-WHERE toLower(ind.name) CONTAINS "fintech"
+WHERE toLower(ind.name) IN ["fintech", "finance", "payments"]
 RETURN DISTINCT c.name AS company, c.yc_batch AS batch,
        t.name AS technology, ind.name AS industry
 ORDER BY c.yc_batch
@@ -496,24 +496,151 @@ def validate_cypher_semantics(question: str, cypher: str) -> None:
         if has_upper_bound and not excludes_unknown:
             raise ValueError("Exclude unknown team sizes with c.team_size > 0.")
 
-    if (
-        re.search(
-            (
-                r"(?:\b(?:which|show|list|find|name)\b|"
-                r"\bgive\s+me\b).*\b(?:companies|startups)\b"
-            ),
-            question,
-            flags=re.IGNORECASE | re.DOTALL,
-        )
-        and
-        re.search(r"\bpython\b", question, flags=re.IGNORECASE)
-        and re.search(r"\bfintech\b", question, flags=re.IGNORECASE)
-    ):
+    mentions_companies = re.search(
+        r"\b(?:companies|startups)\b",
+        question,
+        flags=re.IGNORECASE,
+    )
+    aggregate_intent = re.search(
+        (
+            r"\b(?:how many|count|breakdown|average|avg|median|sum|total|"
+            r"percentage|percent|ratio)\b|"
+            r"\bnumber of(?:\s+\w+){0,3}\s+(?:companies|startups)\b"
+        ),
+        question,
+        flags=re.IGNORECASE,
+    )
+    fintech_company_list = mentions_companies and not aggregate_intent and re.search(
+        r"\bfintech\b",
+        question,
+        flags=re.IGNORECASE,
+    )
+    if fintech_company_list:
+        filtering_cypher = re.split(
+            r"\bRETURN\b",
+            cypher,
+            maxsplit=1,
+            flags=re.IGNORECASE,
+        )[0]
+        fintech_synonyms = ("fintech", "finance", "payments")
+        missing_synonyms = [
+            synonym
+            for synonym in fintech_synonyms
+            if synonym not in filtering_cypher.casefold()
+        ]
+        if missing_synonyms:
+            raise ValueError(
+                "Treat fintech as Fintech, Finance, or Payments industries."
+            )
+
         return_clause = re.split(r"\bRETURN\b", cypher, flags=re.IGNORECASE)[-1]
-        if not re.search(r"\bAS\s+technology\b", return_clause, flags=re.IGNORECASE):
-            raise ValueError("Return the matched technology AS technology.")
-        if not re.search(r"\bAS\s+industry\b", return_clause, flags=re.IGNORECASE):
-            raise ValueError("Return the matched industry AS industry.")
+        company_variables = re.findall(
+            r"\b(\w+)\.name\s+AS\s+company\b",
+            return_clause,
+            flags=re.IGNORECASE,
+        )
+        quoted_term = lambda term: rf"['\"]{term}['\"]"
+        industry_variables = re.findall(
+            r"\((\w+)\s*:\s*Industry\b",
+            filtering_cypher,
+            flags=re.IGNORECASE,
+        )
+        filtered_industry_variables = []
+        for variable in industry_variables:
+            connected_to_returned_company = any(
+                re.search(
+                    (
+                        rf"\(\s*{re.escape(company)}\b[^)]*\)\s*-\s*"
+                        rf"\[[^\]]*OPERATES_IN[^\]]*\]\s*->\s*"
+                        rf"\(\s*{re.escape(variable)}\s*:\s*Industry\b|"
+                        rf"\(\s*{re.escape(variable)}\s*:\s*Industry\b[^)]*\)\s*"
+                        rf"<-\s*\[[^\]]*OPERATES_IN[^\]]*\]\s*-\s*"
+                        rf"\(\s*{re.escape(company)}\b[^)]*\)"
+                    ),
+                    filtering_cypher,
+                    flags=re.IGNORECASE | re.DOTALL,
+                )
+                for company in company_variables
+            )
+            if not connected_to_returned_company:
+                continue
+            industry_property = (
+                rf"toLower\(\s*{re.escape(variable)}\.name\s*\)"
+            )
+            in_lists = re.findall(
+                rf"{industry_property}\s+IN\s*(\[[^\]]*\])",
+                filtering_cypher,
+                flags=re.IGNORECASE | re.DOTALL,
+            )
+            if any(
+                all(
+                    re.search(quoted_term(term), list_text)
+                    for term in fintech_synonyms
+                )
+                for list_text in in_lists
+            ):
+                filtered_industry_variables.append(variable)
+
+        if not filtered_industry_variables:
+            raise ValueError(
+                "Filter the returned company's industry with "
+                "IN [Fintech, Finance, Payments]."
+            )
+
+        if not any(
+            re.search(
+                rf"\b{re.escape(variable)}\.name\s+AS\s+industry\b",
+                return_clause,
+                flags=re.IGNORECASE,
+            )
+            for variable in filtered_industry_variables
+        ):
+            raise ValueError("Return the matched industry name AS industry.")
+
+        if re.search(r"\bpython\b", question, flags=re.IGNORECASE):
+            technology_variables = re.findall(
+                r"\((\w+)\s*:\s*Technology\b",
+                filtering_cypher,
+                flags=re.IGNORECASE,
+            )
+            matched_technology_variables = []
+            for variable in technology_variables:
+                connected_to_returned_company = any(
+                    re.search(
+                        (
+                            rf"\(\s*{re.escape(company)}\b[^)]*\)\s*-\s*"
+                            rf"\[[^\]]*USES[^\]]*\]\s*->\s*"
+                            rf"\(\s*{re.escape(variable)}\s*:\s*Technology\b"
+                        ),
+                        filtering_cypher,
+                        flags=re.IGNORECASE | re.DOTALL,
+                    )
+                    for company in company_variables
+                )
+                python_filter = re.search(
+                    (
+                        rf"toLower\(\s*{re.escape(variable)}\.name\s*\)"
+                        rf"\s*=\s*['\"]python['\"]"
+                    ),
+                    filtering_cypher,
+                    flags=re.IGNORECASE,
+                )
+                if connected_to_returned_company and python_filter:
+                    matched_technology_variables.append(variable)
+
+            if not matched_technology_variables:
+                raise ValueError(
+                    "Filter the returned company's matched Technology as Python."
+                )
+            if not any(
+                re.search(
+                    rf"\b{re.escape(variable)}\.name\s+AS\s+technology\b",
+                    return_clause,
+                    flags=re.IGNORECASE,
+                )
+                for variable in matched_technology_variables
+            ):
+                raise ValueError("Return the matched technology name AS technology.")
 
 # ── Step 3: Query Execution ────────────────────────────────────────────────────
 

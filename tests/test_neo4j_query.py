@@ -29,6 +29,45 @@ class CypherSemanticsTests(unittest.TestCase):
             "Compare Winter 2023 with Summer 2023 and Winter 2009.",
         )
 
+    def test_rejects_case_sensitive_fintech_filter(self):
+        with self.assertRaisesRegex(ValueError, "returned company's industry"):
+            neo4j_query.validate_cypher_semantics(
+                "Which fintech companies are headquartered in India?",
+                """
+                MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+                WHERE ind.name IN ["fintech", "finance", "payments"]
+                RETURN c.name AS company, ind.name AS industry
+                """,
+            )
+
+    def test_rejects_mixed_case_literals_with_lowercased_property(self):
+        with self.assertRaisesRegex(ValueError, "returned company's industry"):
+            neo4j_query.validate_cypher_semantics(
+                "Which fintech companies are headquartered in India?",
+                """
+                MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+                WHERE toLower(ind.name) IN ["Fintech", "Finance", "Payments"]
+                RETURN c.name AS company, ind.name AS industry
+                """,
+            )
+
+    def test_average_fintech_question_is_treated_as_aggregate(self):
+        neo4j_query.validate_cypher_semantics(
+            "What is the average team size of fintech companies?",
+            """
+            MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+            WHERE toLower(ind.name) IN ["fintech", "finance", "payments"]
+            RETURN avg(c.team_size) AS average_team_size
+            """,
+        )
+
+    def test_number_of_employees_does_not_bypass_fintech_list_validation(self):
+        with self.assertRaisesRegex(ValueError, "Fintech, Finance, or Payments"):
+            neo4j_query.validate_cypher_semantics(
+                "Which fintech companies have a number of employees above 100?",
+                "MATCH (c:Company) WHERE c.team_size > 100 RETURN c.name AS company",
+            )
+
     def test_generate_cypher_uses_expanded_batch_names(self):
         with patch.object(
             neo4j_query,
@@ -210,27 +249,27 @@ class CypherSemanticsTests(unittest.TestCase):
         )
 
     def test_requires_filter_evidence_for_python_fintech(self):
-        with self.assertRaisesRegex(ValueError, "matched technology"):
+        with self.assertRaisesRegex(ValueError, "matched industry"):
             neo4j_query.validate_cypher_semantics(
                 "Which companies use Python and operate in fintech?",
                 """
                 MATCH (c)-[:USES]->(t:Technology)
                 WHERE toLower(t.name) = "python"
                 MATCH (c)-[:OPERATES_IN]->(ind:Industry)
-                WHERE toLower(ind.name) CONTAINS "fintech"
+                WHERE toLower(ind.name) IN ["fintech", "finance", "payments"]
                 RETURN c.name AS company
                 """,
             )
 
     def test_requires_filter_evidence_for_name_phrasing(self):
-        with self.assertRaisesRegex(ValueError, "matched technology"):
+        with self.assertRaisesRegex(ValueError, "matched industry"):
             neo4j_query.validate_cypher_semantics(
                 "Name YC companies using Python in fintech.",
                 """
                 MATCH (c)-[:USES]->(t:Technology)
                 MATCH (c)-[:OPERATES_IN]->(ind:Industry)
                 WHERE toLower(t.name) = "python"
-                  AND toLower(ind.name) CONTAINS "fintech"
+                  AND toLower(ind.name) IN ["fintech", "finance", "payments"]
                 RETURN c.name AS company
                 """,
             )
@@ -242,8 +281,153 @@ class CypherSemanticsTests(unittest.TestCase):
             MATCH (c)-[:USES]->(t:Technology)
             WHERE toLower(t.name) = "python"
             MATCH (c)-[:OPERATES_IN]->(ind:Industry)
-            WHERE toLower(ind.name) CONTAINS "fintech"
+            WHERE toLower(ind.name) IN ["fintech", "finance", "payments"]
             RETURN c.name AS company, t.name AS technology, ind.name AS industry
+            """,
+        )
+
+    def test_rejects_incomplete_fintech_synonyms(self):
+        with self.assertRaisesRegex(ValueError, "Fintech, Finance, or Payments"):
+            neo4j_query.validate_cypher_semantics(
+            "Which companies use Python and operate in fintech?",
+            """
+            MATCH (c)-[:USES]->(t:Technology)
+            MATCH (c)-[:OPERATES_IN]->(ind:Industry)
+            WHERE toLower(t.name) = "python"
+              AND toLower(ind.name) CONTAINS "fintech"
+            RETURN c.name AS company, t.name AS technology,
+                   ind.name AS industry
+            """,
+            )
+
+    def test_rejects_conjunctive_fintech_synonyms(self):
+        with self.assertRaisesRegex(ValueError, "returned company's industry"):
+            neo4j_query.validate_cypher_semantics(
+                "Which companies use Python and operate in fintech?",
+                """
+                MATCH (c)-[:USES]->(t:Technology)
+                MATCH (c)-[:OPERATES_IN]->(ind:Industry)
+                WHERE toLower(t.name) = "python"
+                  AND toLower(ind.name) CONTAINS "fintech"
+                  AND toLower(ind.name) CONTAINS "finance"
+                  AND toLower(ind.name) CONTAINS "payments"
+                RETURN c.name AS company, t.name AS technology,
+                       ind.name AS industry
+                """,
+            )
+
+    def test_rejects_narrow_fintech_filter_without_python(self):
+            with self.assertRaisesRegex(ValueError, "Fintech, Finance, or Payments"):
+                neo4j_query.validate_cypher_semantics(
+                    "Which YC companies headquartered in India operate in fintech?",
+                    """
+                    MATCH (c)-[:HEADQUARTERED_IN]->(l:Location)
+                    MATCH (c)-[:OPERATES_IN]->(ind:Industry)
+                    WHERE l.country = "India"
+                      AND toLower(ind.name) CONTAINS "fintech"
+                    RETURN c.name AS company, ind.name AS industry
+                    """,
+                )
+
+    def test_accepts_fintech_synonyms_without_python(self):
+            neo4j_query.validate_cypher_semantics(
+                "Which YC companies headquartered in India operate in fintech?",
+                """
+                MATCH (c)-[:HEADQUARTERED_IN]->(l:Location)
+                MATCH (c)-[:OPERATES_IN]->(ind:Industry)
+                WHERE l.country = "India"
+                  AND toLower(ind.name) IN ["fintech", "finance", "payments"]
+                RETURN c.name AS company, ind.name AS industry
+                """,
+            )
+
+    def test_what_fintech_companies_requires_normalized_filter(self):
+            with self.assertRaisesRegex(ValueError, "Fintech, Finance, or Payments"):
+                neo4j_query.validate_cypher_semantics(
+                    "What fintech companies are headquartered in India?",
+                    """
+                    MATCH (c:Company)-[:HEADQUARTERED_IN]->(l:Location)
+                    WHERE l.country = "India"
+                    RETURN c.name AS company
+                    """,
+                )
+
+    def test_rejects_fintech_list_on_non_industry_property(self):
+            with self.assertRaisesRegex(ValueError, "returned company's industry"):
+                neo4j_query.validate_cypher_semantics(
+                    "Which fintech companies are headquartered in India?",
+                    """
+                    MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+                    WHERE toLower(c.name) IN ["fintech", "finance", "payments"]
+                    RETURN c.name AS company, ind.name AS industry
+                    """,
+                )
+
+    def test_rejects_disconnected_fintech_industry(self):
+        with self.assertRaisesRegex(ValueError, "returned company's industry"):
+                neo4j_query.validate_cypher_semantics(
+                    "Which fintech companies are headquartered in India?",
+                    """
+                    MATCH (c:Company), (ind:Industry)
+                    WHERE toLower(ind.name) IN ["fintech", "finance", "payments"]
+                    RETURN c.name AS company, ind.name AS industry
+                    """,
+                )
+
+    def test_rejects_fintech_industry_for_unrelated_company(self):
+        with self.assertRaisesRegex(ValueError, "returned company's industry"):
+                neo4j_query.validate_cypher_semantics(
+                    "Which fintech companies are headquartered in India?",
+                    """
+                    MATCH (c:Company),
+                          (other:Company)-[:OPERATES_IN]->(ind:Industry)
+                    WHERE toLower(ind.name) IN ["fintech", "finance", "payments"]
+                    RETURN c.name AS company, ind.name AS industry
+                    """,
+                )
+
+    def test_rejects_fabricated_industry_evidence(self):
+        with self.assertRaisesRegex(ValueError, "industry name AS industry"):
+                neo4j_query.validate_cypher_semantics(
+                    "Which fintech companies are headquartered in India?",
+                    """
+                    MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+                    WHERE toLower(ind.name) IN ["fintech", "finance", "payments"]
+                    RETURN c.name AS company, "not evidence" AS industry
+                    """,
+                )
+
+    def test_rejects_fabricated_technology_evidence(self):
+        with self.assertRaisesRegex(ValueError, "technology name AS technology"):
+                neo4j_query.validate_cypher_semantics(
+                    "Which companies use Python and operate in fintech?",
+                    """
+                    MATCH (c:Company)-[:USES]->(t:Technology)
+                    MATCH (c)-[:OPERATES_IN]->(ind:Industry)
+                    WHERE toLower(t.name) = "python"
+                      AND toLower(ind.name) IN ["fintech", "finance", "payments"]
+                    RETURN c.name AS company, ind.name AS industry,
+                           "not evidence" AS technology
+                    """,
+                )
+
+    def test_compare_activity_still_requires_fintech_filter(self):
+        with self.assertRaisesRegex(ValueError, "Fintech, Finance, or Payments"):
+                neo4j_query.validate_cypher_semantics(
+                    "Which fintech companies compare prices for consumers?",
+                    "MATCH (c:Company) RETURN c.name AS company",
+                )
+
+    def test_accepts_fintech_synonym_in_list(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which companies use Python and operate in fintech?",
+            """
+            MATCH (c)-[:USES]->(t:Technology)
+            MATCH (c)-[:OPERATES_IN]->(ind:Industry)
+            WHERE toLower(t.name) = "python"
+              AND toLower(ind.name) IN ["fintech", "finance", "payments"]
+            RETURN c.name AS company, t.name AS technology,
+                   ind.name AS industry
             """,
         )
 

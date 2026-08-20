@@ -17,6 +17,67 @@ FALSE_NO_DATA = re.compile(
     flags=re.IGNORECASE | re.DOTALL,
 )
 
+
+def has_normalized_fintech_filter(cypher):
+    query_parts = re.split(
+        r"\bRETURN\b",
+        cypher,
+        maxsplit=1,
+        flags=re.IGNORECASE,
+    )
+    filtering_cypher = query_parts[0]
+    return_clause = query_parts[1] if len(query_parts) > 1 else ""
+    company_variables = re.findall(
+        r"\b(\w+)\.name\s+AS\s+company\b",
+        return_clause,
+        flags=re.IGNORECASE,
+    )
+    industry_variables = re.findall(
+        r"\((\w+)\s*:\s*Industry\b",
+        filtering_cypher,
+        flags=re.IGNORECASE,
+    )
+    for variable in industry_variables:
+        connected_to_returned_company = any(
+            re.search(
+                (
+                    rf"\(\s*{re.escape(company)}\b[^)]*\)\s*-\s*"
+                    rf"\[[^\]]*OPERATES_IN[^\]]*\]\s*->\s*"
+                    rf"\(\s*{re.escape(variable)}\s*:\s*Industry\b|"
+                    rf"\(\s*{re.escape(variable)}\s*:\s*Industry\b[^)]*\)\s*"
+                    rf"<-\s*\[[^\]]*OPERATES_IN[^\]]*\]\s*-\s*"
+                    rf"\(\s*{re.escape(company)}\b[^)]*\)"
+                ),
+                filtering_cypher,
+                flags=re.IGNORECASE | re.DOTALL,
+            )
+            for company in company_variables
+        )
+        if not connected_to_returned_company:
+            continue
+        property_pattern = (
+            rf"toLower\(\s*{re.escape(variable)}\.name\s*\)"
+        )
+        for values in re.findall(
+            rf"{property_pattern}\s+IN\s*(\[[^\]]*\])",
+            filtering_cypher,
+            flags=re.IGNORECASE | re.DOTALL,
+        ):
+            if all(
+                re.search(
+                    rf"['\"]{term}['\"]",
+                    values,
+                )
+                for term in ("fintech", "finance", "payments")
+            ) and re.search(
+                rf"\b{re.escape(variable)}\.name\s+AS\s+industry\b",
+                return_clause,
+                flags=re.IGNORECASE,
+            ):
+                return True
+    return False
+
+
 CASES = (
     {
         "query": "Which YC companies build developer tools?",
@@ -72,7 +133,12 @@ CASES = (
         "query": "Which YC companies use Python and operate in fintech?",
         "min_results": 1,
         "required_terms": ("python", "fintech"),
-        "required_cypher": (r"\bAS\s+technology\b", r"\bAS\s+industry\b"),
+        "required_filter_terms": ("fintech", "finance", "payments"),
+        "required_cypher": (
+            r"\bAS\s+technology\b",
+            r"\bAS\s+industry\b",
+        ),
+        "require_fintech_industry_in": True,
         "forbidden_terms": (
             "does not contain enough information",
             "does not specify",
@@ -98,6 +164,98 @@ CASES = (
         "query": "Which YC companies are building nuclear-powered consumer smartphones?",
         "expected_results": 0,
         "required_terms": ("no results",),
+    },
+    {
+        "query": "Which investors have the most YC portfolio companies?",
+        "min_results": 5,
+        "required_patterns": (r"\b(?:investor|portfolio)\w*\b",),
+    },
+    {
+        "query": "Which YC companies were acquired and by whom?",
+        "min_results": 1,
+        "required_patterns": (r"\bacquir(?:ed|er|ers|ing)\b",),
+    },
+    {
+        "query": "How many YC companies are Active vs Dead vs Acquired?",
+        "min_results": 3,
+        "required_terms": ("active", "dead", "acquired"),
+    },
+    {
+        "query": "Which YC companies headquartered in India operate in fintech?",
+        "min_results": 1,
+        "required_terms": ("india",),
+        "required_patterns": (r"\b(?:fintech|finance|payments)\b",),
+        "required_filter_terms": ("fintech", "finance", "payments"),
+        "required_cypher": (r"\bAS\s+industry\b",),
+        "require_fintech_industry_in": True,
+    },
+    {
+        "query": "What is Stripe's funding history?",
+        "min_results": 1,
+        "required_terms": ("stripe",),
+        "required_patterns": (r"\b(?:funding|seed|series|round)\w*\b",),
+    },
+    {
+        "query": "Which founders started more than one YC company?",
+        "min_results": 1,
+        "required_patterns": (r"\bfounder\w*\b",),
+    },
+    {
+        "query": "Which active YC companies in San Francisco use AI?",
+        "min_results": 1,
+        "required_terms": ("san francisco", "ai"),
+        "forbidden_cypher": (r'CONTAINS\s+["\']ai["\']',),
+    },
+    {
+        "query": "Which investors backed healthcare companies?",
+        "min_results": 1,
+        "required_patterns": (r"\b(?:investor|backed|invested)\w*\b",),
+        "required_terms": ("healthcare",),
+    },
+    {
+        "query": "Which W21 companies are now public or acquired?",
+        "min_results": 1,
+        "required_patterns": (r"\b(?:public|acquired)\b",),
+        "required_filter_cypher": (r'["\']Winter 2021["\']',),
+        "forbidden_cypher": (r'["\']W21["\']',),
+    },
+    {
+        "query": "Compare healthcare companies in W21 and S21.",
+        "min_results": 2,
+        "required_terms": ("winter 2021", "summer 2021"),
+        "required_filter_cypher": (
+            r'["\']Winter 2021["\']',
+            r'["\']Summer 2021["\']',
+        ),
+    },
+    {
+        "query": "Which YC companies have more than 500 employees?",
+        "min_results": 1,
+        "required_patterns": (r"\b(?:employees|team size)\b",),
+    },
+    {
+        "query": "Which dead consumer companies came from S20?",
+        "min_results": 1,
+        "required_patterns": (r"\b(?:dead|inactive)\b",),
+        "required_terms": ("consumer",),
+        "required_filter_cypher": (r'["\']Summer 2020["\']',),
+        "forbidden_cypher": (r'["\']S20["\']',),
+    },
+    {
+        "query": "Who invested in Airbnb?",
+        "min_results": 1,
+        "required_terms": ("airbnb",),
+        "required_patterns": (r"\b(?:investor|invested|investment)\w*\b",),
+    },
+    {
+        "query": "What is the breakdown of YC companies by stage?",
+        "min_results": 3,
+        "required_terms": ("stage",),
+    },
+    {
+        "query": "Which technologies are most used by YC companies?",
+        "min_results": 5,
+        "required_patterns": (r"\btechnolog(?:y|ies)\b",),
     },
 )
 
@@ -190,6 +348,13 @@ class LiveQueryRegressionTests(unittest.TestCase):
             cypher = payload.get("cypher", "")
             if not cypher:
                 failures.append(f"{query}: missing generated Cypher")
+            if (
+                case.get("require_fintech_industry_in")
+                and not has_normalized_fintech_filter(cypher)
+            ):
+                failures.append(
+                    f"{query}: Cypher is missing normalized fintech industry IN filter"
+                )
             filtering_cypher = re.split(
                 r"\bRETURN\b",
                 cypher,
@@ -204,6 +369,11 @@ class LiveQueryRegressionTests(unittest.TestCase):
                 ):
                     failures.append(
                         f"{query}: filter Cypher does not match required pattern {pattern!r}"
+                    )
+            for term in case.get("required_filter_terms", ()):
+                if term.casefold() not in filtering_cypher.casefold():
+                    failures.append(
+                        f"{query}: filter Cypher is missing required term {term!r}"
                     )
             for pattern in case.get("required_cypher", ()):
                 if not re.search(pattern, cypher, flags=re.IGNORECASE | re.DOTALL):
