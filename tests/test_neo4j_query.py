@@ -21,6 +21,173 @@ neo4j_query = importlib.import_module("neo4j_query")
 
 
 class CypherSemanticsTests(unittest.TestCase):
+    def test_rejects_non_distinct_company_count(self):
+        with self.assertRaisesRegex(ValueError, r"count\(DISTINCT c\)"):
+            neo4j_query.validate_cypher_semantics(
+                "Which batches produced the most healthcare companies?",
+                """
+                MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+                MATCH (c)-[:PART_OF]->(b:Batch)
+                RETURN b.name AS batch, count(c) AS company_count
+                """,
+            )
+
+    def test_accepts_distinct_company_count(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which batches produced the most healthcare companies?",
+            """
+            MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+            MATCH (c)-[:PART_OF]->(b:Batch)
+            RETURN b.name AS batch, count(DISTINCT c) AS company_count
+            """,
+        )
+
+    def test_rejects_company_property_count(self):
+        with self.assertRaisesRegex(ValueError, r"count\(DISTINCT c\)"):
+            neo4j_query.validate_cypher_semantics(
+                "How many healthcare companies are there?",
+                """
+                MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+                RETURN count(c.name) AS company_count
+                """,
+            )
+
+    def test_rejects_distinct_company_property_count(self):
+        with self.assertRaisesRegex(ValueError, r"count\(DISTINCT c\)"):
+            neo4j_query.validate_cypher_semantics(
+                "Which batches produced the most healthcare companies?",
+                """
+                MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+                MATCH (c)-[:PART_OF]->(b:Batch)
+                RETURN b.name AS batch, count(DISTINCT c.name) AS company_count
+                """,
+            )
+
+    def test_rejects_distinct_non_company_count(self):
+        with self.assertRaisesRegex(ValueError, r"count\(DISTINCT c\)"):
+            neo4j_query.validate_cypher_semantics(
+                "Which batches produced the most healthcare companies?",
+                """
+                MATCH (c:Company)-[:PART_OF]->(b:Batch)
+                RETURN b.name AS batch, count(DISTINCT b) AS company_count
+                """,
+            )
+
+    def test_rejects_count_star_for_company_question(self):
+        with self.assertRaisesRegex(ValueError, r"count\(DISTINCT c\)"):
+            neo4j_query.validate_cypher_semantics(
+                "How many healthcare companies are there?",
+                """
+                MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+                RETURN count(*) AS company_count
+                """,
+            )
+
+    def test_rejects_count_star_for_singular_company_wording(self):
+        with self.assertRaisesRegex(ValueError, r"count\(DISTINCT c\)"):
+            neo4j_query.validate_cypher_semantics(
+                "What is the company count by batch?",
+                """
+                MATCH (c:Company)-[:PART_OF]->(b:Batch)
+                RETURN b.name AS batch, count(*) AS company_count
+                """,
+            )
+
+    def test_accepts_related_entity_count_for_company_ranking(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which companies raised the most funding rounds?",
+            """
+            MATCH (c:Company)-[:RAISED]->(fe:FundingEvent)
+            RETURN c.name AS company, count(fe) AS funding_round_count
+            """,
+        )
+
+    def test_requires_status_evidence_for_filtered_company_list(self):
+        with self.assertRaisesRegex(ValueError, "company status AS status"):
+            neo4j_query.validate_cypher_semantics(
+                "Which dead consumer companies came from S20?",
+                """
+                MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+                WHERE c.status = "Dead" AND c.yc_batch = "Summer 2020"
+                RETURN c.name AS company, ind.name AS industry
+                """,
+            )
+
+    def test_accepts_status_evidence_for_filtered_company_list(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which dead consumer companies came from S20?",
+            """
+            MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+            WHERE c.status = "Dead" AND c.yc_batch = "Summer 2020"
+            RETURN c.name AS company, ind.name AS industry,
+                   c.status AS status
+            """,
+        )
+
+    def test_requires_status_evidence_after_with_name_projection(self):
+        with self.assertRaisesRegex(ValueError, "company status AS status"):
+            neo4j_query.validate_cypher_semantics(
+                "Which companies are dead?",
+                """
+                MATCH (c:Company)
+                WHERE c.status = "Dead"
+                WITH c.name AS company
+                RETURN company
+                """,
+            )
+
+    def test_accepts_status_evidence_after_with_projection(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which companies are dead?",
+            """
+            MATCH (c:Company)
+            WHERE c.status = "Dead"
+            WITH c.name AS company, c.status AS status
+            RETURN company, status
+            """,
+        )
+
+    def test_requires_status_evidence_for_negative_predicate(self):
+        with self.assertRaisesRegex(ValueError, "company status AS status"):
+            neo4j_query.validate_cypher_semantics(
+                "Which companies are not active?",
+                """
+                MATCH (c:Company)
+                WHERE c.status <> "Active"
+                RETURN c.name AS company
+                """,
+            )
+
+    def test_requires_status_evidence_for_property_map(self):
+        with self.assertRaisesRegex(ValueError, "company status AS status"):
+            neo4j_query.validate_cypher_semantics(
+                "Which companies are dead?",
+                """
+                MATCH (c:Company {status: "Dead"})
+                RETURN c.name AS company
+                """,
+            )
+
+    def test_requires_status_evidence_with_startup_alias(self):
+        with self.assertRaisesRegex(ValueError, "company status AS status"):
+            neo4j_query.validate_cypher_semantics(
+                "Which startups are dead?",
+                """
+                MATCH (c:Company {status: "Dead"})
+                RETURN c.name AS startup
+                """,
+            )
+
+    def test_status_aggregate_does_not_require_company_record_evidence(self):
+        neo4j_query.validate_cypher_semantics(
+            "How many active companies are there?",
+            """
+            MATCH (c:Company)
+            WHERE c.status = "Active"
+            RETURN count(DISTINCT c) AS company_count
+            """,
+        )
+
     def test_expands_batch_abbreviations(self):
         self.assertEqual(
             neo4j_query.expand_batch_abbreviations(
@@ -454,6 +621,31 @@ class CypherSemanticsTests(unittest.TestCase):
                          THEN c END) AS fintech_count
             """,
         )
+
+    def test_accepts_conditional_distinct_company_count_with_else_null(self):
+        neo4j_query.validate_cypher_semantics(
+            "How many healthcare companies are there?",
+            """
+            MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+            RETURN count(
+                DISTINCT CASE WHEN ind.name = "Healthcare" THEN c ELSE NULL END
+            ) AS healthcare_count
+            """,
+        )
+
+    def test_rejects_non_distinct_conditional_count_alongside_distinct_count(self):
+        with self.assertRaisesRegex(
+            ValueError, "Count conditional Company nodes"
+        ):
+            neo4j_query.validate_cypher_semantics(
+                "How many healthcare companies are there?",
+                """
+                MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+                RETURN count(DISTINCT c) AS total,
+                       count(CASE WHEN ind.name = "Healthcare"
+                             THEN c END) AS healthcare_count
+                """,
+            )
 
 
 class AnswerSynthesisTests(unittest.TestCase):

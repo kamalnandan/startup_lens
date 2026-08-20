@@ -78,6 +78,22 @@ def has_normalized_fintech_filter(cypher):
     return False
 
 
+def has_distinct_company_count(cypher):
+    company_variables = re.findall(
+        r"\((\w+)\s*:\s*Company\b",
+        cypher,
+        flags=re.IGNORECASE,
+    )
+    return any(
+        re.search(
+            rf"\bcount\s*\(\s*DISTINCT\s+{re.escape(variable)}\s*\)",
+            cypher,
+            flags=re.IGNORECASE,
+        )
+        for variable in company_variables
+    )
+
+
 CASES = (
     {
         "query": "Which YC companies build developer tools?",
@@ -106,6 +122,7 @@ CASES = (
             r'["\']Winter 2023["\']',
             r'["\']Summer 2023["\']',
         ),
+        "required_cypher": (r"\b\w+\.status\s+AS\s+status\b",),
         "forbidden_cypher": (
             r'["\']W23["\']',
             r'["\']S23["\']',
@@ -149,11 +166,18 @@ CASES = (
         "query": "Which batches produced the most healthcare companies?",
         "min_results": 1,
         "required_terms": ("healthcare",),
+        "require_distinct_company_count": True,
     },
     {
         "query": "Show companies that raised funding but are now inactive.",
         "min_results": 1,
-        "forbidden_terms": ("insufficient information to determine",),
+        "required_cypher": (r"\b\w+\.status\s+AS\s+status\b",),
+        "forbidden_terms": (
+            "insufficient information to determine",
+            "does not specify",
+            "field is missing",
+            "status is unavailable",
+        ),
     },
     {
         "query": "What technologies are most commonly used by developer-tools companies?",
@@ -204,6 +228,7 @@ CASES = (
         "query": "Which active YC companies in San Francisco use AI?",
         "min_results": 1,
         "required_terms": ("san francisco", "ai"),
+        "required_cypher": (r"\b\w+\.status\s+AS\s+status\b",),
         "forbidden_cypher": (r'CONTAINS\s+["\']ai["\']',),
     },
     {
@@ -216,6 +241,7 @@ CASES = (
         "query": "Which W21 companies are now public or acquired?",
         "min_results": 1,
         "required_patterns": (r"\b(?:public|acquired)\b",),
+        "required_cypher": (r"\b\w+\.status\s+AS\s+status\b",),
         "required_filter_cypher": (r'["\']Winter 2021["\']',),
         "forbidden_cypher": (r'["\']W21["\']',),
     },
@@ -227,6 +253,7 @@ CASES = (
             r'["\']Winter 2021["\']',
             r'["\']Summer 2021["\']',
         ),
+        "require_distinct_company_count": True,
     },
     {
         "query": "Which YC companies have more than 500 employees?",
@@ -238,8 +265,15 @@ CASES = (
         "min_results": 1,
         "required_patterns": (r"\b(?:dead|inactive)\b",),
         "required_terms": ("consumer",),
+        "required_cypher": (r"\b\w+\.status\s+AS\s+status\b",),
         "required_filter_cypher": (r'["\']Summer 2020["\']',),
         "forbidden_cypher": (r'["\']S20["\']',),
+        "forbidden_terms": (
+            "does not specify",
+            "field is missing",
+            "status is unavailable",
+            "status is missing",
+        ),
     },
     {
         "query": "Who invested in Airbnb?",
@@ -354,6 +388,13 @@ class LiveQueryRegressionTests(unittest.TestCase):
             ):
                 failures.append(
                     f"{query}: Cypher is missing normalized fintech industry IN filter"
+                )
+            if (
+                case.get("require_distinct_company_count")
+                and not has_distinct_company_count(cypher)
+            ):
+                failures.append(
+                    f"{query}: Cypher is missing count(DISTINCT Company)"
                 )
             filtering_cypher = re.split(
                 r"\bRETURN\b",

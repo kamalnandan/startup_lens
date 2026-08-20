@@ -114,6 +114,9 @@ You are an expert Neo4j Cypher query generator for a startup intelligence knowle
     each record matched (for example, t.name AS technology and ind.name AS industry).
 14. Batch names use full forms such as "Winter 2023" and "Summer 2023", never
     abbreviations such as "W23" or "S23".
+15. Whenever counting Company nodes, use count(DISTINCT c) to avoid duplicate
+    companies introduced by relationship traversal.
+16. When filtering company records by status, return c.status AS status.
 
 ## Examples:
 
@@ -148,7 +151,8 @@ WHERE c.status = "Active"
   AND any(name IN industries WHERE name CONTAINS "b2b")
   AND any(name IN industries WHERE name CONTAINS "saas")
   AND c.team_size > 0 AND c.team_size < 20
-RETURN DISTINCT c.name AS company, c.team_size AS team_size
+RETURN DISTINCT c.name AS company, c.team_size AS team_size,
+       c.status AS status
 ORDER BY c.team_size
 LIMIT 50
 
@@ -166,14 +170,14 @@ LIMIT 50
 Question: Which industries are most represented across YC companies?
 Cypher:
 MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
-RETURN ind.name AS industry, count(c) AS company_count
+RETURN ind.name AS industry, count(DISTINCT c) AS company_count
 ORDER BY company_count DESC
 LIMIT 20
 
 Question: Which investors have the most portfolio companies?
 Cypher:
 MATCH (i:Investor)-[:INVESTED_IN]->(c:Company)
-RETURN i.name AS investor, count(c) AS portfolio_size, collect(c.name)[0..5] AS sample_companies
+RETURN i.name AS investor, count(DISTINCT c) AS portfolio_size, collect(DISTINCT c.name)[0..5] AS sample_companies
 ORDER BY portfolio_size DESC
 LIMIT 20
 
@@ -181,14 +185,14 @@ Question: Which industries have the most failed (Dead) YC startups?
 Cypher:
 MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
 WHERE c.status = "Dead"
-RETURN ind.name AS industry, count(c) AS dead_count
+RETURN ind.name AS industry, count(DISTINCT c) AS dead_count
 ORDER BY dead_count DESC
 LIMIT 20
 
 Question: How many YC companies are Active vs Dead vs Acquired?
 Cypher:
 MATCH (c:Company)
-RETURN c.status AS status, count(c) AS company_count
+RETURN c.status AS status, count(DISTINCT c) AS company_count
 ORDER BY company_count DESC
 
 Question: What are common patterns among failed YC startups?
@@ -199,14 +203,14 @@ OPTIONAL MATCH (c)-[:OPERATES_IN]->(ind:Industry)
 OPTIONAL MATCH (c)-[:HEADQUARTERED_IN]->(l:Location)
 OPTIONAL MATCH (c)-[:PART_OF]->(b:Batch)
 RETURN ind.name AS industry, l.country AS country, b.name AS batch,
-       count(c) AS dead_count
+       count(DISTINCT c) AS dead_count
 ORDER BY dead_count DESC
 LIMIT 50
 
 Question: What is the breakdown of YC companies by stage?
 Cypher:
 MATCH (c:Company)
-RETURN c.stage AS stage, count(c) AS company_count
+RETURN c.stage AS stage, count(DISTINCT c) AS company_count
 ORDER BY company_count DESC
 
 Question: Which YC companies were acquired and by whom?
@@ -219,7 +223,7 @@ LIMIT 100
 Question: Who are the most connected founders across YC?
 Cypher:
 MATCH (f:Founder)-[:FOUNDED]->(c:Company)
-WITH f, count(c) AS companies_founded, collect(c.name) AS companies
+WITH f, count(DISTINCT c) AS companies_founded, collect(DISTINCT c.name) AS companies
 WHERE companies_founded > 1
 RETURN f.name AS founder, companies_founded, companies
 ORDER BY companies_founded DESC
@@ -253,7 +257,7 @@ LIMIT 20
 Question: Which technologies are most used by YC companies?
 Cypher:
 MATCH (c:Company)-[:USES]->(t:Technology)
-RETURN t.name AS technology, count(c) AS company_count
+RETURN t.name AS technology, count(DISTINCT c) AS company_count
 ORDER BY company_count DESC
 LIMIT 20
 
@@ -404,8 +408,155 @@ def validate_cypher_semantics(question: str, cypher: str) -> None:
     ):
         raise ValueError("Use one result-producing query instead of UNION.")
 
+    query_parts = re.split(
+        r"\bRETURN\b",
+        cypher,
+        maxsplit=1,
+        flags=re.IGNORECASE,
+    )
+    filtering_cypher = query_parts[0]
+    return_clause = query_parts[1] if len(query_parts) > 1 else ""
+    company_variables = set(
+        re.findall(
+            r"\((\w+)\s*:\s*Company\b",
+            cypher,
+            flags=re.IGNORECASE,
+        )
+    )
+    for variable in company_variables:
+        if re.search(
+            (
+                rf"\bcount\s*\(\s*{re.escape(variable)}"
+                rf"(?:\.\w+)?\s*\)"
+            ),
+            cypher,
+            flags=re.IGNORECASE,
+        ):
+            raise ValueError(
+                f"Count companies with count(DISTINCT {variable}) to avoid duplicates."
+            )
+        if re.search(
+            (
+                rf"\bcount\s*\(\s*CASE\b.{{0,500}}?"
+                rf"(?:\bTHEN|\bELSE)\s+{re.escape(variable)}"
+                rf"(?:\s+ELSE\s+NULL)?\s+END\s*\)"
+            ),
+            cypher,
+            flags=re.IGNORECASE | re.DOTALL,
+        ):
+            raise ValueError(
+                "Count conditional Company nodes with "
+                f"count(DISTINCT CASE ... THEN {variable} END)."
+            )
+    company_count_intent = re.search(
+        (
+            r"(?:\b(?:how many|number of|count|most|compare)\b.{0,80}"
+            r"\b(?:companies|startups)\b)"
+            r"|(?:\b(?:company|startup)\s+count\b)"
+        ),
+        question,
+        flags=re.IGNORECASE,
+    ) or re.search(
+        r"\bAS\s+(?:company|startup)_count\b",
+        return_clause,
+        flags=re.IGNORECASE,
+    )
+    if (
+        company_variables
+        and company_count_intent
+        and re.search(r"\bcount\s*\(", cypher, flags=re.IGNORECASE)
+        and not any(
+            (
+                re.search(
+                    rf"\bcount\s*\(\s*DISTINCT\s+{re.escape(variable)}\s*\)",
+                    cypher,
+                    flags=re.IGNORECASE,
+                )
+                or re.search(
+                    (
+                        rf"\bcount\s*\(\s*DISTINCT\s+CASE\b.{{0,500}}?"
+                        rf"\bTHEN\s+{re.escape(variable)}"
+                        rf"(?:\s+ELSE\s+NULL)?\s+END\s*\)"
+                    ),
+                    cypher,
+                    flags=re.IGNORECASE | re.DOTALL,
+                )
+            )
+            for variable in company_variables
+        )
+    ):
+        variable = sorted(company_variables)[0]
+        raise ValueError(
+            f"Count companies with count(DISTINCT {variable}) to avoid duplicates."
+        )
+    if (
+        company_variables
+        and company_count_intent
+        and re.search(r"\bcount\s*\(\s*\*\s*\)", cypher, flags=re.IGNORECASE)
+    ):
+        variable = sorted(company_variables)[0]
+        raise ValueError(
+            f"Count companies with count(DISTINCT {variable}) to avoid duplicates."
+        )
+
+    returned_company_variables = {
+        variable
+        for variable in company_variables
+        if re.search(
+            rf"\b{re.escape(variable)}\.name\b",
+            return_clause,
+            flags=re.IGNORECASE,
+        )
+    }
+    for variable in company_variables:
+        projected_name_aliases = re.findall(
+            rf"\b{re.escape(variable)}\.name\s+AS\s+(\w+)\b",
+            filtering_cypher,
+            flags=re.IGNORECASE,
+        )
+        if any(
+            re.search(
+                rf"\b{re.escape(alias)}\b",
+                return_clause,
+                flags=re.IGNORECASE,
+            )
+            for alias in projected_name_aliases
+        ):
+            returned_company_variables.add(variable)
+    status_filtered_variables = set(
+        re.findall(
+            r"\b(\w+)\.status\b",
+            filtering_cypher,
+            flags=re.IGNORECASE,
+        )
+    )
+    status_filtered_variables.update(
+        variable
+        for variable in company_variables
+        if re.search(
+            (
+                rf"\(\s*{re.escape(variable)}\s*:\s*Company\s*"
+                rf"\{{[^}}]*\bstatus\s*:"
+            ),
+            filtering_cypher,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+    )
+    for variable in returned_company_variables & status_filtered_variables:
+        direct_status = re.search(
+            rf"\b{re.escape(variable)}\.status\s+AS\s+status\b",
+            return_clause,
+            flags=re.IGNORECASE,
+        )
+        projected_status = re.search(
+            rf"\b{re.escape(variable)}\.status\s+AS\s+status\b",
+            filtering_cypher,
+            flags=re.IGNORECASE,
+        ) and re.search(r"\bstatus\b", return_clause, flags=re.IGNORECASE)
+        if not direct_status and not projected_status:
+            raise ValueError("Return the filtered company status AS status.")
+
     batch_aliases = re.findall(r"\b([WS])(\d{2})\b", question, flags=re.IGNORECASE)
-    filtering_cypher = re.split(r"\bRETURN\b", cypher, maxsplit=1, flags=re.IGNORECASE)[0]
     for season_code, short_year in batch_aliases:
         season = "Winter" if season_code.casefold() == "w" else "Summer"
         full_batch = f"{season} {2000 + int(short_year)}"
