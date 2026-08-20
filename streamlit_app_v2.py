@@ -58,6 +58,7 @@ check_access()
 
 
 API_URL = get_required_setting("STARTUPLENS_API_URL").rstrip("/")
+API_KEY = get_required_setting("STARTUPLENS_API_KEY")
 
 # st.sidebar.info(f"Connecting to: {API_URL}")
 
@@ -476,7 +477,7 @@ if search_clicked:
                 response = requests.post(
                     f"{API_URL}/query",
                     json={"query": query.strip()},
-                    headers={"X-Real-IP": user_ip},
+                    headers={"X-Real-IP": user_ip, "X-API-Key": API_KEY},
                     timeout=120,
                 )
                 response.raise_for_status()

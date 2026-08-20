@@ -15,11 +15,23 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from neo4j_query import query as neo4j_query
 from query_logger import log_query
+from app_config import get_required_setting
 
 # ── Logging ────────────────────────────────────────────────────────────────────
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# ── API Key ────────────────────────────────────────────────────────────────────
+
+API_KEY = get_required_setting("STARTUPLENS_API_KEY")
+
+
+def verify_api_key(request: Request):
+    """Check X-API-Key header. Raises 401 if missing or invalid."""
+    key = request.headers.get("x-api-key")
+    if key != API_KEY:
+        raise HTTPException(status_code=401, detail="Invalid or missing API key")
 
 # ── App ────────────────────────────────────────────────────────────────────────
 
@@ -87,6 +99,8 @@ def query(request: QueryRequest, raw_request: Request):
     Automatically classifies query, generates Cypher,
     executes against Neo4j, and returns synthesized answer.
     """
+    verify_api_key(raw_request)
+
     if not request.query or len(request.query.strip()) < 5:
         raise HTTPException(status_code=400, detail="Query too short")
 
