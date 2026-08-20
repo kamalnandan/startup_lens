@@ -173,6 +173,24 @@ streamlit run streamlit_app.py
 
 Open `http://localhost:8501` in your browser.
 
+### Query regression tests
+
+Run the deterministic query-generation and answer-grounding tests:
+
+```bash
+python -m unittest tests.test_neo4j_query -v
+```
+
+After deploying, run the representative live-query suite with credentials supplied
+through the environment:
+
+```bash
+RUN_LIVE_API_TESTS=1 \
+STARTUPLENS_API_URL=https://your-api-host \
+STARTUPLENS_API_KEY=your-api-key \
+python -m unittest tests.test_live_query_regression -v
+```
+
 ---
 
 ## Data Pipeline

@@ -13,7 +13,9 @@ Components:
 """
 
 import json
+import itertools
 import logging
+import re
 import requests
 from neo4j import GraphDatabase
 from app_config import get_required_setting
@@ -95,8 +97,9 @@ You are an expert Neo4j Cypher query generator for a startup intelligence knowle
 
 ## Cypher Generation Rules:
 1. Always return meaningful properties, not just IDs
-2. Use LIMIT 100 on all queries to avoid large result sets
-3. Use case-insensitive matching: toLower(n.name) CONTAINS toLower("value")
+2. Use LIMIT 50 on all queries to avoid large result sets
+3. Use case-insensitive exact matching for short category names such as AI:
+   toLower(n.name) = "ai". Use CONTAINS only for longer free-text search terms.
 4. For pattern queries, use aggregation (count, collect) to summarize results
 5. Return results as flat list of properties, not nested objects
 6. For multi-hop queries, chain MATCH clauses
@@ -104,6 +107,9 @@ You are an expert Neo4j Cypher query generator for a startup intelligence knowle
 8. When asked about failed/dead startups, filter on c.status = "Dead"
 9. When asked about successful startups, filter on c.status IN ["Active", "Public", "Acquired"]
 10. Available status values: Active, Acquired, Public, Dead, Unknown
+11. Preserve the user's boolean intent. "B2B SaaS" means companies matching both
+    B2B AND SaaS, not either category.
+12. team_size = 0 means unknown. Exclude it from employee-count comparisons.
 
 ## Examples:
 
@@ -119,6 +125,28 @@ MATCH (c)-[:OPERATES_IN]->(ind:Industry)
 WHERE toLower(ind.name) CONTAINS "fintech" OR toLower(ind.name) CONTAINS "finance" OR toLower(ind.name) CONTAINS "payments"
 RETURN f.name AS founder, c.name AS company, c.yc_batch AS batch, ind.name AS industry
 ORDER BY c.yc_batch
+
+Question: Compare AI companies in San Francisco and New York.
+Cypher:
+MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+WHERE toLower(ind.name) IN ["ai", "artificial intelligence"]
+MATCH (c)-[:HEADQUARTERED_IN]->(l:Location)
+WHERE toLower(l.city) IN ["san francisco", "new york"]
+RETURN l.city AS city, count(DISTINCT c) AS ai_company_count,
+       collect(DISTINCT c.name)[0..10] AS sample_companies
+ORDER BY ai_company_count DESC
+
+Question: Which active B2B SaaS companies have fewer than 20 employees?
+Cypher:
+MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+WITH c, collect(toLower(ind.name)) AS industries
+WHERE c.status = "Active"
+  AND any(name IN industries WHERE name CONTAINS "b2b")
+  AND any(name IN industries WHERE name CONTAINS "saas")
+  AND c.team_size > 0 AND c.team_size < 20
+RETURN DISTINCT c.name AS company, c.team_size AS team_size
+ORDER BY c.team_size
+LIMIT 50
 
 Question: Which industries are most represented across YC companies?
 Cypher:
@@ -259,13 +287,164 @@ Generate a corrected Cypher query."""
     logger.info(f"Generated Cypher: {cypher}")
     return cypher
 
+
+def enforce_result_limit(cypher: str) -> str:
+    """Ensure the final result-producing clause is capped in Neo4j."""
+    clean_cypher = cypher.rstrip().rstrip(";")
+    trailing_limit = re.search(
+        r"\bLIMIT\s+(\d+)\s*$",
+        clean_cypher,
+        flags=re.IGNORECASE,
+    )
+    if trailing_limit:
+        limit = min(int(trailing_limit.group(1)), MAX_RESULTS)
+        return (
+            f"{clean_cypher[:trailing_limit.start()]}"
+            f"LIMIT {limit}"
+        )
+    return f"{clean_cypher}\nLIMIT {MAX_RESULTS}"
+
+
+def executable_cypher_text(cypher: str) -> str:
+    """Mask literals and comments before checking Cypher operators."""
+    output = []
+    index = 0
+    state = None
+    escaped = False
+
+    while index < len(cypher):
+        character = cypher[index]
+        following = cypher[index + 1] if index + 1 < len(cypher) else ""
+
+        if state in {"'", '"', "`"}:
+            output.append(" ")
+            if escaped:
+                escaped = False
+            elif character == "\\":
+                escaped = True
+            elif character == state:
+                state = None
+            index += 1
+            continue
+        if state == "line_comment":
+            output.append("\n" if character == "\n" else " ")
+            if character == "\n":
+                state = None
+            index += 1
+            continue
+        if state == "block_comment":
+            output.append(" ")
+            if character == "*" and following == "/":
+                output.append(" ")
+                state = None
+                index += 2
+            else:
+                index += 1
+            continue
+
+        if character in {"'", '"', "`"}:
+            output.append(" ")
+            state = character
+            index += 1
+        elif character == "/" and following == "/":
+            output.extend((" ", " "))
+            state = "line_comment"
+            index += 2
+        elif character == "/" and following == "*":
+            output.extend((" ", " "))
+            state = "block_comment"
+            index += 2
+        else:
+            output.append(character)
+            index += 1
+
+    return "".join(output)
+
+
+def validate_cypher_semantics(question: str, cypher: str) -> None:
+    """Reject common queries that execute successfully but change user intent."""
+    if re.search(
+        r"\bUNION\b",
+        executable_cypher_text(cypher),
+        flags=re.IGNORECASE,
+    ):
+        raise ValueError("Use one result-producing query instead of UNION.")
+
+    if re.search(r"\bAI\b", question, flags=re.IGNORECASE) and re.search(
+        r"\bCONTAINS\s+(?:toLower\()?['\"]ai['\"]",
+        cypher,
+        flags=re.IGNORECASE,
+    ):
+        raise ValueError(
+            'Use an exact category match for AI; CONTAINS "ai" matches unrelated words.'
+        )
+
+    if re.search(r"\bB2B\s+SaaS\b", question, flags=re.IGNORECASE):
+        lower_cypher = cypher.lower()
+        if "b2b" not in lower_cypher or "saas" not in lower_cypher:
+            raise ValueError("B2B SaaS requires explicit filters for both categories.")
+
+        category_property = r"(?:\b\w+\.\w+|toLower\([^)]*\))"
+        b2b_predicate = (
+            rf"{category_property}\s*(?:(?:=|CONTAINS)\s*['\"]b2b['\"]|"
+            rf"IN\s*\[[^\]]*['\"]b2b['\"][^\]]*\])"
+        )
+        saas_predicate = (
+            rf"{category_property}\s*(?:(?:=|CONTAINS)\s*['\"]saas['\"]|"
+            rf"IN\s*\[[^\]]*['\"]saas['\"][^\]]*\])"
+        )
+        category_or = (
+            rf"{b2b_predicate}.{{0,160}}\bOR\b.{{0,160}}{saas_predicate}|"
+            rf"{saas_predicate}.{{0,160}}\bOR\b.{{0,160}}{b2b_predicate}"
+        )
+        if re.search(category_or, cypher, flags=re.IGNORECASE | re.DOTALL):
+            raise ValueError("B2B SaaS requires both categories, not an OR condition.")
+
+        category_in = (
+            rf"{category_property}\s+IN\s*\[[^\]]*['\"]b2b['\"]"
+            rf"[^\]]*['\"]saas['\"][^\]]*\]"
+        )
+        reverse_category_in = (
+            rf"{category_property}\s+IN\s*\[[^\]]*['\"]saas['\"]"
+            rf"[^\]]*['\"]b2b['\"][^\]]*\]"
+        )
+        if re.search(
+            f"{category_in}|{reverse_category_in}",
+            cypher,
+            flags=re.IGNORECASE,
+        ):
+            raise ValueError("B2B SaaS requires both categories, not IN membership.")
+
+        literal_membership_or = (
+            r"['\"]b2b['\"]\s+IN\s+\w+.{0,120}\bOR\b.{0,120}"
+            r"['\"]saas['\"]\s+IN\s+\w+|"
+            r"['\"]saas['\"]\s+IN\s+\w+.{0,120}\bOR\b.{0,120}"
+            r"['\"]b2b['\"]\s+IN\s+\w+"
+        )
+        if re.search(
+            literal_membership_or,
+            cypher,
+            flags=re.IGNORECASE | re.DOTALL,
+        ):
+            raise ValueError("B2B SaaS requires both categories, not OR membership.")
+
+    if re.search(r"(?:fewer|less)\s+than\s+\d+\s+employees", question, flags=re.IGNORECASE):
+        has_upper_bound = re.search(r"team_size\s*<", cypher, flags=re.IGNORECASE)
+        excludes_unknown = re.search(
+            r"team_size\s*>\s*0|0\s*<\s*\w*\.?team_size",
+            cypher,
+            flags=re.IGNORECASE,
+        )
+        if has_upper_bound and not excludes_unknown:
+            raise ValueError("Exclude unknown team sizes with c.team_size > 0.")
+
 # ── Step 3: Query Execution ────────────────────────────────────────────────────
 
 def execute_cypher(cypher: str, driver) -> list:
-    """Execute Cypher query and return results as list of dicts."""
+    """Execute Cypher and stream no more rows than synthesis can consume."""
     with driver.session() as session:
         result = session.run(cypher)
-        return [dict(record) for record in result]
+        return [dict(record) for record in itertools.islice(result, MAX_RESULTS)]
 
 # ── Step 4: Answer Synthesis ───────────────────────────────────────────────────
 
@@ -287,14 +466,121 @@ Synthesize an answer STRICTLY from the provided data only.
 
 CRITICAL RULES:
 - ONLY use information present in the data provided
-- If the data is insufficient, say so explicitly
+- The provided data contains matching records. Never claim that there are no
+  results or that the requested property is unavailable when a record contains it.
+- If only part of the question can be answered, answer that part first, then
+  identify the specific missing fields.
 - Do NOT supplement with your own knowledge about companies or founders
 - Do NOT make assumptions about data not present
 - If a company's funding amount is unknown, say "amount not available"
 - Never invent or estimate figures not in the data
 """
 
-def synthesize_answer(question: str, results: list) -> str:
+
+FALSE_NO_DATA_PATTERNS = (
+    r"^\s*the data (?:provided )?does not contain enough information",
+    r"^\s*based on the (?:provided )?data,? there (?:is|are) insufficient",
+    r"there (?:is|are) insufficient information to determine",
+    r"^\s*no results (?:were )?found",
+    r"cannot determine .+ from the (?:provided )?data",
+)
+
+
+def has_substantive_results(results: list) -> bool:
+    return any(
+        value not in (None, "", [], {})
+        for row in results
+        for value in row.values()
+    )
+
+
+def falsely_claims_no_data(answer: str) -> bool:
+    return no_data_claim_start(answer) is not None
+
+
+def no_data_claim_start(answer: str):
+    starts = []
+    for pattern in FALSE_NO_DATA_PATTERNS:
+        match = re.search(pattern, answer, flags=re.IGNORECASE | re.DOTALL)
+        if match:
+            starts.append(match.start())
+    return min(starts) if starts else None
+
+
+def answer_references_results(answer: str, results: list, question: str = "") -> bool:
+    """Check whether an answer grounds a partial response in a returned value."""
+    normalized_answer = answer.casefold()
+    normalized_question = question.casefold()
+    for row in results:
+        for key, value in row.items():
+            if str(key).casefold() in {"status", "stage"}:
+                continue
+            values = value if isinstance(value, list) else [value]
+            for item in values:
+                if isinstance(item, str) and len(item.strip()) >= 3:
+                    normalized_item = item.strip().casefold()
+                    if (
+                        normalized_item not in normalized_question
+                        and normalized_item in normalized_answer
+                    ):
+                        return True
+                elif isinstance(item, bool):
+                    normalized_item = str(item).casefold()
+                    if (
+                        normalized_item not in normalized_question
+                        and normalized_item in normalized_answer
+                    ):
+                        return True
+                elif isinstance(item, (int, float)):
+                    numeric = re.escape(str(item))
+                    pattern = rf"(?<![\d.]){numeric}(?![\d.])"
+                    if (
+                        not re.search(pattern, question)
+                        and re.search(pattern, answer)
+                    ):
+                        return True
+    return False
+
+
+def is_zero_count_aggregate(results: list, cypher: str = None) -> bool:
+    """Recognize a single aggregate row that represents zero matching entities."""
+    if (
+        len(results) != 1
+        or not results[0]
+        or not cypher
+        or not re.search(r"\bcount\s*\(", cypher, flags=re.IGNORECASE)
+    ):
+        return False
+
+    populated_values = [
+        value for value in results[0].values() if value not in (None, "", [], {})
+    ]
+    return bool(populated_values) and all(value == 0 for value in populated_values)
+
+
+def format_grounded_results(results: list) -> str:
+    """Render graph records directly when synthesis contradicts the data."""
+    visible_results = results[:MAX_RESULTS]
+    lines = [f"Found {len(results)} matching record{'s' if len(results) != 1 else ''}:"]
+
+    for index, row in enumerate(visible_results, start=1):
+        fields = []
+        for key, value in row.items():
+            if value in (None, "", [], {}):
+                continue
+            label = key.replace("_", " ").capitalize()
+            if isinstance(value, list):
+                value = ", ".join(str(item) for item in value)
+            fields.append(f"{label}: {value}")
+        lines.append(f"{index}. {'; '.join(fields)}")
+
+    if len(results) > len(visible_results):
+        lines.append(f"Showing the first {len(visible_results)} of {len(results)} records.")
+
+    return "\n".join(lines)
+
+
+def synthesize_answer(question: str, results: list, cypher: str = None) -> str:
     if not results:
         return "No results found for this query. The data may not contain enough information to answer this question."
 
@@ -311,10 +597,25 @@ Data from knowledge graph:
 {results_text}
 
 IMPORTANT: Base your answer STRICTLY on the data above. 
-If the data doesn't contain enough information, say so explicitly.
+These are {len(results)} matching records. Do not say there are no results or
+that a populated field is unavailable.
 Do not use any external knowledge."""
 
-    return call_llm(SYNTHESIS_SYSTEM, user_prompt, max_tokens=2000)
+    answer = call_llm(SYNTHESIS_SYSTEM, user_prompt, max_tokens=2000)
+    contradicts_results = (
+        has_substantive_results(results)
+        and not is_zero_count_aggregate(results, cypher)
+        and falsely_claims_no_data(answer)
+        and not answer_references_results(
+            answer[:no_data_claim_start(answer)],
+            results,
+            question,
+        )
+    )
+    if contradicts_results:
+        logger.warning("Synthesis contradicted non-empty graph results; using grounded fallback")
+        return format_grounded_results(results)
+    return answer
 
 # ── Main Query Pipeline ────────────────────────────────────────────────────────
 
@@ -344,6 +645,8 @@ def query(question: str) -> dict:
                     error_context=error,
                     previous_cypher=cypher
                 )
+                cypher = enforce_result_limit(cypher)
+                validate_cypher_semantics(question, cypher)
                 results = execute_cypher(cypher, driver)
                 error = None
                 break
@@ -351,8 +654,14 @@ def query(question: str) -> dict:
                 error = str(e)
                 logger.warning(f"Cypher attempt {attempt + 1} failed: {error}")
 
+        if error:
+            raise RuntimeError(
+                f"Unable to generate and execute a valid Cypher query after "
+                f"{MAX_CYPHER_RETRIES} attempts: {error}"
+            )
+
         # Step 4 — Synthesize
-        answer = synthesize_answer(question, results)
+        answer = synthesize_answer(question, results, cypher)
 
         return {
             "question": question,

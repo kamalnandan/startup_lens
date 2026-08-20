@@ -1,0 +1,371 @@
+import importlib
+import os
+import unittest
+from unittest.mock import MagicMock, patch
+
+
+REQUIRED_SETTINGS = (
+    "NEO4J_URI",
+    "NEO4J_USERNAME",
+    "NEO4J_PASSWORD",
+    "AZURE_OPENAI_ENDPOINT",
+    "AZURE_OPENAI_DEPLOYMENT",
+    "AZURE_OPENAI_API_VERSION",
+    "AZURE_OPENAI_API_KEY",
+)
+
+for setting in REQUIRED_SETTINGS:
+    os.environ.setdefault(setting, f"test-{setting.lower()}")
+
+neo4j_query = importlib.import_module("neo4j_query")
+
+
+class CypherSemanticsTests(unittest.TestCase):
+    def test_adds_server_side_result_limit(self):
+        cypher = "MATCH (c:Company) RETURN c.name"
+
+        self.assertEqual(
+            neo4j_query.enforce_result_limit(cypher),
+            "MATCH (c:Company) RETURN c.name\nLIMIT 50",
+        )
+
+    def test_caps_existing_trailing_limit(self):
+        cypher = "MATCH (c:Company) RETURN c.name LIMIT 100;"
+
+        self.assertEqual(
+            neo4j_query.enforce_result_limit(cypher),
+            "MATCH (c:Company) RETURN c.name LIMIT 50",
+        )
+
+    def test_adds_final_limit_after_intermediate_limit(self):
+        cypher = (
+            "MATCH (c) WITH c LIMIT 50 "
+            "MATCH (c)-[:USES]->(t) RETURN c.name, t.name"
+        )
+
+        self.assertTrue(
+            neo4j_query.enforce_result_limit(cypher).endswith(
+                "RETURN c.name, t.name\nLIMIT 50"
+            )
+        )
+
+    def test_rejects_union_queries(self):
+        with self.assertRaisesRegex(ValueError, "instead of UNION"):
+            neo4j_query.validate_cypher_semantics(
+                "Which companies are active?",
+                (
+                    "MATCH (c:Company {status: 'Active'}) RETURN c.name "
+                    "UNION MATCH (c:Company {status: 'Public'}) RETURN c.name"
+                ),
+            )
+
+    def test_allows_union_inside_string_literal(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which companies are in Union City?",
+            """
+            MATCH (c:Company)-[:HEADQUARTERED_IN]->(l:Location)
+            WHERE l.city = "Union City"
+            RETURN c.name
+            """,
+        )
+
+    def test_rejects_contains_for_short_ai_category(self):
+        with self.assertRaisesRegex(ValueError, "exact category match"):
+            neo4j_query.validate_cypher_semantics(
+                "Compare AI startups in San Francisco and New York.",
+                'MATCH (c)-[:OPERATES_IN]->(i) WHERE toLower(i.name) CONTAINS "ai" RETURN c',
+            )
+
+    def test_rejects_or_for_b2b_saas(self):
+        with self.assertRaisesRegex(ValueError, "both categories"):
+            neo4j_query.validate_cypher_semantics(
+                "Which B2B SaaS companies are active?",
+                'MATCH (c)-[:OPERATES_IN]->(i) WHERE i.name = "B2B" OR i.name = "SaaS" RETURN c',
+            )
+
+    def test_rejects_in_membership_for_b2b_saas(self):
+        with self.assertRaisesRegex(ValueError, "IN membership"):
+            neo4j_query.validate_cypher_semantics(
+                "Which B2B SaaS companies are active?",
+                """
+                MATCH (c)-[:OPERATES_IN]->(i)
+                WHERE toLower(i.name) IN ["b2b", "saas"]
+                RETURN c
+                """,
+            )
+
+    def test_accepts_all_predicate_for_b2b_saas(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which B2B SaaS companies are active?",
+            """
+            MATCH (c)-[:OPERATES_IN]->(i)
+            WITH c, collect(toLower(i.name)) AS industries
+            WHERE all(category IN ["b2b", "saas"] WHERE category IN industries)
+            RETURN c
+            """,
+        )
+
+    def test_rejects_literal_or_membership_for_b2b_saas(self):
+        with self.assertRaisesRegex(ValueError, "OR membership"):
+            neo4j_query.validate_cypher_semantics(
+                "Which B2B SaaS companies are active?",
+                """
+                MATCH (c)-[:OPERATES_IN]->(i)
+                WITH c, collect(toLower(i.name)) AS industries
+                WHERE "b2b" IN industries OR "saas" IN industries
+                RETURN c
+                """,
+            )
+
+    def test_rejects_singleton_in_or_for_b2b_saas(self):
+        with self.assertRaisesRegex(ValueError, "OR condition"):
+            neo4j_query.validate_cypher_semantics(
+                "Which B2B SaaS companies are active?",
+                """
+                MATCH (c)-[:OPERATES_IN]->(i)
+                WHERE toLower(i.name) IN ["b2b"]
+                   OR toLower(i.name) IN ["saas"]
+                RETURN c
+                """,
+            )
+
+    def test_rejects_unknown_team_sizes_from_employee_filter(self):
+        with self.assertRaisesRegex(ValueError, "unknown team sizes"):
+            neo4j_query.validate_cypher_semantics(
+                "Which companies have fewer than 20 employees?",
+                "MATCH (c:Company) WHERE c.team_size < 20 RETURN c",
+            )
+
+    def test_accepts_conjunctive_categories_and_known_team_sizes(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which B2B SaaS companies have fewer than 20 employees?",
+            """
+            MATCH (c)-[:OPERATES_IN]->(b2b), (c)-[:OPERATES_IN]->(saas)
+            WHERE b2b.name = "B2B" AND saas.name = "SaaS"
+              AND c.team_size > 0 AND c.team_size < 20
+            RETURN c
+            """,
+        )
+
+
+class AnswerSynthesisTests(unittest.TestCase):
+    def test_empty_results_do_not_call_llm(self):
+        with patch.object(neo4j_query, "call_llm") as call_llm:
+            answer = neo4j_query.synthesize_answer("Any matches?", [])
+
+        call_llm.assert_not_called()
+        self.assertIn("No results found", answer)
+
+    def test_false_no_data_claim_uses_grounded_fallback(self):
+        results = [
+            {
+                "company": "ExampleCo",
+                "round": "Seed",
+                "year": 2023,
+                "status": "Dead",
+            }
+        ]
+        with patch.object(
+            neo4j_query,
+            "call_llm",
+            return_value="The data provided does not contain enough information to answer.",
+        ):
+            answer = neo4j_query.synthesize_answer(
+                "Show companies that raised funding but are now inactive.",
+                results,
+            )
+
+        self.assertIn("Found 1 matching record", answer)
+        self.assertIn("Company: ExampleCo", answer)
+        self.assertIn("Status: Dead", answer)
+
+    def test_valid_grounded_answer_is_preserved(self):
+        expected = "ExampleCo raised a Seed round in 2023."
+        with patch.object(neo4j_query, "call_llm", return_value=expected):
+            answer = neo4j_query.synthesize_answer(
+                "Which company raised a seed round?",
+                [{"company": "ExampleCo", "round": "Seed", "year": 2023}],
+            )
+
+        self.assertEqual(answer, expected)
+
+    def test_grounded_partial_answer_is_preserved(self):
+        expected = (
+            "Patrick Collison founded Stripe. I cannot determine other "
+            "biographical details from the provided data."
+        )
+        with patch.object(neo4j_query, "call_llm", return_value=expected):
+            answer = neo4j_query.synthesize_answer(
+                "Who founded Stripe, and what else is known about the founder?",
+                [{"founder": "Patrick Collison", "company": "Stripe"}],
+            )
+
+        self.assertEqual(answer, expected)
+
+    def test_zero_count_aggregate_does_not_claim_one_match(self):
+        for alias in (
+            "company_count",
+            "companyCount",
+            "count(c)",
+            "total_companies",
+            "matching_companies",
+            "num_companies",
+        ):
+            with self.subTest(alias=alias):
+                expected = "No results were found."
+                with patch.object(neo4j_query, "call_llm", return_value=expected):
+                    answer = neo4j_query.synthesize_answer(
+                        "How many companies match?",
+                        [{alias: 0}],
+                        f"MATCH (c:Company) RETURN count(c) AS `{alias}`",
+                    )
+
+                self.assertEqual(answer, expected)
+
+    def test_numeric_grounded_partial_answer_is_preserved(self):
+        expected = (
+            "There are 12 companies, but I cannot determine total funding from "
+            "the provided data."
+        )
+        with patch.object(neo4j_query, "call_llm", return_value=expected):
+            answer = neo4j_query.synthesize_answer(
+                "How many companies are there and how much did they raise?",
+                [{"company_count": 12, "total_funding": None}],
+            )
+
+        self.assertEqual(answer, expected)
+
+    def test_generic_status_does_not_ground_no_data_claim(self):
+        with patch.object(
+            neo4j_query,
+            "call_llm",
+            return_value=(
+                "Cannot determine the active companies from the provided data."
+            ),
+        ):
+            answer = neo4j_query.synthesize_answer(
+                "Which companies are active?",
+                [{"company": "ExampleCo", "status": "Active"}],
+            )
+
+        self.assertIn("Company: ExampleCo", answer)
+
+    def test_subject_mention_inside_no_data_claim_is_not_grounding(self):
+        with patch.object(
+            neo4j_query,
+            "call_llm",
+            return_value=(
+                "Cannot determine who founded Stripe from the provided data."
+            ),
+        ):
+            answer = neo4j_query.synthesize_answer(
+                "Who founded Stripe?",
+                [{"founder": "Patrick Collison", "company": "Stripe"}],
+            )
+
+        self.assertIn("Founder: Patrick Collison", answer)
+
+    def test_subject_preamble_before_no_data_claim_is_not_grounding(self):
+        with patch.object(
+            neo4j_query,
+            "call_llm",
+            return_value=(
+                "Stripe is the company in question. Cannot determine who "
+                "founded Stripe from the provided data."
+            ),
+        ):
+            answer = neo4j_query.synthesize_answer(
+                "Who founded Stripe?",
+                [{"founder": "Patrick Collison", "company": "Stripe"}],
+            )
+
+        self.assertIn("Founder: Patrick Collison", answer)
+
+    def test_fallback_discloses_truncation(self):
+        results = [{"company": f"Company {index}"} for index in range(55)]
+
+        answer = neo4j_query.format_grounded_results(results)
+
+        self.assertIn("Showing the first 50 of 55 records.", answer)
+        self.assertNotIn("Company 54", answer)
+
+
+class QueryPipelineTests(unittest.TestCase):
+    def test_semantic_failure_regenerates_before_execution(self):
+        driver = MagicMock()
+        invalid = (
+            'MATCH (c)-[:OPERATES_IN]->(i) '
+            'WHERE toLower(i.name) CONTAINS "ai" RETURN c LIMIT 100'
+        )
+        valid = (
+            'MATCH (c)-[:OPERATES_IN]->(i) '
+            'WHERE toLower(i.name) = "ai" RETURN c LIMIT 100'
+        )
+
+        with (
+            patch.object(neo4j_query.GraphDatabase, "driver", return_value=driver),
+            patch.object(neo4j_query, "classify_query", return_value="global"),
+            patch.object(
+                neo4j_query,
+                "generate_cypher",
+                side_effect=[invalid, valid],
+            ) as generate,
+            patch.object(
+                neo4j_query,
+                "execute_cypher",
+                return_value=[{"company": "ExampleCo"}],
+            ) as execute,
+            patch.object(
+                neo4j_query,
+                "synthesize_answer",
+                return_value="ExampleCo",
+            ),
+        ):
+            result = neo4j_query.query("Which AI companies are active?")
+
+        self.assertEqual(generate.call_count, 2)
+        execute.assert_called_once_with(
+            neo4j_query.enforce_result_limit(valid),
+            driver,
+        )
+        self.assertEqual(result["result_count"], 1)
+        driver.close.assert_called_once()
+
+    def test_exhausted_semantic_retries_raise_error(self):
+        driver = MagicMock()
+        invalid = (
+            'MATCH (c)-[:OPERATES_IN]->(i) '
+            'WHERE toLower(i.name) CONTAINS "ai" RETURN c'
+        )
+
+        with (
+            patch.object(neo4j_query.GraphDatabase, "driver", return_value=driver),
+            patch.object(neo4j_query, "classify_query", return_value="global"),
+            patch.object(neo4j_query, "generate_cypher", return_value=invalid),
+            patch.object(neo4j_query, "execute_cypher") as execute,
+        ):
+            with self.assertRaisesRegex(RuntimeError, "after 3 attempts"):
+                neo4j_query.query("Which AI companies are active?")
+
+        execute.assert_not_called()
+        driver.close.assert_called_once()
+
+    def test_execution_streams_at_most_max_results(self):
+        driver = MagicMock()
+        session = driver.session.return_value.__enter__.return_value
+        session.run.return_value = (
+            {"company": f"Company {index}"}
+            for index in range(neo4j_query.MAX_RESULTS + 10)
+        )
+
+        results = neo4j_query.execute_cypher(
+            "MATCH (c:Company) RETURN c.name AS company",
+            driver,
+        )
+
+        self.assertEqual(len(results), neo4j_query.MAX_RESULTS)
+        self.assertEqual(results[-1]["company"], "Company 49")
+
+
+if __name__ == "__main__":
+    unittest.main()
