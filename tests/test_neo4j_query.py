@@ -21,6 +21,68 @@ neo4j_query = importlib.import_module("neo4j_query")
 
 
 class CypherSemanticsTests(unittest.TestCase):
+    def test_expands_batch_abbreviations(self):
+        self.assertEqual(
+            neo4j_query.expand_batch_abbreviations(
+                "Compare W23 with S23 and W09."
+            ),
+            "Compare Winter 2023 with Summer 2023 and Winter 2009.",
+        )
+
+    def test_generate_cypher_uses_expanded_batch_names(self):
+        with patch.object(
+            neo4j_query,
+            "call_llm",
+            return_value="MATCH (b:Batch {name: 'Winter 2023'}) RETURN b.name",
+        ) as call_llm:
+            neo4j_query.generate_cypher("Which companies joined W23?")
+
+        self.assertIn("Winter 2023", call_llm.call_args.args[1])
+        self.assertNotIn("W23", call_llm.call_args.args[1])
+
+    def test_rejects_abbreviated_batch_values(self):
+        with self.assertRaisesRegex(ValueError, "stored batch name"):
+            neo4j_query.validate_cypher_semantics(
+                "Which companies joined W23 or S23?",
+                """
+                MATCH (c)-[:PART_OF]->(b:Batch)
+                WHERE b.name IN ["W23", "S23"]
+                RETURN c.name
+                """,
+            )
+
+    def test_accepts_expanded_batch_values(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which companies joined W23 or S23?",
+            """
+            MATCH (c)-[:PART_OF]->(b:Batch)
+            WHERE b.name IN ["Winter 2023", "Summer 2023"]
+            RETURN c.name
+            """,
+        )
+
+    def test_rejects_batch_name_only_returned_as_constant(self):
+        with self.assertRaisesRegex(ValueError, "stored batch name"):
+            neo4j_query.validate_cypher_semantics(
+                "Which companies joined W23 or S23?",
+                """
+                MATCH (c)-[:PART_OF]->(b:Batch)
+                WHERE b.name = "Winter 2023"
+                RETURN c.name, "Summer 2023" AS note
+                """,
+            )
+
+    def test_rejects_batch_name_bound_without_filtering(self):
+        with self.assertRaisesRegex(ValueError, "stored batch name"):
+            neo4j_query.validate_cypher_semantics(
+                "Which companies joined W23?",
+                """
+                WITH "Winter 2023" AS requested_batch
+                MATCH (c:Company)
+                RETURN c.name
+                """,
+            )
+
     def test_adds_server_side_result_limit(self):
         cypher = "MATCH (c:Company) RETURN c.name"
 
@@ -144,6 +206,68 @@ class CypherSemanticsTests(unittest.TestCase):
             WHERE b2b.name = "B2B" AND saas.name = "SaaS"
               AND c.team_size > 0 AND c.team_size < 20
             RETURN c
+            """,
+        )
+
+    def test_requires_filter_evidence_for_python_fintech(self):
+        with self.assertRaisesRegex(ValueError, "matched technology"):
+            neo4j_query.validate_cypher_semantics(
+                "Which companies use Python and operate in fintech?",
+                """
+                MATCH (c)-[:USES]->(t:Technology)
+                WHERE toLower(t.name) = "python"
+                MATCH (c)-[:OPERATES_IN]->(ind:Industry)
+                WHERE toLower(ind.name) CONTAINS "fintech"
+                RETURN c.name AS company
+                """,
+            )
+
+    def test_requires_filter_evidence_for_name_phrasing(self):
+        with self.assertRaisesRegex(ValueError, "matched technology"):
+            neo4j_query.validate_cypher_semantics(
+                "Name YC companies using Python in fintech.",
+                """
+                MATCH (c)-[:USES]->(t:Technology)
+                MATCH (c)-[:OPERATES_IN]->(ind:Industry)
+                WHERE toLower(t.name) = "python"
+                  AND toLower(ind.name) CONTAINS "fintech"
+                RETURN c.name AS company
+                """,
+            )
+
+    def test_accepts_filter_evidence_for_python_fintech(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which companies use Python and operate in fintech?",
+            """
+            MATCH (c)-[:USES]->(t:Technology)
+            WHERE toLower(t.name) = "python"
+            MATCH (c)-[:OPERATES_IN]->(ind:Industry)
+            WHERE toLower(ind.name) CONTAINS "fintech"
+            RETURN c.name AS company, t.name AS technology, ind.name AS industry
+            """,
+        )
+
+    def test_does_not_require_industry_for_python_payment_product(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which Python companies use Stripe for payments?",
+            """
+            MATCH (c)-[:USES]->(t:Technology)
+            WHERE toLower(t.name) = "python"
+            RETURN c.name AS company, t.name AS technology
+            """,
+        )
+
+    def test_does_not_require_record_evidence_for_python_fintech_aggregate(self):
+        neo4j_query.validate_cypher_semantics(
+            "How many companies use Python versus operate in fintech?",
+            """
+            MATCH (c:Company)
+            OPTIONAL MATCH (c)-[:USES]->(t:Technology)
+            OPTIONAL MATCH (c)-[:OPERATES_IN]->(ind:Industry)
+            RETURN count(DISTINCT CASE WHEN toLower(t.name) = "python"
+                         THEN c END) AS python_count,
+                   count(DISTINCT CASE WHEN toLower(ind.name) CONTAINS "fintech"
+                         THEN c END) AS fintech_count
             """,
         )
 

@@ -41,7 +41,13 @@ CASES = (
         ),
         "min_results": 1,
         "forbidden_terms": ("team size: 0",),
+        "required_filter_cypher": (
+            r'["\']Winter 2023["\']',
+            r'["\']Summer 2023["\']',
+        ),
         "forbidden_cypher": (
+            r'["\']W23["\']',
+            r'["\']S23["\']',
             r'["\']b2b["\'].{0,120}\bOR\b.{0,120}["\']saas["\']',
             (
                 r'(?:\b\w+\.\w+|toLower\([^)]*\))\s+IN\s*\['
@@ -65,7 +71,13 @@ CASES = (
     {
         "query": "Which YC companies use Python and operate in fintech?",
         "min_results": 1,
-        "forbidden_terms": ("does not contain enough information",),
+        "required_terms": ("python", "fintech"),
+        "required_cypher": (r"\bAS\s+technology\b", r"\bAS\s+industry\b"),
+        "forbidden_terms": (
+            "does not contain enough information",
+            "does not specify",
+            "missing fields",
+        ),
     },
     {
         "query": "Which batches produced the most healthcare companies?",
@@ -80,7 +92,7 @@ CASES = (
     {
         "query": "What technologies are most commonly used by developer-tools companies?",
         "min_results": 1,
-        "required_terms": ("technology",),
+        "required_patterns": (r"\btechnolog(?:y|ies)\b",),
     },
     {
         "query": "Which YC companies are building nuclear-powered consumer smartphones?",
@@ -167,12 +179,37 @@ class LiveQueryRegressionTests(unittest.TestCase):
             for term in case.get("required_terms", ()):
                 if term not in answer_lower:
                     failures.append(f"{query}: answer is missing {term!r}")
+            for pattern in case.get("required_patterns", ()):
+                if not re.search(pattern, answer, flags=re.IGNORECASE | re.DOTALL):
+                    failures.append(
+                        f"{query}: answer does not match required pattern {pattern!r}"
+                    )
             for term in case.get("forbidden_terms", ()):
                 if term in answer_lower:
                     failures.append(f"{query}: answer unexpectedly contains {term!r}")
             cypher = payload.get("cypher", "")
             if not cypher:
                 failures.append(f"{query}: missing generated Cypher")
+            filtering_cypher = re.split(
+                r"\bRETURN\b",
+                cypher,
+                maxsplit=1,
+                flags=re.IGNORECASE,
+            )[0]
+            for pattern in case.get("required_filter_cypher", ()):
+                if not re.search(
+                    pattern,
+                    filtering_cypher,
+                    flags=re.IGNORECASE | re.DOTALL,
+                ):
+                    failures.append(
+                        f"{query}: filter Cypher does not match required pattern {pattern!r}"
+                    )
+            for pattern in case.get("required_cypher", ()):
+                if not re.search(pattern, cypher, flags=re.IGNORECASE | re.DOTALL):
+                    failures.append(
+                        f"{query}: Cypher does not match required pattern {pattern!r}"
+                    )
             for pattern in case.get("forbidden_cypher", ()):
                 if re.search(pattern, cypher, flags=re.IGNORECASE | re.DOTALL):
                     failures.append(

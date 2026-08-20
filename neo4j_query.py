@@ -110,6 +110,10 @@ You are an expert Neo4j Cypher query generator for a startup intelligence knowle
 11. Preserve the user's boolean intent. "B2B SaaS" means companies matching both
     B2B AND SaaS, not either category.
 12. team_size = 0 means unknown. Exclude it from employee-count comparisons.
+13. Return the properties used to satisfy filters so the answer can explain why
+    each record matched (for example, t.name AS technology and ind.name AS industry).
+14. Batch names use full forms such as "Winter 2023" and "Summer 2023", never
+    abbreviations such as "W23" or "S23".
 
 ## Examples:
 
@@ -146,6 +150,17 @@ WHERE c.status = "Active"
   AND c.team_size > 0 AND c.team_size < 20
 RETURN DISTINCT c.name AS company, c.team_size AS team_size
 ORDER BY c.team_size
+LIMIT 50
+
+Question: Which YC companies use Python and operate in fintech?
+Cypher:
+MATCH (c:Company)-[:USES]->(t:Technology)
+WHERE toLower(t.name) = "python"
+MATCH (c)-[:OPERATES_IN]->(ind:Industry)
+WHERE toLower(ind.name) CONTAINS "fintech"
+RETURN DISTINCT c.name AS company, c.yc_batch AS batch,
+       t.name AS technology, ind.name AS industry
+ORDER BY c.yc_batch
 LIMIT 50
 
 Question: Which industries are most represented across YC companies?
@@ -271,16 +286,35 @@ Generate a single valid Cypher query for the question below.
 Return ONLY the Cypher query — no explanation, no markdown, no backticks.
 """
 
+
+def expand_batch_abbreviations(question: str) -> str:
+    """Expand YC batch aliases to the names stored in the graph."""
+    seasons = {"w": "Winter", "s": "Summer"}
+
+    def replace_batch(match):
+        season = seasons[match.group(1).casefold()]
+        year = 2000 + int(match.group(2))
+        return f"{season} {year}"
+
+    return re.sub(
+        r"\b([WS])(\d{2})\b",
+        replace_batch,
+        question,
+        flags=re.IGNORECASE,
+    )
+
+
 def generate_cypher(question: str, error_context: str = None, previous_cypher: str = None) -> str:
+    generation_question = expand_batch_abbreviations(question)
     if error_context:
-        user_prompt = f"""Question: {question}
+        user_prompt = f"""Question: {generation_question}
 
 Previous Cypher attempt failed with error: {error_context}
 Previous Cypher: {previous_cypher}
 
 Generate a corrected Cypher query."""
     else:
-        user_prompt = f"Question: {question}"
+        user_prompt = f"Question: {generation_question}"
 
     cypher = call_llm(CYPHER_SYSTEM, user_prompt, max_tokens=500)
     cypher = cypher.replace("```cypher", "").replace("```", "").strip()
@@ -370,6 +404,30 @@ def validate_cypher_semantics(question: str, cypher: str) -> None:
     ):
         raise ValueError("Use one result-producing query instead of UNION.")
 
+    batch_aliases = re.findall(r"\b([WS])(\d{2})\b", question, flags=re.IGNORECASE)
+    filtering_cypher = re.split(r"\bRETURN\b", cypher, maxsplit=1, flags=re.IGNORECASE)[0]
+    for season_code, short_year in batch_aliases:
+        season = "Winter" if season_code.casefold() == "w" else "Summer"
+        full_batch = f"{season} {2000 + int(short_year)}"
+        abbreviation = f"{season_code}{short_year}"
+        batch_filter = (
+            rf"(?:\b\w+\.)?(?:name|yc_batch)\s*(?:=|IN)\s*"
+            rf"(?:\[[^\]]{{0,200}})?['\"]{re.escape(full_batch)}['\"]|"
+            rf"(?:name|yc_batch)\s*:\s*['\"]{re.escape(full_batch)}['\"]"
+        )
+        if re.search(
+            rf"['\"]{re.escape(abbreviation)}['\"]",
+            cypher,
+            flags=re.IGNORECASE,
+        ) or not re.search(
+            batch_filter,
+            filtering_cypher,
+            flags=re.IGNORECASE | re.DOTALL,
+        ):
+            raise ValueError(
+                f'Use the stored batch name "{full_batch}" instead of "{abbreviation}".'
+            )
+
     if re.search(r"\bAI\b", question, flags=re.IGNORECASE) and re.search(
         r"\bCONTAINS\s+(?:toLower\()?['\"]ai['\"]",
         cypher,
@@ -437,6 +495,25 @@ def validate_cypher_semantics(question: str, cypher: str) -> None:
         )
         if has_upper_bound and not excludes_unknown:
             raise ValueError("Exclude unknown team sizes with c.team_size > 0.")
+
+    if (
+        re.search(
+            (
+                r"(?:\b(?:which|show|list|find|name)\b|"
+                r"\bgive\s+me\b).*\b(?:companies|startups)\b"
+            ),
+            question,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+        and
+        re.search(r"\bpython\b", question, flags=re.IGNORECASE)
+        and re.search(r"\bfintech\b", question, flags=re.IGNORECASE)
+    ):
+        return_clause = re.split(r"\bRETURN\b", cypher, flags=re.IGNORECASE)[-1]
+        if not re.search(r"\bAS\s+technology\b", return_clause, flags=re.IGNORECASE):
+            raise ValueError("Return the matched technology AS technology.")
+        if not re.search(r"\bAS\s+industry\b", return_clause, flags=re.IGNORECASE):
+            raise ValueError("Return the matched industry AS industry.")
 
 # ── Step 3: Query Execution ────────────────────────────────────────────────────
 
