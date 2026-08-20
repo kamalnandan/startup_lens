@@ -101,6 +101,9 @@ You are an expert Neo4j Cypher query generator for a startup intelligence knowle
 5. Return results as flat list of properties, not nested objects
 6. For multi-hop queries, chain MATCH clauses
 7. If counting or ranking, use ORDER BY and LIMIT
+8. When asked about failed/dead startups, filter on c.status = "Dead"
+9. When asked about successful startups, filter on c.status IN ["Active", "Public", "Acquired"]
+10. Available status values: Active, Acquired, Public, Dead, Unknown
 
 ## Examples:
 
@@ -108,12 +111,6 @@ Question: Who founded Stripe?
 Cypher:
 MATCH (f:Founder)-[:FOUNDED]->(c:Company {name: "Stripe"})
 RETURN f.name AS founder, c.name AS company, c.yc_batch AS batch
-
-Question: Which investors backed both Stripe and Airbnb?
-Cypher:
-MATCH (i:Investor)-[:INVESTED_IN]->(c1:Company {name: "Stripe"})
-MATCH (i)-[:INVESTED_IN]->(c2:Company {name: "Airbnb"})
-RETURN i.name AS investor
 
 Question: Which YC founders from India built fintech companies?
 Cypher:
@@ -137,15 +134,43 @@ RETURN i.name AS investor, count(c) AS portfolio_size, collect(c.name)[0..5] AS 
 ORDER BY portfolio_size DESC
 LIMIT 20
 
+Question: Which industries have the most failed (Dead) YC startups?
+Cypher:
+MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+WHERE c.status = "Dead"
+RETURN ind.name AS industry, count(c) AS dead_count
+ORDER BY dead_count DESC
+LIMIT 20
+
+Question: How many YC companies are Active vs Dead vs Acquired?
+Cypher:
+MATCH (c:Company)
+RETURN c.status AS status, count(c) AS company_count
+ORDER BY company_count DESC
+
 Question: What are common patterns among failed YC startups?
 Cypher:
 MATCH (c:Company)
 WHERE c.status = "Dead"
 OPTIONAL MATCH (c)-[:OPERATES_IN]->(ind:Industry)
 OPTIONAL MATCH (c)-[:HEADQUARTERED_IN]->(l:Location)
-RETURN c.name AS company, c.yc_batch AS batch,
-       collect(DISTINCT ind.name) AS industries,
-       l.country AS country
+OPTIONAL MATCH (c)-[:PART_OF]->(b:Batch)
+RETURN ind.name AS industry, l.country AS country, b.name AS batch,
+       count(c) AS dead_count
+ORDER BY dead_count DESC
+LIMIT 50
+
+Question: What is the breakdown of YC companies by stage?
+Cypher:
+MATCH (c:Company)
+RETURN c.stage AS stage, count(c) AS company_count
+ORDER BY company_count DESC
+
+Question: Which YC companies were acquired and by whom?
+Cypher:
+MATCH (c:Company)-[:ACQUIRED_BY]->(acquirer:Company)
+RETURN c.name AS company, acquirer.name AS acquired_by, c.yc_batch AS batch
+ORDER BY c.yc_batch DESC
 LIMIT 100
 
 Question: Who are the most connected founders across YC?
@@ -157,12 +182,13 @@ RETURN f.name AS founder, companies_founded, companies
 ORDER BY companies_founded DESC
 LIMIT 20
 
-Question: How many funding rounds did GoCardless have?
+Question: Which companies raised Series A funding?
 Cypher:
 MATCH (c:Company)-[:RAISED]->(fe:FundingEvent)
-WHERE toLower(c.name) CONTAINS toLower("gocardless")
-RETURN c.name AS company, count(fe) AS funding_rounds,
-       collect(fe.round) AS rounds, collect(fe.year) AS years
+WHERE toLower(fe.round) CONTAINS "series a"
+RETURN c.name AS company, fe.year AS year, fe.amount AS amount, c.yc_batch AS batch
+ORDER BY fe.year DESC
+LIMIT 50
 
 Question: What is Stripe's funding history?
 Cypher:
@@ -171,14 +197,6 @@ WHERE toLower(c.name) CONTAINS toLower("stripe")
 RETURN c.name AS company, fe.round AS round, 
        fe.year AS year, fe.amount AS amount
 ORDER BY fe.year
-
-Question: Which companies raised a Series B?
-Cypher:
-MATCH (c:Company)-[:RAISED]->(fe:FundingEvent)
-WHERE toLower(fe.round) CONTAINS "series b"
-RETURN c.name AS company, fe.year AS year, fe.amount AS amount
-ORDER BY fe.year DESC
-LIMIT 50
 
 Question: Which companies raised the most funding rounds?
 Cypher:
@@ -189,6 +207,12 @@ RETURN c.name AS company, rounds
 ORDER BY rounds DESC
 LIMIT 20
 
+Question: Which technologies are most used by YC companies?
+Cypher:
+MATCH (c:Company)-[:USES]->(t:Technology)
+RETURN t.name AS technology, count(c) AS company_count
+ORDER BY company_count DESC
+LIMIT 20
 
 Note: When asked about external investors or VC portfolios, always exclude 
 "Y Combinator" from results since it is the accelerator, not an external investor.

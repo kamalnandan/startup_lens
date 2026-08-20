@@ -281,22 +281,22 @@ EXAMPLE_QUERIES = {
     "🎯 YC Research": [
         "Which YC batches produced the most fintech companies?",
         "What industries are trending in the most recent YC batches?",
-        "What is the survival rate of YC companies by industry?",
+        "How many YC companies are Active vs Dead vs Acquired?",
     ],
     "🌍 Founders": [
         "Which YC founders from India built fintech companies?",
         "Which countries outside the US produce the most YC companies?",
         "Who are the most connected founders across YC?",
     ],
-    "💰 Fundraising": [
-        "Which investors backed both Stripe and Airbnb?",
+    "💰 Acquisitions & Funding": [
+        "Which YC companies were acquired and by whom?",
+        "Which companies raised Series A funding?",
         "Which investors have the largest YC portfolios?",
-        "What are the most common Series A investors for YC companies?",
     ],
     "📈 Patterns": [
-        "What are common patterns among failed YC startups?",
-        "Which companies were acquired and by whom?",
-        "What technologies are most used by successful YC companies?",
+        "Which industries have the most failed (Dead) YC startups?",
+        "Which technologies are most used by YC companies?",
+        "What is the breakdown of YC companies by stage?",
     ],
 }
 
