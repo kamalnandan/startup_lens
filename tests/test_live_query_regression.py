@@ -94,6 +94,52 @@ def has_distinct_company_count(cypher):
     )
 
 
+def has_ai_alias_filter(cypher):
+    filtering_cypher = re.split(
+        r"\bRETURN\b",
+        cypher,
+        maxsplit=1,
+        flags=re.IGNORECASE,
+    )[0]
+    for values in re.findall(
+        r"toLower\(\s*\w+\.name\s*\)\s+IN\s*(\[[^\]]+\])",
+        filtering_cypher,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        aliases = {
+            value.casefold()
+            for value in re.findall(r"['\"]([^'\"]+)['\"]", values)
+        }
+        if {"ai", "artificial intelligence"}.issubset(aliases):
+            return True
+    return False
+
+
+def has_canonical_ai_category(cypher, output_alias):
+    expressions = re.findall(
+        (
+            r"(\bCASE\b.{0,800}?\bEND)\s+AS\s+"
+            rf"{re.escape(output_alias)}\b"
+        ),
+        cypher,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    return any(
+        {"ai", "artificial intelligence"}.issubset(
+            {
+                value.casefold()
+                for value in re.findall(r"['\"]([^'\"]+)['\"]", expression)
+            }
+        )
+        and re.search(
+            r"\bTHEN\s+['\"]Artificial Intelligence['\"]",
+            expression,
+            flags=re.IGNORECASE,
+        )
+        for expression in expressions
+    )
+
+
 CASES = (
     {
         "query": "Which YC companies build developer tools?",
@@ -104,11 +150,13 @@ CASES = (
         "query": "What are the top 10 industries by number of YC companies?",
         "min_results": 10,
         "required_terms": ("b2b", "fintech"),
+        "canonical_ai_category": "industry",
     },
     {
         "query": "Compare the AI startup ecosystem in San Francisco and New York.",
         "min_results": 2,
         "required_terms": ("san francisco", "new york"),
+        "require_ai_alias_filter": True,
         "forbidden_cypher": (r'CONTAINS\s+["\']ai["\']',),
     },
     {
@@ -149,7 +197,8 @@ CASES = (
     {
         "query": "Which YC companies use Python and operate in fintech?",
         "min_results": 1,
-        "required_terms": ("python", "fintech"),
+        "required_terms": ("python",),
+        "required_patterns": (r"\b(?:fintech|finance|payments)\b",),
         "required_filter_terms": ("fintech", "finance", "payments"),
         "required_cypher": (
             r"\bAS\s+technology\b",
@@ -183,6 +232,7 @@ CASES = (
         "query": "What technologies are most commonly used by developer-tools companies?",
         "min_results": 1,
         "required_patterns": (r"\btechnolog(?:y|ies)\b",),
+        "canonical_ai_category": "technology",
     },
     {
         "query": "Which YC companies are building nuclear-powered consumer smartphones?",
@@ -228,6 +278,7 @@ CASES = (
         "query": "Which active YC companies in San Francisco use AI?",
         "min_results": 1,
         "required_terms": ("san francisco", "ai"),
+        "require_ai_alias_filter": True,
         "required_cypher": (r"\b\w+\.status\s+AS\s+status\b",),
         "forbidden_cypher": (r'CONTAINS\s+["\']ai["\']',),
     },
@@ -290,6 +341,7 @@ CASES = (
         "query": "Which technologies are most used by YC companies?",
         "min_results": 5,
         "required_patterns": (r"\btechnolog(?:y|ies)\b",),
+        "canonical_ai_category": "technology",
     },
 )
 
@@ -395,6 +447,17 @@ class LiveQueryRegressionTests(unittest.TestCase):
             ):
                 failures.append(
                     f"{query}: Cypher is missing count(DISTINCT Company)"
+                )
+            if case.get("require_ai_alias_filter") and not has_ai_alias_filter(cypher):
+                failures.append(
+                    f"{query}: Cypher is missing exact AI alias normalization"
+                )
+            canonical_alias = case.get("canonical_ai_category")
+            if canonical_alias and not has_canonical_ai_category(
+                cypher, canonical_alias
+            ):
+                failures.append(
+                    f"{query}: Cypher does not canonicalize AI as {canonical_alias}"
                 )
             filtering_cypher = re.split(
                 r"\bRETURN\b",

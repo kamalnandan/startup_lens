@@ -38,6 +38,11 @@ AZURE_OPENAI_API_KEY = get_required_setting("AZURE_OPENAI_API_KEY")
 
 MAX_CYPHER_RETRIES = 3
 MAX_RESULTS = 50
+AI_CATEGORY_ALIASES = frozenset({"ai", "artificial intelligence"})
+CANONICAL_AI_CATEGORY = "Artificial Intelligence"
+CATEGORY_RESULT_FIELDS = frozenset(
+    {"category", "categories", "industry", "industries", "technology", "technologies"}
+)
 
 # ── LLM Call ──────────────────────────────────────────────────────────────────
 
@@ -98,8 +103,10 @@ You are an expert Neo4j Cypher query generator for a startup intelligence knowle
 ## Cypher Generation Rules:
 1. Always return meaningful properties, not just IDs
 2. Use LIMIT 50 on all queries to avoid large result sets
-3. Use case-insensitive exact matching for short category names such as AI:
-   toLower(n.name) = "ai". Use CONTAINS only for longer free-text search terms.
+3. Treat AI and Artificial Intelligence as the same category. For any AI filter,
+   use case-insensitive exact alias matching:
+   toLower(n.name) IN ["ai", "artificial intelligence"].
+   Never use CONTAINS or match only one alias.
 4. For pattern queries, use aggregation (count, collect) to summarize results
 5. Return results as flat list of properties, not nested objects
 6. For multi-hop queries, chain MATCH clauses
@@ -117,6 +124,10 @@ You are an expert Neo4j Cypher query generator for a startup intelligence knowle
 15. Whenever counting Company nodes, use count(DISTINCT c) to avoid duplicate
     companies introduced by relationship traversal.
 16. When filtering company records by status, return c.status AS status.
+17. When grouping or ranking Industry or Technology categories, combine the AI
+    aliases under one canonical label before aggregation:
+    CASE WHEN toLower(n.name) IN ["ai", "artificial intelligence"]
+         THEN "Artificial Intelligence" ELSE n.name END AS category.
 
 ## Examples:
 
@@ -170,7 +181,9 @@ LIMIT 50
 Question: Which industries are most represented across YC companies?
 Cypher:
 MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
-RETURN ind.name AS industry, count(DISTINCT c) AS company_count
+RETURN CASE WHEN toLower(ind.name) IN ["ai", "artificial intelligence"]
+            THEN "Artificial Intelligence" ELSE ind.name END AS industry,
+       count(DISTINCT c) AS company_count
 ORDER BY company_count DESC
 LIMIT 20
 
@@ -185,7 +198,9 @@ Question: Which industries have the most failed (Dead) YC startups?
 Cypher:
 MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
 WHERE c.status = "Dead"
-RETURN ind.name AS industry, count(DISTINCT c) AS dead_count
+RETURN CASE WHEN toLower(ind.name) IN ["ai", "artificial intelligence"]
+            THEN "Artificial Intelligence" ELSE ind.name END AS industry,
+       count(DISTINCT c) AS dead_count
 ORDER BY dead_count DESC
 LIMIT 20
 
@@ -202,7 +217,9 @@ WHERE c.status = "Dead"
 OPTIONAL MATCH (c)-[:OPERATES_IN]->(ind:Industry)
 OPTIONAL MATCH (c)-[:HEADQUARTERED_IN]->(l:Location)
 OPTIONAL MATCH (c)-[:PART_OF]->(b:Batch)
-RETURN ind.name AS industry, l.country AS country, b.name AS batch,
+RETURN CASE WHEN toLower(ind.name) IN ["ai", "artificial intelligence"]
+            THEN "Artificial Intelligence" ELSE ind.name END AS industry,
+       l.country AS country, b.name AS batch,
        count(DISTINCT c) AS dead_count
 ORDER BY dead_count DESC
 LIMIT 50
@@ -257,7 +274,9 @@ LIMIT 20
 Question: Which technologies are most used by YC companies?
 Cypher:
 MATCH (c:Company)-[:USES]->(t:Technology)
-RETURN t.name AS technology, count(DISTINCT c) AS company_count
+RETURN CASE WHEN toLower(t.name) IN ["ai", "artificial intelligence"]
+            THEN "Artificial Intelligence" ELSE t.name END AS technology,
+       count(DISTINCT c) AS company_count
 ORDER BY company_count DESC
 LIMIT 20
 
@@ -579,14 +598,197 @@ def validate_cypher_semantics(question: str, cypher: str) -> None:
                 f'Use the stored batch name "{full_batch}" instead of "{abbreviation}".'
             )
 
-    if re.search(r"\bAI\b", question, flags=re.IGNORECASE) and re.search(
-        r"\bCONTAINS\s+(?:toLower\()?['\"]ai['\"]",
-        cypher,
+    category_variables = set(
+        re.findall(
+            r"\((\w+)\s*:\s*(?:Industry|Technology)\b",
+            cypher,
+            flags=re.IGNORECASE,
+        )
+    )
+    category_variables.update(
+        re.findall(
+            (
+                r"-\s*\[[^\]]*:\s*(?:OPERATES_IN|USES)\b[^\]]*\]\s*"
+                r"->\s*\(\s*(\w+)\b"
+            ),
+            cypher,
+            flags=re.IGNORECASE,
+        )
+    )
+    while True:
+        projected_category_variables = {
+            alias
+            for variable in category_variables
+            for alias in re.findall(
+                rf"\b{re.escape(variable)}\s+AS\s+(\w+)\b",
+                cypher,
+                flags=re.IGNORECASE,
+            )
+        }
+        if projected_category_variables.issubset(category_variables):
+            break
+        category_variables.update(projected_category_variables)
+    ai_intent = re.search(
+        r"\bAI\b|\bArtificial\s+Intelligence\b",
+        question,
         flags=re.IGNORECASE,
+    )
+    ai_company_name_intent = re.search(
+        (
+            r"\b(?:compan(?:y|ies)|startups?)\s+"
+            r"(?:(?:is|are)\s+)?(?:named|called)\s+"
+            r"['\"]?(?:AI|Artificial\s+Intelligence)\b"
+        ),
+        question,
+        flags=re.IGNORECASE,
+    )
+    company_name_values = []
+    for variable in company_variables:
+        company_name_values.extend(
+            re.findall(
+                (
+                    rf"(?:toLower\(\s*)?\b{re.escape(variable)}\.name\b"
+                    r"\s*\)?\s*(?:=|CONTAINS)\s*['\"]([^'\"]+)['\"]"
+                ),
+                filtering_cypher,
+                flags=re.IGNORECASE,
+            )
+        )
+        company_name_values.extend(
+            re.findall(
+                (
+                    rf"\(\s*{re.escape(variable)}\s*:\s*Company\s*"
+                    r"\{[^}]*\bname\s*:\s*['\"]([^'\"]+)['\"]"
+                ),
+                filtering_cypher,
+                flags=re.IGNORECASE | re.DOTALL,
+            )
+        )
+    ai_company_name_reference = any(
+        re.search(
+            r"\bAI\b|\bArtificial\s+Intelligence\b",
+            value,
+            flags=re.IGNORECASE,
+        )
+        and value.casefold() not in AI_CATEGORY_ALIASES
+        for value in company_name_values
+    )
+    ai_mentions = re.findall(
+        r"\bAI\b|\bArtificial\s+Intelligence\b",
+        question,
+        flags=re.IGNORECASE,
+    )
+    explicit_ai_company_name_only = bool(
+        ai_company_name_intent and len(ai_mentions) == 1
+    )
+    question_without_company_names = question
+    for value in company_name_values:
+        if value.casefold() in AI_CATEGORY_ALIASES:
+            continue
+        question_without_company_names = re.sub(
+            re.escape(value),
+            "",
+            question_without_company_names,
+            flags=re.IGNORECASE,
+        )
+    ai_company_reference_only = bool(
+        ai_company_name_reference
+        and not re.search(
+            r"\bAI\b|\bArtificial\s+Intelligence\b",
+            question_without_company_names,
+            flags=re.IGNORECASE,
+        )
+    )
+    ai_alias_filter = any(
+        variable in category_variables
+        and AI_CATEGORY_ALIASES.issubset(
+            {
+                value.casefold()
+                for value in re.findall(r"['\"]([^'\"]+)['\"]", values)
+            }
+        )
+        for variable, values in re.findall(
+            (
+                r"toLower\(\s*(\w+)\.name\s*\)\s+IN\s*"
+                r"(\[[^\]]+\])"
+            ),
+            filtering_cypher,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+    )
+    if (
+        ai_intent
+        and not explicit_ai_company_name_only
+        and not ai_company_reference_only
+        and not ai_alias_filter
     ):
         raise ValueError(
-            'Use an exact category match for AI; CONTAINS "ai" matches unrelated words.'
+            "Match both AI category aliases exactly with "
+            'IN ["ai", "artificial intelligence"].'
         )
+
+    if re.search(r"\bcount\s*\(", cypher, flags=re.IGNORECASE):
+        projection_clauses = re.findall(
+            (
+                r"\b(?:WITH|RETURN)\b(.*?)(?="
+                r"\b(?:MATCH|WHERE|WITH|RETURN|ORDER\s+BY|LIMIT|UNWIND|CALL)\b"
+                r"|\Z)"
+            ),
+            cypher,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+        for variable in category_variables:
+            category_cases = [
+                expression
+                for expression in re.findall(
+                    r"(\bCASE\b.{0,800}?\bEND)\s+AS\s+\w+\b",
+                    cypher,
+                    flags=re.IGNORECASE | re.DOTALL,
+                )
+                if re.search(
+                    rf"\b{re.escape(variable)}\.name\b",
+                    expression,
+                    flags=re.IGNORECASE,
+                )
+            ]
+            noncanonical_projection = False
+            for clause in projection_clauses:
+                clause_without_cases = re.sub(
+                    r"\bCASE\b.{0,800}?\bEND",
+                    "",
+                    clause,
+                    flags=re.IGNORECASE | re.DOTALL,
+                )
+                if re.search(
+                    rf"\b{re.escape(variable)}\.name\b",
+                    clause_without_cases,
+                    flags=re.IGNORECASE,
+                ):
+                    noncanonical_projection = True
+                    break
+            invalid_category_case = any(
+                not AI_CATEGORY_ALIASES.issubset(
+                    {
+                        value.casefold()
+                        for value in re.findall(
+                            r"['\"]([^'\"]+)['\"]",
+                            expression,
+                        )
+                    }
+                )
+                or not re.search(
+                    r"\bTHEN\s+['\"]Artificial Intelligence['\"]",
+                    expression,
+                    flags=re.IGNORECASE,
+                )
+                for expression in category_cases
+            )
+            if not noncanonical_projection and not invalid_category_case:
+                continue
+            raise ValueError(
+                "Normalize AI and Artificial Intelligence to the canonical "
+                "Artificial Intelligence label before category aggregation."
+            )
 
     if re.search(r"\bB2B\s+SaaS\b", question, flags=re.IGNORECASE):
         lower_cypher = cypher.lower()
@@ -972,6 +1174,47 @@ Do not use any external knowledge."""
         return format_grounded_results(results)
     return answer
 
+# ── Result Normalization ──────────────────────────────────────────────────────
+
+def normalize_category_aliases(value, category_field=False):
+    """Canonicalize known category aliases without modifying stored graph data."""
+    if isinstance(value, str):
+        if category_field and value.casefold() in AI_CATEGORY_ALIASES:
+            return CANONICAL_AI_CATEGORY
+        return value
+    if isinstance(value, list):
+        normalized = [
+            normalize_category_aliases(item, category_field=category_field)
+            for item in value
+        ]
+        if not category_field:
+            return normalized
+        deduplicated = []
+        seen_strings = set()
+        for item in normalized:
+            if isinstance(item, str):
+                key = item.casefold()
+                if key in seen_strings:
+                    continue
+                seen_strings.add(key)
+            deduplicated.append(item)
+        return deduplicated
+    if isinstance(value, tuple):
+        return tuple(
+            normalize_category_aliases(item, category_field=category_field)
+            for item in value
+        )
+    if isinstance(value, dict):
+        return {
+            key: normalize_category_aliases(
+                item,
+                category_field=str(key).casefold() in CATEGORY_RESULT_FIELDS,
+            )
+            for key, item in value.items()
+        }
+    return value
+
+
 # ── Main Query Pipeline ────────────────────────────────────────────────────────
 
 def query(question: str) -> dict:
@@ -1002,7 +1245,7 @@ def query(question: str) -> dict:
                 )
                 cypher = enforce_result_limit(cypher)
                 validate_cypher_semantics(question, cypher)
-                results = execute_cypher(cypher, driver)
+                results = normalize_category_aliases(execute_cypher(cypher, driver))
                 error = None
                 break
             except Exception as e:

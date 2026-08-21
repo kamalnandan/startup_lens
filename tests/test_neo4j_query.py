@@ -338,11 +338,230 @@ class CypherSemanticsTests(unittest.TestCase):
         )
 
     def test_rejects_contains_for_short_ai_category(self):
-        with self.assertRaisesRegex(ValueError, "exact category match"):
+        with self.assertRaisesRegex(ValueError, "both AI category aliases"):
             neo4j_query.validate_cypher_semantics(
                 "Compare AI startups in San Francisco and New York.",
                 'MATCH (c)-[:OPERATES_IN]->(i) WHERE toLower(i.name) CONTAINS "ai" RETURN c',
             )
+
+    def test_rejects_single_exact_ai_alias(self):
+        with self.assertRaisesRegex(ValueError, "both AI category aliases"):
+            neo4j_query.validate_cypher_semantics(
+                "Which companies use AI?",
+                """
+                MATCH (c:Company)-[:USES]->(t:Technology)
+                WHERE toLower(t.name) = "ai"
+                RETURN c.name AS company, t.name AS technology
+                """,
+            )
+
+    def test_accepts_both_exact_ai_aliases(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which companies use Artificial Intelligence?",
+            """
+            MATCH (c:Company)-[:USES]->(t:Technology)
+            WHERE toLower(t.name) IN ["ai", "artificial intelligence"]
+            RETURN c.name AS company, t.name AS technology
+            """,
+        )
+
+    def test_accepts_explicit_company_named_ai(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which company is named AI?",
+            """
+            MATCH (c:Company)
+            WHERE toLower(c.name) = "ai"
+            RETURN c.name AS company
+            """,
+        )
+
+    def test_accepts_explicit_company_named_artificial_intelligence(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which company is named Artificial Intelligence?",
+            """
+            MATCH (c:Company)
+            WHERE toLower(c.name) = "artificial intelligence"
+            RETURN c.name AS company
+            """,
+        )
+
+    def test_accepts_explicit_companies_named_ai(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which companies are named AI?",
+            """
+            MATCH (c:Company)
+            WHERE toLower(c.name) = "ai"
+            RETURN c.name AS company
+            """,
+        )
+
+    def test_accepts_company_name_ending_in_ai(self):
+        neo4j_query.validate_cypher_semantics(
+            "What is Scale AI's funding history?",
+            """
+            MATCH (c:Company {name: "Scale AI"})-[:RAISED]->(fe:FundingEvent)
+            RETURN c.name AS company, fe.round AS round
+            """,
+        )
+
+    def test_company_name_ai_filter_does_not_satisfy_category_intent(self):
+        with self.assertRaisesRegex(ValueError, "both AI category aliases"):
+            neo4j_query.validate_cypher_semantics(
+                "Which companies use AI?",
+                """
+                MATCH (c:Company)-[:USES]->(t:Technology)
+                WHERE toLower(c.name) = "ai"
+                RETURN c.name AS company, t.name AS technology
+                """,
+            )
+
+    def test_company_proper_name_does_not_suppress_ai_category_intent(self):
+        with self.assertRaisesRegex(ValueError, "both AI category aliases"):
+            neo4j_query.validate_cypher_semantics(
+                "Which AI companies compete with Scale AI?",
+                """
+                MATCH (c:Company)-[:COMPETES_WITH]->(
+                    rival:Company {name: "Scale AI"}
+                )
+                RETURN c.name AS company
+                """,
+            )
+
+    def test_rejects_ai_alias_filter_on_company_name(self):
+        with self.assertRaisesRegex(ValueError, "both AI category aliases"):
+            neo4j_query.validate_cypher_semantics(
+                "Which companies use AI?",
+                """
+                MATCH (c:Company)-[:USES]->(t:Technology)
+                WHERE toLower(c.name) IN ["ai", "artificial intelligence"]
+                RETURN c.name AS company, t.name AS technology
+                """,
+            )
+
+    def test_rejects_raw_category_aggregation(self):
+        with self.assertRaisesRegex(ValueError, "canonical"):
+            neo4j_query.validate_cypher_semantics(
+                "Which technologies are most used by YC companies?",
+                """
+                MATCH (c:Company)-[:USES]->(t:Technology)
+                RETURN t.name AS technology,
+                       count(DISTINCT c) AS company_count
+                """,
+            )
+
+    def test_accepts_canonical_ai_category_aggregation(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which technologies are most used by YC companies?",
+            """
+            MATCH (c:Company)-[:USES]->(t:Technology)
+            RETURN CASE
+                     WHEN toLower(t.name) IN ["ai", "artificial intelligence"]
+                     THEN "Artificial Intelligence"
+                     ELSE t.name
+                   END AS technology,
+                   count(DISTINCT c) AS company_count
+            """,
+        )
+
+    def test_rejects_noncanonical_case_category_aggregation(self):
+        with self.assertRaisesRegex(ValueError, "canonical"):
+            neo4j_query.validate_cypher_semantics(
+                "Which technologies are most used by YC companies?",
+                """
+                MATCH (c:Company)-[:USES]->(t:Technology)
+                RETURN CASE WHEN toLower(t.name) = "ai"
+                            THEN "AI" ELSE t.name END AS technology,
+                       count(DISTINCT c) AS company_count
+                """,
+            )
+
+    def test_rejects_raw_category_alias_aggregation(self):
+        with self.assertRaisesRegex(ValueError, "canonical"):
+            neo4j_query.validate_cypher_semantics(
+                "Which technologies are most used by YC companies?",
+                """
+                MATCH (c:Company)-[:USES]->(t:Technology)
+                RETURN t.name AS category,
+                       count(DISTINCT c) AS company_count
+                """,
+            )
+
+    def test_rejects_wrapped_raw_category_aggregation(self):
+        with self.assertRaisesRegex(ValueError, "canonical"):
+            neo4j_query.validate_cypher_semantics(
+                "Which technologies are most used by YC companies?",
+                """
+                MATCH (c:Company)-[:USES]->(t:Technology)
+                RETURN toLower(t.name) AS technology,
+                       count(DISTINCT c) AS company_count
+                """,
+            )
+
+    def test_rejects_raw_category_with_additional_grouping(self):
+        with self.assertRaisesRegex(ValueError, "canonical"):
+            neo4j_query.validate_cypher_semantics(
+                "Which industries are most common by company stage?",
+                """
+                MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+                RETURN ind.name AS industry, c.stage AS stage,
+                       count(DISTINCT c) AS company_count
+                """,
+            )
+
+    def test_rejects_raw_category_projected_through_with(self):
+        with self.assertRaisesRegex(ValueError, "canonical"):
+            neo4j_query.validate_cypher_semantics(
+                "Which technologies are most used by YC companies?",
+                """
+                MATCH (c:Company)-[:USES]->(t:Technology)
+                WITH t.name AS category, count(DISTINCT c) AS company_count
+                RETURN category, company_count
+                """,
+            )
+
+    def test_rejects_aliased_category_node_aggregation(self):
+        with self.assertRaisesRegex(ValueError, "canonical"):
+            neo4j_query.validate_cypher_semantics(
+                "Which technologies are most used by YC companies?",
+                """
+                MATCH (c:Company)-[:USES]->(t:Technology)
+                WITH t AS category, count(DISTINCT c) AS company_count
+                RETURN category.name AS technology, company_count
+                """,
+            )
+
+    def test_accepts_canonical_category_projected_through_with(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which technologies are most used by YC companies?",
+            """
+            MATCH (c:Company)-[:USES]->(t:Technology)
+            WITH CASE
+                   WHEN toLower(t.name) IN ["artificial intelligence", "ai"]
+                   THEN "Artificial Intelligence"
+                   ELSE t.name
+                 END AS category,
+                 count(DISTINCT c) AS company_count
+            RETURN category, company_count
+            """,
+        )
+
+    def test_accepts_canonical_industry_aggregation_with_other_groups(self):
+        neo4j_query.validate_cypher_semantics(
+            "What are common patterns among failed YC startups?",
+            """
+            MATCH (c:Company)
+            WHERE c.status = "Dead"
+            OPTIONAL MATCH (c)-[:OPERATES_IN]->(ind:Industry)
+            OPTIONAL MATCH (c)-[:HEADQUARTERED_IN]->(l:Location)
+            RETURN CASE
+                     WHEN toLower(ind.name) IN ["ai", "artificial intelligence"]
+                     THEN "Artificial Intelligence"
+                     ELSE ind.name
+                   END AS industry,
+                   l.country AS country,
+                   count(DISTINCT c) AS dead_count
+            """,
+        )
 
     def test_rejects_or_for_b2b_saas(self):
         with self.assertRaisesRegex(ValueError, "both categories"):
@@ -648,6 +867,31 @@ class CypherSemanticsTests(unittest.TestCase):
             )
 
 
+class CategoryNormalizationTests(unittest.TestCase):
+    def test_normalizes_ai_aliases_recursively(self):
+        results = [
+            {
+                "technology": "AI",
+                "technologies": ["AI", "Artificial Intelligence", "Python"],
+                "company": "AI",
+            }
+        ]
+
+        normalized = neo4j_query.normalize_category_aliases(results)
+
+        self.assertEqual(
+            normalized,
+            [
+                {
+                    "technology": "Artificial Intelligence",
+                    "technologies": ["Artificial Intelligence", "Python"],
+                    "company": "AI",
+                }
+            ],
+        )
+        self.assertEqual(results[0]["technology"], "AI")
+
+
 class AnswerSynthesisTests(unittest.TestCase):
     def test_empty_results_do_not_call_llm(self):
         with patch.object(neo4j_query, "call_llm") as call_llm:
@@ -799,7 +1043,8 @@ class QueryPipelineTests(unittest.TestCase):
         )
         valid = (
             'MATCH (c)-[:OPERATES_IN]->(i) '
-            'WHERE toLower(i.name) = "ai" RETURN c LIMIT 100'
+            'WHERE toLower(i.name) IN ["ai", "artificial intelligence"] '
+            'RETURN c LIMIT 100'
         )
 
         with (
