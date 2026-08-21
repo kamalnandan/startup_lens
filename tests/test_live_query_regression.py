@@ -343,6 +343,101 @@ CASES = (
         "required_patterns": (r"\btechnolog(?:y|ies)\b",),
         "canonical_ai_category": "technology",
     },
+    {
+        "query": "How many YC companies use AI?",
+        "min_results": 1,
+        "required_patterns": (r"\b(?:AI|Artificial Intelligence)\b",),
+        "require_ai_alias_filter": True,
+        "require_distinct_company_count": True,
+        "equivalent_answer_number_group": "ai-company-count",
+        "answer_number_pattern": r"\b([\d,]+)\s+YC companies\b",
+    },
+    {
+        "query": "How many YC companies use Artificial Intelligence?",
+        "min_results": 1,
+        "required_patterns": (r"\b(?:AI|Artificial Intelligence)\b",),
+        "require_ai_alias_filter": True,
+        "require_distinct_company_count": True,
+        "equivalent_answer_number_group": "ai-company-count",
+        "answer_number_pattern": r"\b([\d,]+)\s+YC companies\b",
+    },
+    {
+        "query": "Which AI companies are headquartered in New York?",
+        "min_results": 1,
+        "required_terms": ("new york",),
+        "require_ai_alias_filter": True,
+        "required_filter_terms": ("new york",),
+    },
+    {
+        "query": "Who founded Scale AI?",
+        "min_results": 1,
+        "required_terms": ("scale ai",),
+        "required_filter_terms": ("scale ai",),
+        "forbid_ai_alias_filter": True,
+    },
+    {
+        "query": "Which AI companies compete with Scale AI?",
+        "expected_results": 0,
+        "required_terms": ("no results",),
+        "require_ai_alias_filter": True,
+        "required_filter_terms": ("scale ai",),
+    },
+    {
+        "query": "Which YC companies use Kubernetes?",
+        "min_results": 1,
+        "required_terms": ("kubernetes",),
+        "required_filter_terms": ("kubernetes",),
+        "forbid_ai_alias_filter": True,
+    },
+    {
+        "query": "Which industries have the most active YC companies?",
+        "min_results": 5,
+        "required_patterns": (r"\bindustr(?:y|ies)\b",),
+        "canonical_ai_category": "industry",
+        "require_distinct_company_count": True,
+        "required_filter_cypher": (
+            r"\b\w+\.status\s*=\s*[\"']Active[\"']",
+        ),
+    },
+    {
+        "query": "Which technologies are used by Stripe?",
+        "min_results": 1,
+        "required_terms": ("stripe",),
+        "required_patterns": (r"\btechnolog(?:y|ies)\b",),
+        "required_filter_terms": ("stripe",),
+        "forbid_ai_alias_filter": True,
+    },
+    {
+        "query": "Compare Artificial Intelligence companies in W21 and S21.",
+        "min_results": 2,
+        "required_terms": ("winter 2021", "summer 2021"),
+        "require_ai_alias_filter": True,
+        "require_distinct_company_count": True,
+        "required_filter_cypher": (
+            r'["\']Winter 2021["\']',
+            r'["\']Summer 2021["\']',
+        ),
+        "forbidden_cypher": (
+            r'["\']W21["\']',
+            r'["\']S21["\']',
+        ),
+    },
+    {
+        "query": (
+            "List active Artificial Intelligence companies with fewer "
+            "than 50 employees."
+        ),
+        "min_results": 1,
+        "required_patterns": (r"\b(?:AI|Artificial Intelligence)\b",),
+        "require_ai_alias_filter": True,
+        "required_cypher": (r"\b\w+\.status\s+AS\s+status\b",),
+        "required_filter_cypher": (
+            r"\b\w+\.status\s*=\s*[\"']Active[\"']",
+            r"\b\w+\.team_size\s*>\s*0\b",
+            r"\b\w+\.team_size\s*<\s*50\b",
+        ),
+        "forbidden_terms": ("team size: 0",),
+    },
 )
 
 
@@ -383,6 +478,7 @@ class LiveAssertionTests(unittest.TestCase):
 class LiveQueryRegressionTests(unittest.TestCase):
     def test_representative_queries(self):
         failures = []
+        equivalent_answer_numbers = {}
 
         for case in CASES:
             query = case["query"]
@@ -452,6 +548,10 @@ class LiveQueryRegressionTests(unittest.TestCase):
                 failures.append(
                     f"{query}: Cypher is missing exact AI alias normalization"
                 )
+            if case.get("forbid_ai_alias_filter") and has_ai_alias_filter(cypher):
+                failures.append(
+                    f"{query}: Cypher unexpectedly applies AI category normalization"
+                )
             canonical_alias = case.get("canonical_ai_category")
             if canonical_alias and not has_canonical_ai_category(
                 cypher, canonical_alias
@@ -489,6 +589,27 @@ class LiveQueryRegressionTests(unittest.TestCase):
                     failures.append(
                         f"{query}: generated Cypher matches forbidden pattern {pattern!r}"
                     )
+            equivalence_group = case.get("equivalent_answer_number_group")
+            if equivalence_group:
+                number_match = re.search(
+                    case["answer_number_pattern"],
+                    answer,
+                    flags=re.IGNORECASE,
+                )
+                if not number_match:
+                    failures.append(
+                        f"{query}: answer does not expose a comparable aggregate"
+                    )
+                else:
+                    answer_number = int(number_match.group(1).replace(",", ""))
+                    previous = equivalent_answer_numbers.setdefault(
+                        equivalence_group, answer_number
+                    )
+                    if previous != answer_number:
+                        failures.append(
+                            f"{query}: aggregate {answer_number} does not match "
+                            f"{equivalence_group} result {previous}"
+                        )
 
         self.assertEqual([], failures, "\n" + "\n".join(failures))
 
