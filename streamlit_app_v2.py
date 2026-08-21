@@ -11,6 +11,13 @@ import streamlit as st
 from app_config import get_required_setting
 
 
+st.set_page_config(
+    page_title="StartupLens",
+    page_icon="🔭",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
 
 # ── Configuration ──────────────────────────────────────────────────────────────
 ACCESS_CODE = get_required_setting("ACCESS_CODE")
@@ -29,7 +36,7 @@ def check_access():
             """
             <div style="max-width: 400px; margin: 100px auto; text-align: center;">
                 <h1>🔭 StartupLens</h1>
-                <p style="color: #666;">The YC ecosystem explorer</p>
+                <p style="color: #666;">YC Startup Intelligence</p>
                 <p style="color: #888; font-size: 0.9rem;">Enter your access code to continue</p>
             </div>
             """,
@@ -68,16 +75,6 @@ API_KEY = get_required_setting("STARTUPLENS_API_KEY")
 #     st.sidebar.json(r.json())
 # except Exception as e:
 #     st.sidebar.error(f"Connection error: {type(e).__name__}: {e}")
-
-
-
-
-st.set_page_config(
-    page_title="StartupLens — YC Ecosystem Explorer",
-    page_icon="🔭",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
 
 st.markdown(
     """
@@ -374,7 +371,7 @@ def render_result(result: dict) -> None:
 
 with st.sidebar:
     st.markdown("## 🔭 StartupLens")
-    st.caption("The YC ecosystem explorer")
+    st.caption("YC Startup Intelligence")
     st.divider()
 
     st.markdown("### Live graph")
@@ -409,7 +406,7 @@ with st.sidebar:
 st.markdown(
     """
     <section class="hero">
-        <div class="hero-kicker">5,700+ YC Companies · 20 Years of Data · One Knowledge Graph</div>
+        <div class="hero-kicker">YC Startup Intelligence · 5,700+ Companies · 20 Years of Data</div>
         <h1>Research Y Combinator<br>like never before.</h1>
         <p>
             Explore every YC batch, founder, investor, and industry trend

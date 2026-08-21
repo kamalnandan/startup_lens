@@ -106,7 +106,7 @@ startuplens/
 ├── neo4j_query.py           # Natural language → Cypher → answer pipeline
 ├── neo4j_dedup.py           # Entity deduplication and normalization
 ├── neo4j_fastapi.py         # FastAPI query API
-├── streamlit_app.py         # Streamlit UI
+├── streamlit_app_v2.py      # Streamlit UI
 ├── enrich_companies.py      # Wikipedia enrichment pipeline
 ├── settings.yaml            # GraphRAG configuration (legacy)
 ├── prompts/                 # Custom GraphRAG prompts (legacy)
@@ -168,7 +168,7 @@ python neo4j_dedup.py
 uvicorn neo4j_fastapi:app --reload
 
 # Start Streamlit UI (in a separate terminal)
-streamlit run streamlit_app.py
+streamlit run streamlit_app_v2.py
 ```
 
 Open `http://localhost:8501` in your browser.
