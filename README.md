@@ -247,7 +247,9 @@ Natural language answer
 - [ ] "Companies like yours" feature for YC applicants
 - [ ] Neo4j vector index for semantic search
 - [ ] Export answers to PDF/Excel
-- [ ] Multi-turn conversation support
+- [ ] **P1 post-alpha:** Session-aware follow-up questions using session IDs,
+      bounded TTL-based history, entity/pronoun resolution, context clearing,
+      and multi-turn regression tests
 
 ---
 
