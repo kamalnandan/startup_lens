@@ -21,6 +21,179 @@ neo4j_query = importlib.import_module("neo4j_query")
 
 
 class CypherSemanticsTests(unittest.TestCase):
+    def test_rejects_case_sensitive_multi_company_name_filter(self):
+        with self.assertRaisesRegex(ValueError, "case-insensitively"):
+            neo4j_query.validate_cypher_semantics(
+                "Who founded Stripe and RazorPay?",
+                """
+                MATCH (f:Founder)-[:FOUNDED]->(c:Company)
+                WHERE c.name IN ["Stripe", "RazorPay"]
+                RETURN f.name AS founder, c.name AS company
+                """,
+            )
+
+    def test_rejects_case_sensitive_company_name_equality(self):
+        with self.assertRaisesRegex(ValueError, "Company.name case-insensitively"):
+            neo4j_query.validate_cypher_semantics(
+                "Who founded Stripe and RazorPay?",
+                """
+                MATCH (f:Founder)-[:FOUNDED]->(c:Company)
+                WHERE c.name = "Stripe" OR c.name = "RazorPay"
+                RETURN f.name AS founder, c.name AS company
+                """,
+            )
+
+    def test_rejects_reversed_case_sensitive_company_name_equality(self):
+        with self.assertRaisesRegex(ValueError, "Company.name case-insensitively"):
+            neo4j_query.validate_cypher_semantics(
+                "Who founded Stripe?",
+                """
+                MATCH (c:Company)
+                WHERE "Stripe" = c.name
+                RETURN c.name AS company
+                """,
+            )
+
+    def test_rejects_mixed_case_reversed_lowercase_filter(self):
+        with self.assertRaisesRegex(ValueError, "lowercase literal"):
+            neo4j_query.validate_cypher_semantics(
+                "Who founded Stripe?",
+                """
+                MATCH (c:Company)
+                WHERE "Stripe" = toLower(c.name)
+                RETURN c.name AS company
+                """,
+            )
+
+    def test_accepts_reversed_case_insensitive_company_filter(self):
+        neo4j_query.validate_cypher_semantics(
+            "Who founded Stripe?",
+            """
+            MATCH (c:Company)
+            WHERE "stripe" = toLower(c.name)
+            RETURN c.name AS company
+            """,
+        )
+
+    def test_rejects_mixed_case_apostrophe_company_filter(self):
+        with self.assertRaisesRegex(ValueError, "lowercase literal"):
+            neo4j_query.validate_cypher_semantics(
+                "Tell me about McDonald's.",
+                """
+                MATCH (c:Company)
+                WHERE "McDonald's" = toLower(c.name)
+                RETURN c.name AS company
+                """,
+            )
+
+    def test_accepts_lowercase_apostrophe_company_filter(self):
+        neo4j_query.validate_cypher_semantics(
+            "Tell me about McDonald's.",
+            """
+            MATCH (c:Company)
+            WHERE "mcdonald's" = toLower(c.name)
+            RETURN c.name AS company
+            """,
+        )
+
+    def test_rejects_reversed_mixed_case_string_operator(self):
+        with self.assertRaisesRegex(ValueError, "lowercase literal"):
+            neo4j_query.validate_cypher_semantics(
+                "Find companies whose name appears in Stripe.",
+                """
+                MATCH (c:Company)
+                WHERE "Stripe" CONTAINS toLower(c.name)
+                RETURN c.name AS company
+                """,
+            )
+
+    def test_rejects_case_sensitive_company_property_map(self):
+        with self.assertRaisesRegex(ValueError, "Company.name case-insensitively"):
+            neo4j_query.validate_cypher_semantics(
+                "Who founded RazorPay?",
+                """
+                MATCH (f:Founder)-[:FOUNDED]->(
+                    c:Company {name: "RazorPay"}
+                )
+                RETURN f.name AS founder
+                """,
+            )
+
+    def test_rejects_case_sensitive_investor_name_filter(self):
+        with self.assertRaisesRegex(ValueError, "Investor.name case-insensitively"):
+            neo4j_query.validate_cypher_semantics(
+                "Which companies did Sequoia Capital invest in?",
+                """
+                MATCH (i:Investor)-[:INVESTED_IN]->(c:Company)
+                WHERE i.name = "Sequoia Capital"
+                RETURN c.name AS company
+                """,
+            )
+
+    def test_rejects_case_sensitive_location_filter(self):
+        with self.assertRaisesRegex(ValueError, "Location.country case-insensitively"):
+            neo4j_query.validate_cypher_semantics(
+                "Which companies are headquartered in India?",
+                """
+                MATCH (c:Company)-[:HEADQUARTERED_IN]->(l:Location)
+                WHERE l.country = "India"
+                RETURN c.name AS company
+                """,
+            )
+
+    def test_accepts_case_insensitive_named_entity_filters(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which companies did Sequoia Capital invest in India?",
+            """
+            MATCH (i:Investor)-[:INVESTED_IN]->(c:Company)
+            MATCH (c)-[:HEADQUARTERED_IN]->(l:Location)
+            WHERE toLower(i.name) = "sequoia capital"
+              AND toLower(l.country) = "india"
+            RETURN c.name AS company
+            """,
+        )
+
+    def test_rejects_mixed_case_literals_in_lowercase_company_filter(self):
+        with self.assertRaisesRegex(ValueError, "lowercase literals"):
+            neo4j_query.validate_cypher_semantics(
+                "Who founded Stripe and RazorPay?",
+                """
+                MATCH (f:Founder)-[:FOUNDED]->(c:Company)
+                WHERE toLower(c.name) IN ["stripe", "RazorPay"]
+                RETURN f.name AS founder, c.name AS company
+                """,
+            )
+
+    def test_accepts_case_insensitive_multi_company_name_filter(self):
+        neo4j_query.validate_cypher_semantics(
+            "Who founded Stripe and RazorPay?",
+            """
+            MATCH (f:Founder)-[:FOUNDED]->(c:Company)
+            WHERE toLower(c.name) IN ["stripe", "razorpay"]
+            RETURN f.name AS founder, c.name AS company
+            """,
+        )
+
+    def test_accepts_lowercase_unicode_company_name_filter(self):
+        neo4j_query.validate_cypher_semantics(
+            "Who founded Straße and Stripe?",
+            """
+            MATCH (f:Founder)-[:FOUNDED]->(c:Company)
+            WHERE toLower(c.name) IN ["straße", "stripe"]
+            RETURN f.name AS founder, c.name AS company
+            """,
+        )
+
+    def test_allows_case_sensitive_in_filter_for_non_company_name(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which companies are Active or Public?",
+            """
+            MATCH (c:Company)
+            WHERE c.status IN ["Active", "Public"]
+            RETURN c.name AS company, c.status AS status
+            """,
+        )
+
     def test_rejects_non_distinct_company_count(self):
         with self.assertRaisesRegex(ValueError, r"count\(DISTINCT c\)"):
             neo4j_query.validate_cypher_semantics(
@@ -197,7 +370,7 @@ class CypherSemanticsTests(unittest.TestCase):
         )
 
     def test_rejects_case_sensitive_fintech_filter(self):
-        with self.assertRaisesRegex(ValueError, "returned company's industry"):
+        with self.assertRaisesRegex(ValueError, "Industry.name case-insensitively"):
             neo4j_query.validate_cypher_semantics(
                 "Which fintech companies are headquartered in India?",
                 """
@@ -208,7 +381,7 @@ class CypherSemanticsTests(unittest.TestCase):
             )
 
     def test_rejects_mixed_case_literals_with_lowercased_property(self):
-        with self.assertRaisesRegex(ValueError, "returned company's industry"):
+        with self.assertRaisesRegex(ValueError, "lowercase literals"):
             neo4j_query.validate_cypher_semantics(
                 "Which fintech companies are headquartered in India?",
                 """
@@ -332,7 +505,7 @@ class CypherSemanticsTests(unittest.TestCase):
             "Which companies are in Union City?",
             """
             MATCH (c:Company)-[:HEADQUARTERED_IN]->(l:Location)
-            WHERE l.city = "Union City"
+            WHERE toLower(l.city) = "union city"
             RETURN c.name
             """,
         )
@@ -399,7 +572,8 @@ class CypherSemanticsTests(unittest.TestCase):
         neo4j_query.validate_cypher_semantics(
             "What is Scale AI's funding history?",
             """
-            MATCH (c:Company {name: "Scale AI"})-[:RAISED]->(fe:FundingEvent)
+            MATCH (c:Company)-[:RAISED]->(fe:FundingEvent)
+            WHERE toLower(c.name) = "scale ai"
             RETURN c.name AS company, fe.round AS round
             """,
         )
@@ -420,9 +594,8 @@ class CypherSemanticsTests(unittest.TestCase):
             neo4j_query.validate_cypher_semantics(
                 "Which AI companies compete with Scale AI?",
                 """
-                MATCH (c:Company)-[:COMPETES_WITH]->(
-                    rival:Company {name: "Scale AI"}
-                )
+                MATCH (c:Company)-[:COMPETES_WITH]->(rival:Company)
+                WHERE toLower(rival.name) = "scale ai"
                 RETURN c.name AS company
                 """,
             )
@@ -709,7 +882,7 @@ class CypherSemanticsTests(unittest.TestCase):
                     """
                     MATCH (c)-[:HEADQUARTERED_IN]->(l:Location)
                     MATCH (c)-[:OPERATES_IN]->(ind:Industry)
-                    WHERE l.country = "India"
+                    WHERE toLower(l.country) = "india"
                       AND toLower(ind.name) CONTAINS "fintech"
                     RETURN c.name AS company, ind.name AS industry
                     """,
@@ -721,7 +894,7 @@ class CypherSemanticsTests(unittest.TestCase):
                 """
                 MATCH (c)-[:HEADQUARTERED_IN]->(l:Location)
                 MATCH (c)-[:OPERATES_IN]->(ind:Industry)
-                WHERE l.country = "India"
+                WHERE toLower(l.country) = "india"
                   AND toLower(ind.name) IN ["fintech", "finance", "payments"]
                 RETURN c.name AS company, ind.name AS industry
                 """,
@@ -733,7 +906,7 @@ class CypherSemanticsTests(unittest.TestCase):
                     "What fintech companies are headquartered in India?",
                     """
                     MATCH (c:Company)-[:HEADQUARTERED_IN]->(l:Location)
-                    WHERE l.country = "India"
+                    WHERE toLower(l.country) = "india"
                     RETURN c.name AS company
                     """,
                 )

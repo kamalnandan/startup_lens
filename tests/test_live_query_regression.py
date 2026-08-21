@@ -438,6 +438,27 @@ CASES = (
         ),
         "forbidden_terms": ("team size: 0",),
     },
+    {
+        "query": (
+            "Can you tell me who founded Stripe? Also tell me who were "
+            "the founders of RazorPay!"
+        ),
+        "min_results": 4,
+        "required_terms": (
+            "john collison",
+            "patrick collison",
+            "harshil mathur",
+            "shashank kumar",
+        ),
+        "required_filter_cypher": (
+            r"toLower\(\s*\w+\.name\s*\)\s+IN\s*\[",
+            r"[\"']stripe[\"']",
+            r"[\"']razorpay[\"']",
+        ),
+        "forbidden_cypher": (
+            r"\b\w+\.name\s+IN\s*\[",
+        ),
+    },
 )
 
 

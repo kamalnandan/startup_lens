@@ -43,6 +43,17 @@ CANONICAL_AI_CATEGORY = "Artificial Intelligence"
 CATEGORY_RESULT_FIELDS = frozenset(
     {"category", "categories", "industry", "industries", "technology", "technologies"}
 )
+CYPHER_STRING_LITERAL_PATTERN = (
+    r"""(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')"""
+)
+
+
+def cypher_string_literals(text: str) -> list[str]:
+    """Extract quoted Cypher string values while respecting their quote type."""
+    return [
+        match.group(0)[1:-1]
+        for match in re.finditer(CYPHER_STRING_LITERAL_PATTERN, text)
+    ]
 
 # ── LLM Call ──────────────────────────────────────────────────────────────────
 
@@ -128,19 +139,32 @@ You are an expert Neo4j Cypher query generator for a startup intelligence knowle
     aliases under one canonical label before aggregation:
     CASE WHEN toLower(n.name) IN ["ai", "artificial intelligence"]
          THEN "Artificial Intelligence" ELSE n.name END AS category.
+18. Match user-supplied entity names and locations case-insensitively. This
+    includes Company, Founder, Investor, Industry, and Technology names, plus
+    Location city and country. Lowercase both the property and literals:
+    toLower(c.name) IN ["stripe", "razorpay"].
 
 ## Examples:
 
 Question: Who founded Stripe?
 Cypher:
-MATCH (f:Founder)-[:FOUNDED]->(c:Company {name: "Stripe"})
+MATCH (f:Founder)-[:FOUNDED]->(c:Company)
+WHERE toLower(c.name) = "stripe"
 RETURN f.name AS founder, c.name AS company, c.yc_batch AS batch
+
+Question: Who founded Stripe and Razorpay?
+Cypher:
+MATCH (f:Founder)-[:FOUNDED]->(c:Company)
+WHERE toLower(c.name) IN ["stripe", "razorpay"]
+RETURN f.name AS founder, c.name AS company, c.yc_batch AS batch
+ORDER BY c.name, founder
 
 Question: Which YC founders from India built fintech companies?
 Cypher:
-MATCH (f:Founder)-[:FOUNDED]->(c:Company)-[:HEADQUARTERED_IN]->(l:Location {country: "India"})
+MATCH (f:Founder)-[:FOUNDED]->(c:Company)-[:HEADQUARTERED_IN]->(l:Location)
 MATCH (c)-[:OPERATES_IN]->(ind:Industry)
-WHERE toLower(ind.name) IN ["fintech", "finance", "payments"]
+WHERE toLower(l.country) = "india"
+  AND toLower(ind.name) IN ["fintech", "finance", "payments"]
 RETURN f.name AS founder, c.name AS company, c.yc_batch AS batch, ind.name AS industry
 ORDER BY c.yc_batch
 
@@ -280,8 +304,9 @@ RETURN CASE WHEN toLower(t.name) IN ["ai", "artificial intelligence"]
 ORDER BY company_count DESC
 LIMIT 20
 
-Note: When asked about external investors or VC portfolios, always exclude 
-"Y Combinator" from results since it is the accelerator, not an external investor.
+Note: When asked about external investors or VC portfolios, always exclude
+"Y Combinator" case-insensitively with toLower(i.name) <> "y combinator",
+since it is the accelerator, not an external investor.
 """
 
 # ── Step 1: Query Classification ───────────────────────────────────────────────
@@ -437,11 +462,106 @@ def validate_cypher_semantics(question: str, cypher: str) -> None:
     return_clause = query_parts[1] if len(query_parts) > 1 else ""
     company_variables = set(
         re.findall(
-            r"\((\w+)\s*:\s*Company\b",
+            r"\(\s*(\w+)\s*:\s*Company\b",
             cypher,
             flags=re.IGNORECASE,
         )
     )
+    case_insensitive_fields = {
+        "Company": ("name",),
+        "Founder": ("name",),
+        "Investor": ("name",),
+        "Industry": ("name",),
+        "Technology": ("name",),
+        "Location": ("city", "country"),
+    }
+    entity_variables = re.findall(
+        r"\(\s*(\w+)\s*:\s*(Company|Founder|Investor|Industry|Technology|Location)\b",
+        cypher,
+        flags=re.IGNORECASE,
+    )
+    normalized_fields = {
+        label.casefold(): fields
+        for label, fields in case_insensitive_fields.items()
+    }
+    for variable, label in entity_variables:
+        for field in normalized_fields[label.casefold()]:
+            raw_property_filter = re.search(
+                (
+                    rf"\b{re.escape(variable)}\.{re.escape(field)}\b\s*"
+                    r"(?:=|<>|!=|\bIN\b|\bCONTAINS\b|"
+                    r"\bSTARTS\s+WITH\b|\bENDS\s+WITH\b)"
+                ),
+                filtering_cypher,
+                flags=re.IGNORECASE,
+            )
+            reversed_raw_filter = re.search(
+                (
+                    r"['\"][^'\"]+['\"]\s*(?:=|<>|!=|\bCONTAINS\b|"
+                    r"\bSTARTS\s+WITH\b|\bENDS\s+WITH\b)\s*"
+                    rf"\b{re.escape(variable)}\.{re.escape(field)}\b"
+                ),
+                filtering_cypher,
+                flags=re.IGNORECASE,
+            )
+            property_map_filter = re.search(
+                (
+                    rf"\(\s*{re.escape(variable)}\s*:\s*{re.escape(label)}\s*"
+                    rf"\{{[^}}]*\b{re.escape(field)}\s*:"
+                ),
+                filtering_cypher,
+                flags=re.IGNORECASE | re.DOTALL,
+            )
+            if raw_property_filter or reversed_raw_filter or property_map_filter:
+                raise ValueError(
+                    f"Match {label}.{field} case-insensitively with "
+                    f"toLower({variable}.{field}) and lowercase literals."
+                )
+            for values in re.findall(
+                (
+                    rf"toLower\(\s*{re.escape(variable)}\.{re.escape(field)}\s*\)"
+                    r"\s+IN\s*(\[[^\]]+\])"
+                ),
+                filtering_cypher,
+                flags=re.IGNORECASE | re.DOTALL,
+            ):
+                literals = cypher_string_literals(values)
+                if not literals or any(value != value.lower() for value in literals):
+                    raise ValueError(
+                        f"Use lowercase literals with "
+                        f"toLower({variable}.{field}) IN."
+                    )
+            for literal_token in re.findall(
+                (
+                    rf"toLower\(\s*{re.escape(variable)}\.{re.escape(field)}\s*\)"
+                    r"\s*(?:=|<>|!=|\bCONTAINS\b|\bSTARTS\s+WITH\b|"
+                    rf"\bENDS\s+WITH\b)\s*({CYPHER_STRING_LITERAL_PATTERN})"
+                ),
+                filtering_cypher,
+                flags=re.IGNORECASE,
+            ):
+                literal = literal_token[1:-1]
+                if literal != literal.lower():
+                    raise ValueError(
+                        f"Use a lowercase literal with "
+                        f"toLower({variable}.{field})."
+                    )
+            for literal_token in re.findall(
+                (
+                    rf"({CYPHER_STRING_LITERAL_PATTERN})\s*"
+                    r"(?:=|<>|!=|\bCONTAINS\b|\bSTARTS\s+WITH\b|"
+                    r"\bENDS\s+WITH\b)\s*"
+                    rf"toLower\(\s*{re.escape(variable)}\.{re.escape(field)}\s*\)"
+                ),
+                filtering_cypher,
+                flags=re.IGNORECASE,
+            ):
+                literal = literal_token[1:-1]
+                if literal != literal.lower():
+                    raise ValueError(
+                        f"Use a lowercase literal with "
+                        f"toLower({variable}.{field})."
+                    )
     for variable in company_variables:
         if re.search(
             (
