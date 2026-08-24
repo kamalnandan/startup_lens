@@ -714,6 +714,29 @@ class CypherSemanticsTests(unittest.TestCase):
             """,
         )
 
+    def test_prompt_and_validator_support_conditional_batch_category_counts(self):
+        self.assertIn(
+            "For W21 and S21, compare healthcare and fintech company counts.",
+            neo4j_query.GRAPH_SCHEMA,
+        )
+        neo4j_query.validate_cypher_semantics(
+            "For W21 and S21, compare healthcare and fintech company counts.",
+            """
+            MATCH (c:Company)-[:PART_OF]->(b:Batch)
+            MATCH (c)-[:OPERATES_IN]->(ind:Industry)
+            WHERE b.name IN ["Winter 2021", "Summer 2021"]
+            RETURN b.name AS batch,
+                   count(DISTINCT CASE
+                     WHEN toLower(ind.name) CONTAINS "health" THEN c END
+                   ) AS healthcare_count,
+                   count(DISTINCT CASE
+                     WHEN toLower(ind.name) IN [
+                       "fintech", "finance", "payments"
+                     ] THEN c END
+                   ) AS fintech_count
+            """,
+        )
+
     def test_rejects_noncanonical_case_category_aggregation(self):
         with self.assertRaisesRegex(ValueError, "canonical"):
             neo4j_query.validate_cypher_semantics(

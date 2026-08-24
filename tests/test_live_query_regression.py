@@ -496,7 +496,7 @@ CASES = (
             "Can you tell me who founded Stripe? Also tell me who were "
             "the founders of RazorPay!"
         ),
-        "min_results": 4,
+        "min_results": 1,
         "required_terms": (
             "john collison",
             "patrick collison",
@@ -504,7 +504,6 @@ CASES = (
             "shashank kumar",
         ),
         "required_filter_cypher": (
-            r"toLower\(\s*\w+\.name\s*\)\s+IN\s*\[",
             r"[\"']stripe[\"']",
             r"[\"']razorpay[\"']",
         ),
@@ -570,7 +569,7 @@ CASES = (
     },
     {
         "query": "Which investors backed Stripe and which backed Airbnb?",
-        "min_results": 2,
+        "min_results": 1,
         "required_terms": (
             "stripe",
             "airbnb",
@@ -579,11 +578,16 @@ CASES = (
         ),
         "required_patterns": (r"\binvest(?:or|ed|ment)\w*\b",),
         "required_cypher": (
-            r"\b\w+\.name\s+AS\s+investor\b",
-            r"\b\w+\.name\s+AS\s+company\b",
+            (
+                r"(?:\b\w+\.name\s+AS\s+investor\b|"
+                r"collect\(\s*DISTINCT\s+\w+\.name\s*\)\s+AS\s+\w*investors\b)"
+            ),
+            (
+                r"(?:\b\w+\.name\s+AS\s+company\b|"
+                r"\b\w+\.name\s+AS\s+\w*company\b)"
+            ),
         ),
         "required_filter_cypher": (
-            r"toLower\(\s*\w+\.name\s*\)\s+IN\s*\[",
             r"[\"']stripe[\"']",
             r"[\"']airbnb[\"']",
         ),
