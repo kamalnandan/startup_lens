@@ -80,15 +80,26 @@ def has_normalized_fintech_filter(cypher):
 
 def has_distinct_company_count(cypher):
     company_variables = re.findall(
-        r"\((\w+)\s*:\s*Company\b",
+        r"\(\s*(\w+)\s*:\s*Company\b",
         cypher,
         flags=re.IGNORECASE,
     )
     return any(
-        re.search(
-            rf"\bcount\s*\(\s*DISTINCT\s+{re.escape(variable)}\s*\)",
-            cypher,
-            flags=re.IGNORECASE,
+        (
+            re.search(
+                rf"\bcount\s*\(\s*DISTINCT\s+{re.escape(variable)}\s*\)",
+                cypher,
+                flags=re.IGNORECASE,
+            )
+            or re.search(
+                (
+                    rf"\bcount\s*\(\s*DISTINCT\s+CASE\b.{{0,500}}?"
+                    rf"\bTHEN\s+{re.escape(variable)}"
+                    rf"(?:\s+ELSE\s+NULL)?\s+END\s*\)"
+                ),
+                cypher,
+                flags=re.IGNORECASE | re.DOTALL,
+            )
         )
         for variable in company_variables
     )
@@ -138,6 +149,45 @@ def has_canonical_ai_category(cypher, output_alias):
         )
         for expression in expressions
     )
+
+
+def has_separate_healthcare_fintech_counts(cypher):
+    company_variables = re.findall(
+        r"\(\s*(\w+)\s*:\s*Company\b",
+        cypher,
+        flags=re.IGNORECASE,
+    )
+    for variable in company_variables:
+        conditional_counts = re.findall(
+            (
+                r"\bcount\s*\(\s*DISTINCT\s+CASE\b(.{0,800}?)"
+                rf"\bTHEN\s+{re.escape(variable)}"
+                r"(?:\s+ELSE\s+NULL)?\s+END\s*\)"
+            ),
+            cypher,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+        healthcare_indices = {
+            index
+            for index, expression in enumerate(conditional_counts)
+            if "health" in expression.casefold()
+            and not any(
+                term in expression.casefold()
+                for term in ("fintech", "finance", "payments")
+            )
+        }
+        fintech_indices = {
+            index
+            for index, expression in enumerate(conditional_counts)
+            if all(
+                term in expression.casefold()
+                for term in ("fintech", "finance", "payments")
+            )
+            and "health" not in expression.casefold()
+        }
+        if healthcare_indices and fintech_indices:
+            return True
+    return False
 
 
 CASES = (
@@ -459,6 +509,182 @@ CASES = (
             r"\b\w+\.name\s+IN\s*\[",
         ),
     },
+    {
+        "query": "Who founded Airbnb and Coinbase?",
+        "min_results": 5,
+        "required_terms": (
+            "airbnb",
+            "coinbase",
+            "brian chesky",
+            "joe gebbia",
+            "nathan blecharczyk",
+            "brian armstrong",
+            "fred ehrsam",
+        ),
+        "required_filter_cypher": (
+            r"toLower\(\s*\w+\.name\s*\)\s+IN\s*\[",
+            r"[\"']airbnb[\"']",
+            r"[\"']coinbase[\"']",
+        ),
+    },
+    {
+        "query": (
+            "Compare the status, stage, and team size of Stripe, Airbnb, "
+            "and Coinbase."
+        ),
+        "min_results": 3,
+        "required_terms": ("stripe", "airbnb", "coinbase", "active", "growth"),
+        "required_patterns": (
+            r"\b(?:team size|employees)\b",
+        ),
+        "required_cypher": (
+            r"\b\w+\.status\s+AS\s+status\b",
+            r"\b\w+\.stage\s+AS\s+stage\b",
+            r"\b\w+\.team_size\s+AS\s+team_size\b",
+        ),
+        "required_filter_cypher": (
+            r"toLower\(\s*\w+\.name\s*\)\s+IN\s*\[",
+            r"[\"']stripe[\"']",
+            r"[\"']airbnb[\"']",
+            r"[\"']coinbase[\"']",
+        ),
+    },
+    {
+        "query": (
+            "Who founded Stripe, which YC batch was it in, and what is "
+            "its current status?"
+        ),
+        "min_results": 2,
+        "required_terms": ("john collison", "patrick collison", "summer 2009"),
+        "required_patterns": (r"\bactive\b",),
+        "required_cypher": (
+            r"\b\w+\.yc_batch\s+AS\s+batch\b",
+            r"\b\w+\.status\s+AS\s+status\b",
+        ),
+        "required_filter_cypher": (
+            r"toLower\(\s*\w+\.name\s*\)\s*=\s*[\"']stripe[\"']",
+        ),
+    },
+    {
+        "query": "Which investors backed Stripe and which backed Airbnb?",
+        "min_results": 2,
+        "required_terms": (
+            "stripe",
+            "airbnb",
+            "sequoia capital",
+            "andreessen horowitz",
+        ),
+        "required_patterns": (r"\binvest(?:or|ed|ment)\w*\b",),
+        "required_cypher": (
+            r"\b\w+\.name\s+AS\s+investor\b",
+            r"\b\w+\.name\s+AS\s+company\b",
+        ),
+        "required_filter_cypher": (
+            r"toLower\(\s*\w+\.name\s*\)\s+IN\s*\[",
+            r"[\"']stripe[\"']",
+            r"[\"']airbnb[\"']",
+        ),
+    },
+    {
+        "query": (
+            "Compare AI company counts in San Francisco, New York, and London."
+        ),
+        "min_results": 3,
+        "required_terms": ("san francisco", "new york", "london"),
+        "required_patterns": (
+            (
+                r"(?:san francisco.{0,80}\b\d[\d,]*\b|"
+                r"\b\d[\d,]*\b.{0,80}san francisco)"
+            ),
+            (
+                r"(?:new york.{0,80}\b\d[\d,]*\b|"
+                r"\b\d[\d,]*\b.{0,80}new york)"
+            ),
+            (
+                r"(?:london.{0,80}\b\d[\d,]*\b|"
+                r"\b\d[\d,]*\b.{0,80}london)"
+            ),
+        ),
+        "require_ai_alias_filter": True,
+        "require_distinct_company_count": True,
+        "required_cypher": (
+            r"\b\w+\.city\s+AS\s+city\b",
+        ),
+        "required_filter_cypher": (
+            r"toLower\(\s*\w+\.city\s*\)\s+IN\s*\[",
+            r"[\"']san francisco[\"']",
+            r"[\"']new york[\"']",
+            r"[\"']london[\"']",
+        ),
+    },
+    {
+        "query": (
+            "For W21 and S21, compare healthcare and fintech company counts."
+        ),
+        "min_results": 2,
+        "required_terms": (
+            "winter 2021",
+            "summer 2021",
+            "healthcare",
+            "fintech",
+        ),
+        "required_patterns": (
+            r"(?:.*\b\d{1,3}(?:,\d{3})*\b){4}",
+        ),
+        "required_filter_cypher": (
+            r"[\"']Winter 2021[\"']",
+            r"[\"']Summer 2021[\"']",
+            r"health",
+            r"[\"']fintech[\"']",
+            r"[\"']finance[\"']",
+            r"[\"']payments[\"']",
+        ),
+        "require_distinct_company_count": True,
+        "require_separate_healthcare_fintech_counts": True,
+        "forbidden_cypher": (
+            r"[\"']W21[\"']",
+            r"[\"']S21[\"']",
+        ),
+    },
+    {
+        "query": (
+            "List active AI companies in New York with fewer than 20 employees."
+        ),
+        "min_results": 1,
+        "required_terms": ("new york",),
+        "required_patterns": (r"\b(?:AI|Artificial Intelligence)\b",),
+        "require_ai_alias_filter": True,
+        "required_cypher": (r"\b\w+\.status\s+AS\s+status\b",),
+        "required_filter_cypher": (
+            r"toLower\(\s*\w+\.city\s*\)\s*=\s*[\"']new york[\"']",
+            r"\b\w+\.status\s*=\s*[\"']Active[\"']",
+            r"\b\w+\.team_size\s*>\s*0\b",
+            r"\b\w+\.team_size\s*<\s*20\b",
+        ),
+    },
+    {
+        "query": "Who founded RazorPay, and who invested in Airbnb?",
+        "min_results": 1,
+        "required_terms": (
+            "harshil mathur",
+            "shashank kumar",
+            "airbnb",
+            "sequoia capital",
+        ),
+        "required_patterns": (r"\binvest(?:or|ed|ment)\w*\b",),
+        "required_cypher": (
+            r"\b\w+\.name\s+AS\s+founder\b",
+            r"\b\w+\.name\s+AS\s+investor\b",
+            (
+                r"toLower\(\s*\w+\.name\s*\)\s*=\s*"
+                r"[\"']razorpay[\"']"
+            ),
+            (
+                r"toLower\(\s*\w+\.name\s*\)\s*=\s*"
+                r"[\"']airbnb[\"']"
+            ),
+        ),
+    },
 )
 
 
@@ -474,6 +700,65 @@ def contradicts_results(answer, case):
 
 
 class LiveAssertionTests(unittest.TestCase):
+    def test_combined_category_count_is_not_treated_as_separate_counts(self):
+        cypher = """
+        MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+        RETURN count(DISTINCT CASE
+                     WHEN toLower(ind.name) IN [
+                       "healthcare", "fintech", "finance", "payments"
+                     ]
+                     THEN c END) AS combined_count
+        """
+
+        self.assertFalse(has_separate_healthcare_fintech_counts(cypher))
+
+    def test_separate_category_counts_are_recognized(self):
+        cypher = """
+        MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+        RETURN count(DISTINCT CASE
+                     WHEN toLower(ind.name) CONTAINS "health"
+                     THEN c END) AS healthcare_count,
+               count(DISTINCT CASE
+                     WHEN toLower(ind.name) IN [
+                       "fintech", "finance", "payments"
+                     ]
+                     THEN c END) AS fintech_count
+        """
+
+        self.assertTrue(has_separate_healthcare_fintech_counts(cypher))
+
+    def test_combined_and_healthcare_counts_are_not_separate_fintech_counts(self):
+        cypher = """
+        MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+        RETURN count(DISTINCT CASE
+                     WHEN toLower(ind.name) IN [
+                       "healthcare", "fintech", "finance", "payments"
+                     ]
+                     THEN c END) AS combined_count,
+               count(DISTINCT CASE
+                     WHEN toLower(ind.name) CONTAINS "health"
+                     THEN c END) AS healthcare_count
+        """
+
+        self.assertFalse(has_separate_healthcare_fintech_counts(cypher))
+
+    def test_partial_combined_and_fintech_counts_are_not_separate_healthcare_counts(
+        self,
+    ):
+        cypher = """
+        MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+        RETURN count(DISTINCT CASE
+                     WHEN toLower(ind.name) IN ["healthcare", "fintech"]
+                     THEN c END) AS combined_count,
+               count(DISTINCT CASE
+                     WHEN toLower(ind.name) IN [
+                       "fintech", "finance", "payments"
+                     ]
+                     THEN c END) AS fintech_count
+        """
+
+        self.assertFalse(has_separate_healthcare_fintech_counts(cypher))
+
     def test_grounded_partial_answer_is_allowed_for_configured_case(self):
         case = {
             "allow_grounded_partial": True,
@@ -564,6 +849,14 @@ class LiveQueryRegressionTests(unittest.TestCase):
             ):
                 failures.append(
                     f"{query}: Cypher is missing count(DISTINCT Company)"
+                )
+            if (
+                case.get("require_separate_healthcare_fintech_counts")
+                and not has_separate_healthcare_fintech_counts(cypher)
+            ):
+                failures.append(
+                    f"{query}: Cypher is missing separate distinct healthcare "
+                    "and normalized fintech counts"
                 )
             if case.get("require_ai_alias_filter") and not has_ai_alias_filter(cypher):
                 failures.append(
