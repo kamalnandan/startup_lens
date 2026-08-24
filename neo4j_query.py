@@ -123,7 +123,9 @@ You are an expert Neo4j Cypher query generator for a startup intelligence knowle
 6. For multi-hop queries, chain MATCH clauses
 7. If counting or ranking, use ORDER BY and LIMIT
 8. When asked about failed/dead startups, filter on c.status = "Dead"
-9. When asked about successful startups, filter on c.status IN ["Active", "Public", "Acquired"]
+9. When asked specifically for active startups, filter on c.status = "Active".
+   When asked more broadly about successful startups, filter on
+   c.status IN ["Active", "Public", "Acquired"].
 10. Available status values: Active, Acquired, Public, Dead, Unknown
 11. Preserve the user's boolean intent. "B2B SaaS" means companies matching both
     B2B AND SaaS, not either category.
@@ -143,6 +145,9 @@ You are an expert Neo4j Cypher query generator for a startup intelligence knowle
     includes Company, Founder, Investor, Industry, and Technology names, plus
     Location city and country. Lowercase both the property and literals:
     toLower(c.name) IN ["stripe", "razorpay"].
+19. For compound questions requesting different facts about named companies,
+    bind each company separately and return a compatible result shape. Do not
+    use UNION.
 
 ## Examples:
 
@@ -158,6 +163,18 @@ MATCH (f:Founder)-[:FOUNDED]->(c:Company)
 WHERE toLower(c.name) IN ["stripe", "razorpay"]
 RETURN f.name AS founder, c.name AS company, c.yc_batch AS batch
 ORDER BY c.name, founder
+
+Question: Who founded Razorpay, and who invested in Airbnb?
+Cypher:
+MATCH (razorpay:Company), (airbnb:Company)
+WHERE toLower(razorpay.name) = "razorpay"
+  AND toLower(airbnb.name) = "airbnb"
+MATCH (f:Founder)-[:FOUNDED]->(razorpay)
+MATCH (i:Investor)-[:INVESTED_IN]->(airbnb)
+RETURN razorpay.name AS founded_company,
+       collect(DISTINCT f.name) AS founders,
+       airbnb.name AS invested_company,
+       collect(DISTINCT i.name) AS investors
 
 Question: Which YC founders from India built fintech companies?
 Cypher:
@@ -695,25 +712,99 @@ def validate_cypher_semantics(question: str, cypher: str) -> None:
         if not direct_status and not projected_status:
             raise ValueError("Return the filtered company status AS status.")
 
+    active_company_intent = re.search(
+        (
+            r"\bactive\b(?:[\s-]+\w+){0,5}[\s-]+\b(?:companies|startups)\b"
+            r"|\b(?:companies|startups)\b(?:[\s-]+\w+){0,3}[\s-]+\bactive\b"
+        ),
+        question,
+        flags=re.IGNORECASE,
+    )
+    active_only_intent = active_company_intent and not re.search(
+        r"\b(?:public|acquired|successful)\b",
+        question,
+        flags=re.IGNORECASE,
+    )
+    if active_only_intent:
+        for variable in company_variables:
+            exact_active_filter = re.search(
+                rf"\b{re.escape(variable)}\.status\s*=\s*['\"]Active['\"]",
+                filtering_cypher,
+            )
+            status_lists = re.findall(
+                rf"\b{re.escape(variable)}\.status\s+IN\s*(\[[^\]]+\])",
+                filtering_cypher,
+                flags=re.IGNORECASE | re.DOTALL,
+            )
+            broad_active_filter = any(
+                {
+                    value.casefold()
+                    for value in cypher_string_literals(values)
+                }
+                != {"active"}
+                for values in status_lists
+            )
+            if not exact_active_filter or broad_active_filter:
+                raise ValueError(
+                    f'Filter active companies with {variable}.status = "Active".'
+                )
+
     batch_aliases = re.findall(r"\b([WS])(\d{2})\b", question, flags=re.IGNORECASE)
     for season_code, short_year in batch_aliases:
         season = "Winter" if season_code.casefold() == "w" else "Summer"
         full_batch = f"{season} {2000 + int(short_year)}"
         abbreviation = f"{season_code}{short_year}"
-        batch_filter = (
-            rf"(?:\b\w+\.)?(?:name|yc_batch)\s*(?:=|IN)\s*"
-            rf"(?:\[[^\]]{{0,200}})?['\"]{re.escape(full_batch)}['\"]|"
-            rf"(?:name|yc_batch)\s*:\s*['\"]{re.escape(full_batch)}['\"]"
+        direct_batch_values = [
+            value
+            for expression in re.findall(
+                (
+                    r"(?:\b\w+\.)?(?:name|yc_batch)\s*(?:=|IN)\s*"
+                    r"(\[[^\]]{0,200}\]|"
+                    + CYPHER_STRING_LITERAL_PATTERN
+                    + r")"
+                ),
+                filtering_cypher,
+                flags=re.IGNORECASE | re.DOTALL,
+            )
+            for value in cypher_string_literals(expression)
+        ]
+        direct_batch_values.extend(
+            re.findall(
+                (
+                    r"(?:name|yc_batch)\s*:\s*"
+                    r"([\"'][^\"']+[\"'])"
+                ),
+                filtering_cypher,
+                flags=re.IGNORECASE,
+            )
+        )
+        direct_batch_values = [
+            value[1:-1] if value[:1] in {"'", '"'} else value
+            for value in direct_batch_values
+        ]
+        normalized_batch_values = [
+            value
+            for expression in re.findall(
+                (
+                    r"toLower\(\s*(?:\b\w+\.)?(?:name|yc_batch)\s*\)\s*"
+                    r"(?:=|IN)\s*(\[[^\]]{0,200}\]|"
+                    + CYPHER_STRING_LITERAL_PATTERN
+                    + r")"
+                ),
+                filtering_cypher,
+                flags=re.IGNORECASE | re.DOTALL,
+            )
+            for value in cypher_string_literals(expression)
+        ]
+        has_batch_filter = (
+            full_batch in direct_batch_values
+            or full_batch.casefold() in normalized_batch_values
         )
         if re.search(
             rf"['\"]{re.escape(abbreviation)}['\"]",
             cypher,
             flags=re.IGNORECASE,
-        ) or not re.search(
-            batch_filter,
-            filtering_cypher,
-            flags=re.IGNORECASE | re.DOTALL,
-        ):
+        ) or not has_batch_filter:
             raise ValueError(
                 f'Use the stored batch name "{full_batch}" instead of "{abbreviation}".'
             )

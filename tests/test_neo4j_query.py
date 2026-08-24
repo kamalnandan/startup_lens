@@ -21,6 +21,84 @@ neo4j_query = importlib.import_module("neo4j_query")
 
 
 class CypherSemanticsTests(unittest.TestCase):
+    def test_rejects_broad_success_filter_for_active_question(self):
+        with self.assertRaisesRegex(ValueError, 'status = "Active"'):
+            neo4j_query.validate_cypher_semantics(
+                "Which industries have the most active YC companies?",
+                """
+                MATCH (c:Company)-[:OPERATES_IN]->(ind:Industry)
+                WHERE c.status IN ["Active", "Public", "Acquired"]
+                RETURN ind.name AS industry,
+                       count(DISTINCT c) AS company_count
+                """,
+            )
+
+    def test_rejects_reordered_broad_filter_for_active_question(self):
+        with self.assertRaisesRegex(ValueError, 'status = "Active"'):
+            neo4j_query.validate_cypher_semantics(
+                "Which active YC companies use Kubernetes?",
+                """
+                MATCH (c:Company)-[:USES]->(t:Technology)
+                WHERE c.status IN ["Public", "Active"]
+                  AND toLower(t.name) = "kubernetes"
+                RETURN c.name AS company, c.status AS status
+                """,
+            )
+
+    def test_does_not_treat_active_investors_as_active_companies(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which investors are most active?",
+            """
+            MATCH (i:Investor)<-[:HAS_INVESTOR]-(c:Company)
+            RETURN i.name AS investor, count(DISTINCT c) AS company_count
+            """,
+        )
+
+    def test_rejects_wrong_statuses_for_active_question(self):
+        with self.assertRaisesRegex(ValueError, 'status = "Active"'):
+            neo4j_query.validate_cypher_semantics(
+                "Which active YC companies use Kubernetes?",
+                """
+                MATCH (c:Company)-[:USES]->(t:Technology)
+                WHERE c.status IN ["Public", "Acquired"]
+                  AND toLower(t.name) = "kubernetes"
+                RETURN c.name AS company, c.status AS status
+                """,
+            )
+
+    def test_accepts_exact_active_filter(self):
+        neo4j_query.validate_cypher_semantics(
+            "Which active YC companies use Kubernetes?",
+            """
+            MATCH (c:Company)-[:USES]->(t:Technology)
+            WHERE c.status = "Active"
+              AND toLower(t.name) = "kubernetes"
+            RETURN c.name AS company, c.status AS status
+            """,
+        )
+
+    def test_accepts_lowercased_expanded_batch_filter(self):
+        neo4j_query.validate_cypher_semantics(
+            "Compare W21 and S21 companies.",
+            """
+            MATCH (c:Company)-[:PART_OF]->(b:Batch)
+            WHERE toLower(b.name) IN ["winter 2021", "summer 2021"]
+            RETURN b.name AS batch, count(DISTINCT c) AS company_count
+            """,
+        )
+
+    def test_rejects_wrong_case_direct_expanded_batch_filter(self):
+        with self.assertRaisesRegex(ValueError, "Winter 2021"):
+            neo4j_query.validate_cypher_semantics(
+                "Which W21 companies are active?",
+                """
+                MATCH (c:Company)
+                WHERE c.yc_batch = "winter 2021"
+                  AND c.status = "Active"
+                RETURN c.name AS company, c.status AS status
+                """,
+            )
+
     def test_rejects_case_sensitive_multi_company_name_filter(self):
         with self.assertRaisesRegex(ValueError, "case-insensitively"):
             neo4j_query.validate_cypher_semantics(

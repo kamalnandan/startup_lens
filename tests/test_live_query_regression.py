@@ -448,6 +448,9 @@ CASES = (
         "required_filter_cypher": (
             r"\b\w+\.status\s*=\s*[\"']Active[\"']",
         ),
+        "forbidden_cypher": (
+            r"\b\w+\.status\s+IN\s*\[[^\]]*[\"']Active[\"']",
+        ),
     },
     {
         "query": "Which technologies are used by Stripe?",
@@ -673,8 +676,8 @@ CASES = (
         ),
         "required_patterns": (r"\binvest(?:or|ed|ment)\w*\b",),
         "required_cypher": (
-            r"\b\w+\.name\s+AS\s+founder\b",
-            r"\b\w+\.name\s+AS\s+investor\b",
+            r"collect\(\s*DISTINCT\s+\w+\.name\s*\)\s+AS\s+founders\b",
+            r"collect\(\s*DISTINCT\s+\w+\.name\s*\)\s+AS\s+investors\b",
             (
                 r"toLower\(\s*\w+\.name\s*\)\s*=\s*"
                 r"[\"']razorpay[\"']"
