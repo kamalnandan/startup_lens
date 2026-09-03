@@ -641,6 +641,8 @@ CASES = (
         "required_filter_cypher": (
             r"[\"']Winter 2021[\"']",
             r"[\"']Summer 2021[\"']",
+        ),
+        "required_cypher": (
             r"health",
             r"[\"']fintech[\"']",
             r"[\"']finance[\"']",

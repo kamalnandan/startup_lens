@@ -19,6 +19,7 @@ import re
 import requests
 from neo4j import GraphDatabase
 from app_config import get_required_setting
+import schema_contract
 
 # ── Logging ────────────────────────────────────────────────────────────────────
 
@@ -473,6 +474,109 @@ def executable_cypher_text(cypher: str) -> str:
             index += 1
 
     return "".join(output)
+
+
+def validate_projection_fact_types(cypher: str) -> None:
+    """Reject projections that relabel a stored value as a different fact.
+
+    The RETURN alias is the claim label answer synthesis reads, so an alias may
+    only be satisfied by a property whose semantic type can carry that claim.
+    Unrecognised wording is allowed through so the rule fails open.
+    """
+    labels = schema_contract.variable_labels(cypher)
+    for expression, alias in schema_contract.carried_projections(cypher):
+        source_type, source_subject, source_description = (
+            schema_contract.projection_source(expression, labels)
+        )
+        if source_type is None:
+            continue
+
+        if source_type == schema_contract.PROVENANCE:
+            raise ValueError(
+                f"{source_description} is internal source provenance. Never "
+                f"return it; select a property that answers the question."
+            )
+
+        if not alias:
+            continue
+
+        requested_type = schema_contract.infer_requested_fact_type(alias)
+        if requested_type is None:
+            continue
+
+        if not schema_contract.is_compatible(source_type, requested_type):
+            detail = (
+                schema_contract.unmodeled_reason(requested_type)
+                if requested_type in schema_contract.UNMODELED_FACT_TYPES
+                else "Return a property that stores that fact, or omit it."
+            )
+            raise ValueError(
+                f"{source_description} holds "
+                f"{schema_contract.FACT_TYPE_LABELS[source_type]} and cannot be "
+                f"returned as \"{alias}\", which states "
+                f"{schema_contract.FACT_TYPE_LABELS[requested_type]}. {detail}"
+            )
+
+        if (
+            source_type == schema_contract.COUNT
+            and requested_type == schema_contract.COUNT
+            and source_subject
+        ):
+            requested_subject = schema_contract.infer_count_subject(alias)
+            if not schema_contract.count_subjects_match(
+                source_subject, requested_subject
+            ):
+                raise ValueError(
+                    f"{source_description} counts {source_subject} and cannot be "
+                    f"returned as \"{alias}\", which counts {requested_subject}."
+                )
+
+
+def validate_projection_anchoring(cypher: str) -> None:
+    """Reject projected entities reached only through a peer relationship.
+
+    A hop between two nodes of the same label (co-founder, competitor) leaves
+    the entity the question anchored on, so projecting the far side attributes
+    another entity's relationships to the subject.
+    """
+    positive_patterns = []
+    for clause in re.findall(
+        r"\b(?:OPTIONAL\s+)?MATCH\b(.*?)(?=\b(?:OPTIONAL\s+)?MATCH\b|\bWHERE\b|"
+        r"\bWITH\b|\bRETURN\b|$)",
+        cypher,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        positive_patterns.append(clause)
+    pattern_text = "\n".join(positive_patterns)
+
+    relationships = re.findall(
+        r"\(\s*(\w+)[^)]*\)\s*<?-\s*\[\s*:?\s*(\w+)?[^\]]*\]\s*-?>?\s*\(\s*(\w+)",
+        pattern_text,
+    )
+    peer_targets = set()
+    anchored = set()
+    for left, relationship_type, right in relationships:
+        is_peer = (relationship_type or "").upper() in (
+            schema_contract.PEER_RELATIONSHIPS
+        )
+        if is_peer:
+            anchored.add(left)
+            if right:
+                peer_targets.add(right)
+        else:
+            anchored.update(variable for variable in (left, right) if variable)
+
+    projected_variables = set()
+    for expression, _ in schema_contract.carried_projections(cypher):
+        projected_variables.update(re.findall(r"\b(\w+)\.\w+\b", expression))
+
+    for variable in sorted(projected_variables):
+        if variable in peer_targets and variable not in anchored:
+            raise ValueError(
+                f"\"{variable}\" is reached only through a peer relationship, so "
+                f"it belongs to another entity. Project entities connected to "
+                f"the subject the question asks about."
+            )
 
 
 def validate_cypher_semantics(question: str, cypher: str) -> None:
@@ -1221,6 +1325,9 @@ def validate_cypher_semantics(question: str, cypher: str) -> None:
             ):
                 raise ValueError("Return the matched technology name AS technology.")
 
+    validate_projection_fact_types(cypher)
+    validate_projection_anchoring(cypher)
+
 # ── Step 3: Query Execution ────────────────────────────────────────────────────
 
 def execute_cypher(cypher: str, driver) -> list:
@@ -1364,16 +1471,16 @@ def format_grounded_results(results: list) -> str:
 
 
 def synthesize_answer(question: str, results: list, cypher: str = None) -> str:
+    unmodeled = schema_contract.unmodeled_facts_in_question(question)
+    constraints = "\n".join(
+        f"- {constraint}"
+        for constraint in schema_contract.synthesis_constraints(unmodeled, question)
+    )
+
     if not results:
         return "No results found for this query. The data may not contain enough information to answer this question."
 
     results_text = json.dumps(results[:MAX_RESULTS], indent=2)
-#     user_prompt = f"""Question: {question}
-
-# Data from knowledge graph:
-# {results_text}
-
-# Provide a comprehensive answer based on this data."""
     user_prompt = f"""Question: {question}
 
 Data from knowledge graph:
@@ -1382,7 +1489,10 @@ Data from knowledge graph:
 IMPORTANT: Base your answer STRICTLY on the data above. 
 These are {len(results)} matching records. Do not say there are no results or
 that a populated field is unavailable.
-Do not use any external knowledge."""
+Do not use any external knowledge.
+
+The graph stores a fixed set of facts. Respect these limits:
+{constraints}"""
 
     answer = call_llm(SYNTHESIS_SYSTEM, user_prompt, max_tokens=2000)
     contradicts_results = (
