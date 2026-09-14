@@ -1589,10 +1589,25 @@ def query(question: str) -> dict:
                 logger.warning(f"Cypher attempt {attempt + 1} failed: {error}")
 
         if error:
-            raise RuntimeError(
-                f"Unable to generate and execute a valid Cypher query after "
-                f"{MAX_CYPHER_RETRIES} attempts: {error}"
+            # Every attempt was rejected or failed, so no query was trusted
+            # enough to answer from. Abstaining is the safe outcome: returning
+            # an error would be a failure, and answering from a rejected query
+            # would risk the mislabelled claims validation exists to prevent.
+            logger.warning(
+                f"Unable to generate a valid Cypher query after "
+                f"{MAX_CYPHER_RETRIES} attempts; answering as no data. "
+                f"Last error: {error}"
             )
+            return {
+                "question": question,
+                "method": method,
+                "cypher": cypher,
+                "cypher_result": [],
+                "result_count": 0,
+                "answer": (
+                    "I don't have reliable data to answer that question."
+                ),
+            }
 
         # Step 4 — Synthesize
         answer = synthesize_answer(question, results, cypher)
