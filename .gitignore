@@ -26,6 +26,7 @@ input_test/
 datasets/
 test_data/
 output/
+benchmark_results/
 cache/
 logs/
 *.parquet

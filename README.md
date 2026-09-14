@@ -191,6 +191,35 @@ STARTUPLENS_API_KEY=your-api-key \
 python -m unittest tests.test_live_query_regression -v
 ```
 
+### Source-backed anchor benchmark
+
+`benchmarks/gold_questions.json` contains 100 dated, source-backed questions:
+25 each for identity, funding/status, company facts, and compound questions. Every
+expected claim maps to at least one official source. Version 1 deliberately focuses
+on five well-documented anchor companies: Stripe, Airbnb, Coinbase, Dropbox, and
+DoorDash. Treat this as a targeted smoke benchmark, not a representative quality
+score for all YC companies.
+
+Validate the benchmark structure and claim-to-source mappings without making API
+requests:
+
+```bash
+python evaluate_gold_benchmark.py --validate-only
+```
+
+Run it against a deployment:
+
+```bash
+RUN_LIVE_API_TESTS=1 \
+STARTUPLENS_API_URL=https://your-api-host \
+STARTUPLENS_API_KEY=your-api-key \
+python evaluate_gold_benchmark.py
+```
+
+The evaluator checks HTTP success and deterministic required-term coverage, then
+produces redacted JSON and Markdown reports. These automated checks identify likely
+omissions but do not replace human comparison of each answer with its cited sources.
+
 ---
 
 ## Data Pipeline
