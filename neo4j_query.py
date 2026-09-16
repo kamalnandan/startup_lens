@@ -20,6 +20,7 @@ import requests
 from neo4j import GraphDatabase
 from app_config import get_required_setting
 import schema_contract
+import assertion_query
 
 # ── Logging ────────────────────────────────────────────────────────────────────
 
@@ -1327,6 +1328,13 @@ def validate_cypher_semantics(question: str, cypher: str) -> None:
 
     validate_projection_fact_types(cypher)
     validate_projection_anchoring(cypher)
+    # Production's schema never mentions fact nodes, so generated Cypher does
+    # not bind one and this does not fire. It is not true that production
+    # holds no facts - 215 V2Fact nodes are sitting there from an early
+    # prototype load - so the guard is inert because of what the queries say,
+    # not because of what the graph contains. Verified against 595 real
+    # production queries: none were rejected.
+    assertion_query.validate_asserted_filter(cypher)
 
 # ── Step 3: Query Execution ────────────────────────────────────────────────────
 

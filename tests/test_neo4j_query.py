@@ -1350,7 +1350,7 @@ class QueryPipelineTests(unittest.TestCase):
         self.assertEqual(result["result_count"], 1)
         driver.close.assert_called_once()
 
-    def test_exhausted_semantic_retries_raise_error(self):
+    def test_exhausted_semantic_retries_abstain(self):
         driver = MagicMock()
         invalid = (
             'MATCH (c)-[:OPERATES_IN]->(i) '
@@ -1362,11 +1362,15 @@ class QueryPipelineTests(unittest.TestCase):
             patch.object(neo4j_query, "classify_query", return_value="global"),
             patch.object(neo4j_query, "generate_cypher", return_value=invalid),
             patch.object(neo4j_query, "execute_cypher") as execute,
+            patch.object(neo4j_query, "synthesize_answer") as synthesize,
         ):
-            with self.assertRaisesRegex(RuntimeError, "after 3 attempts"):
-                neo4j_query.query("Which AI companies are active?")
+            result = neo4j_query.query("Which AI companies are active?")
 
+        self.assertEqual(result["result_count"], 0)
+        self.assertEqual(result["cypher_result"], [])
+        self.assertIn("don't have reliable data", result["answer"])
         execute.assert_not_called()
+        synthesize.assert_not_called()
         driver.close.assert_called_once()
 
     def test_execution_streams_at_most_max_results(self):

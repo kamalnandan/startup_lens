@@ -8,7 +8,7 @@ import time
 
 import requests
 import streamlit as st
-from app_config import get_required_setting
+from app_config import get_required_setting, get_setting
 
 
 st.set_page_config(
@@ -66,6 +66,29 @@ check_access()
 
 API_URL = get_required_setting("STARTUPLENS_API_URL").rstrip("/")
 API_KEY = get_required_setting("STARTUPLENS_API_KEY")
+
+# Two answer engines read two different graphs, and which one spoke changes
+# what an answer is worth. Configuring both makes the choice visible in the
+# app rather than a restart away; configuring one keeps the app exactly as it
+# was, so nothing here can break a single-engine deployment.
+ASSERTION_URL = get_setting("STARTUPLENS_API_URL_V2", "").rstrip("/")
+ASSERTION_KEY = get_setting("STARTUPLENS_API_KEY_V2", "") or API_KEY
+
+CLASSIC_ENGINE = "Classic"
+ASSERTION_ENGINE = "Assertion"
+
+ENGINES = {CLASSIC_ENGINE: (API_URL, API_KEY)}
+if ASSERTION_URL:
+    # Listed first so it is the default. The engine that shows its sources is
+    # the one worth reaching for by accident.
+    ENGINES = {ASSERTION_ENGINE: (ASSERTION_URL, ASSERTION_KEY), **ENGINES}
+
+
+def active_engine() -> tuple:
+    """The engine the sidebar has selected, as (name, url, key)."""
+    name = st.session_state.get("engine") or next(iter(ENGINES))
+    url, key = ENGINES[name]
+    return name, url, key
 
 # st.sidebar.info(f"Connecting to: {API_URL}")
 
@@ -324,10 +347,24 @@ def clear_query() -> None:
 
 
 @st.cache_data(ttl=30, show_spinner=False)
-def fetch_graph_stats() -> dict:
-    response = requests.get(f"{API_URL}/status", timeout=5)
+def fetch_graph_stats(base_url: str) -> dict:
+    """Counts from whichever engine is selected.
+
+    The url is a parameter rather than a constant so the cache is keyed by
+    engine. Sharing one cache entry would show the previous engine's counts
+    after a switch, which is the most quietly misleading thing this page
+    could do.
+    """
+    response = requests.get(f"{base_url}/status", timeout=5)
     response.raise_for_status()
-    return response.json().get("graph_stats", {})
+    payload = response.json()
+    if "graph_stats" in payload:
+        return payload["graph_stats"]
+    # The assertion API labels its nodes V2Company rather than Company so the
+    # two graphs can never be confused for one another. The sidebar counts the
+    # same things either way, so strip the prefix rather than special-case it.
+    return {name[2:] if name.startswith("V2") else name: count
+            for name, count in payload.get("counts", {}).items()}
 
 
 def metric_cards(stats: dict) -> str:
@@ -344,21 +381,62 @@ def metric_cards(stats: dict) -> str:
     return '<div class="metric-grid">' + "".join(cards) + "</div>"
 
 
+def render_sources(parts: list) -> None:
+    """Show the sentence behind every fact in the answer.
+
+    The citation is the product. An answer a reader cannot check is worth
+    about as much as a guess, so the evidence is one click away rather than
+    hidden behind an admin flag.
+    """
+    cited = [part for part in parts if part.get("rows")]
+    if not cited:
+        return
+    total = sum(len(part["rows"]) for part in cited)
+    with st.expander(f"📎 Sources ({total:,} supporting facts)", expanded=False):
+        for part in cited:
+            st.caption(part["question"])
+            for row in part["rows"][:25]:
+                evidence = row.get("evidence")
+                values = ", ".join(str(value) for key, value in row.items()
+                                   if key != "evidence" and value is not None)
+                st.markdown(f"- **{values}**")
+                if evidence:
+                    st.markdown(f"  > {evidence}")
+
+
 def render_result(result: dict) -> None:
     method = str(result.get("method", "unknown")).title()
     count = int(result.get("result_count", 0))
     duration = float(result.get("duration", 0))
 
     st.markdown('<div class="section-title">💬 Intelligence Brief</div>', unsafe_allow_html=True)
+    # The engine is named on the answer itself. A toggle in the sidebar can be
+    # left on the wrong setting, and an answer whose origin you have to
+    # remember is an answer you cannot trust later.
+    engine = result.get("engine")
+    engine_badge = (f'<span class="badge">{html.escape(engine)} engine</span>'
+                    if engine else "")
     st.markdown(
         '<div class="result-card">'
+        f'{engine_badge}'
         f'<span class="badge">{html.escape(method)} search</span>'
         f'<span class="badge cyan">{count:,} records</span>'
         f'<span class="badge green">{duration:.2f} seconds</span>'
         "</div>",
         unsafe_allow_html=True,
     )
-    st.markdown(result.get("answer", "No answer returned."))
+    answer = result.get("answer")
+    if answer:
+        st.markdown(answer)
+    else:
+        # Not an error. The assertion API returns no answer when the graph
+        # holds no supported fact, and saying so plainly is the point - the
+        # alternative is a confident sentence nothing backs.
+        st.info("No supported fact was found for this question, so no answer "
+                "is given. Nothing here is inferred or filled in from "
+                "elsewhere.")
+
+    render_sources(result.get("parts", []))
 
     # if result.get("cypher"):
     #     with st.expander("🔧 View generated Cypher", expanded=False):
@@ -374,9 +452,24 @@ with st.sidebar:
     st.caption("YC Startup Intelligence")
     st.divider()
 
+    if len(ENGINES) > 1:
+        st.markdown("### Answer engine")
+        st.radio(
+            "Answer engine",
+            list(ENGINES),
+            key="engine",
+            label_visibility="collapsed",
+            captions=["Grounded in extracted assertions, with sources"
+                      if name == ASSERTION_ENGINE else "The original graph"
+                      for name in ENGINES],
+        )
+        st.divider()
+
+    engine_name, engine_url, engine_key = active_engine()
+
     st.markdown("### Live graph")
     try:
-        sidebar_stats = fetch_graph_stats()
+        sidebar_stats = fetch_graph_stats(engine_url)
         st.success("API connected")
         for node_type in ("Company", "Founder", "Investor", "Industry"):
             if node_type in sidebar_stats:
@@ -419,7 +512,7 @@ st.markdown(
 )
 
 try:
-    graph_stats = fetch_graph_stats()
+    graph_stats = fetch_graph_stats(active_engine()[1])
 except requests.RequestException:
     graph_stats = {}
 
@@ -471,20 +564,26 @@ if search_clicked:
             try:
                 # Forward end-user IP to FastAPI
                 user_ip = st.context.headers.get("X-Forwarded-For", "unknown").split(",")[0].strip()
+                engine_name, engine_url, engine_key = active_engine()
                 response = requests.post(
-                    f"{API_URL}/query",
+                    f"{engine_url}/query",
                     json={"query": query.strip()},
-                    headers={"X-Real-IP": user_ip, "X-API-Key": API_KEY},
+                    headers={"X-Real-IP": user_ip, "X-API-Key": engine_key},
                     timeout=120,
                 )
                 response.raise_for_status()
                 payload = response.json()
+                rows = sum(len(part.get("rows", []))
+                           for part in payload.get("parts", []))
                 result = {
                     "query": query.strip(),
                     "answer": payload["answer"],
-                    "method": payload.get("method", "unknown"),
+                    "method": payload.get("method", payload.get("status", "unknown")),
                     "cypher": payload.get("cypher"),
-                    "result_count": payload.get("result_count", 0),
+                    "result_count": payload.get("result_count", rows),
+                    "parts": payload.get("parts", []),
+                    "status": payload.get("status", ""),
+                    "engine": engine_name,
                     "duration": round(time.time() - started_at, 2),
                 }
                 st.session_state.last_result = result
@@ -505,9 +604,9 @@ if len(st.session_state.history) > 1:
     st.markdown('<div class="section-title">🕐 Previous research</div>', unsafe_allow_html=True)
     for item in reversed(st.session_state.history[:-1]):
         with st.expander(item["query"], expanded=False):
-            st.markdown(item["answer"])
+            st.markdown(item["answer"] or "_No supported fact was found._")
             detail_columns = st.columns(3)
-            detail_columns[0].caption(f"Method: {item['method'].title()}")
+            detail_columns[0].caption(f"Engine: {item.get('engine', 'unknown')}")
             detail_columns[1].caption(f"Records: {item['result_count']:,}")
             detail_columns[2].caption(f"Time: {item['duration']:.2f}s")
             # if item.get("cypher"):

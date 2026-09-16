@@ -1,0 +1,3958 @@
+[
+  {
+    "id": "identity-001",
+    "category": "identity",
+    "question": "Who founded Stripe?",
+    "expected_answer_summary": "Patrick Collison and John Collison founded Stripe.",
+    "expected_claims": [
+      "Patrick Collison founded Stripe.",
+      "John Collison founded Stripe."
+    ],
+    "required_answer_terms": [
+      "patrick collison",
+      "john collison"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe: Economic infrastructure for the internet",
+        "url": "https://www.ycombinator.com/companies/stripe",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Patrick Collison and John Collison as Stripe's founders, gives 2009 as its founding year, and labels its batch S09 (Summer 2009).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-002",
+    "category": "identity",
+    "question": "Which Y Combinator batch did Stripe attend?",
+    "expected_answer_summary": "Stripe was in YC's Summer 2009 batch (S09).",
+    "expected_claims": [
+      "Stripe attended YC's Summer 2009 batch."
+    ],
+    "required_answer_terms": [
+      "summer 2009"
+    ],
+    "acceptable_variants": {
+      "summer 2009": [
+        "s09"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe: Economic infrastructure for the internet",
+        "url": "https://www.ycombinator.com/companies/stripe",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Patrick Collison and John Collison as Stripe's founders, gives 2009 as its founding year, and labels its batch S09 (Summer 2009).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-003",
+    "category": "identity",
+    "question": "In what year was Stripe founded?",
+    "expected_answer_summary": "Stripe was founded in 2009.",
+    "expected_claims": [
+      "Stripe was founded in 2009."
+    ],
+    "required_answer_terms": [
+      "2009"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe: Economic infrastructure for the internet",
+        "url": "https://www.ycombinator.com/companies/stripe",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Patrick Collison and John Collison as Stripe's founders, gives 2009 as its founding year, and labels its batch S09 (Summer 2009).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-004",
+    "category": "identity",
+    "question": "Name Stripe's founders and its YC batch.",
+    "expected_answer_summary": "Patrick Collison and John Collison founded Stripe, which attended YC's Summer 2009 batch.",
+    "expected_claims": [
+      "Patrick Collison founded Stripe.",
+      "John Collison founded Stripe.",
+      "Stripe attended YC's Summer 2009 batch."
+    ],
+    "required_answer_terms": [
+      "patrick collison",
+      "john collison",
+      "summer 2009"
+    ],
+    "acceptable_variants": {
+      "summer 2009": [
+        "s09"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe: Economic infrastructure for the internet",
+        "url": "https://www.ycombinator.com/companies/stripe",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Patrick Collison and John Collison as Stripe's founders, gives 2009 as its founding year, and labels its batch S09 (Summer 2009).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-005",
+    "category": "identity",
+    "question": "Give Stripe's founding year together with both founder names.",
+    "expected_answer_summary": "Stripe was founded in 2009 by Patrick Collison and John Collison.",
+    "expected_claims": [
+      "Stripe was founded in 2009.",
+      "Patrick Collison founded Stripe.",
+      "John Collison founded Stripe."
+    ],
+    "required_answer_terms": [
+      "2009",
+      "patrick collison",
+      "john collison"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe: Economic infrastructure for the internet",
+        "url": "https://www.ycombinator.com/companies/stripe",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Patrick Collison and John Collison as Stripe's founders, gives 2009 as its founding year, and labels its batch S09 (Summer 2009).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-006",
+    "category": "identity",
+    "question": "Who are Airbnb's three founders?",
+    "expected_answer_summary": "Airbnb's founders are Brian Chesky, Nathan Blecharczyk, and Joe Gebbia.",
+    "expected_claims": [
+      "Brian Chesky founded Airbnb.",
+      "Nathan Blecharczyk founded Airbnb.",
+      "Joe Gebbia founded Airbnb."
+    ],
+    "required_answer_terms": [
+      "brian chesky",
+      "nathan blecharczyk",
+      "joe gebbia"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Airbnb: Book accommodations around the world",
+        "url": "https://www.ycombinator.com/companies/airbnb",
+        "publisher": "Y Combinator",
+        "evidence": "YC names Brian Chesky, Nathan Blecharczyk, and Joe Gebbia as founders; it says Airbnb was founded in August 2008 in San Francisco and labels the batch W09 (Winter 2009).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-007",
+    "category": "identity",
+    "question": "What founding month and year does YC list for Airbnb, and where does Airbnb say its story began?",
+    "expected_answer_summary": "YC lists Airbnb as founded in August 2008; Airbnb says it was born in 2007 when two hosts welcomed guests in their San Francisco home.",
+    "expected_claims": [
+      "YC lists Airbnb's founding date as August 2008.",
+      "Airbnb says it was born in 2007 at its hosts' San Francisco home."
+    ],
+    "required_answer_terms": [
+      "august 2008",
+      "2007",
+      "san francisco"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Airbnb: Book accommodations around the world",
+        "url": "https://www.ycombinator.com/companies/airbnb",
+        "publisher": "Y Combinator",
+        "evidence": "YC lists Airbnb's founding date as August 2008 and its batch as W09 (Winter 2009); the page separately describes Airbnb as based in San Francisco.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      },
+      {
+        "title": "About us",
+        "url": "https://news.airbnb.com/about-us/",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb says it was born in 2007 when two hosts welcomed three guests to their San Francisco home.",
+        "accessed_date": "2026-08-25",
+        "supports_claims": [
+          1
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-008",
+    "category": "identity",
+    "question": "Which YC batch is Airbnb listed in on its official YC profile?",
+    "expected_answer_summary": "Airbnb is listed in Winter 2009 (W09).",
+    "expected_claims": [
+      "Airbnb attended YC's Winter 2009 batch."
+    ],
+    "required_answer_terms": [
+      "winter 2009"
+    ],
+    "acceptable_variants": {
+      "winter 2009": [
+        "w09"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Airbnb: Book accommodations around the world",
+        "url": "https://www.ycombinator.com/companies/airbnb",
+        "publisher": "Y Combinator",
+        "evidence": "YC names Brian Chesky, Nathan Blecharczyk, and Joe Gebbia as founders; it says Airbnb was founded in August 2008 in San Francisco and labels the batch W09 (Winter 2009).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-009",
+    "category": "identity",
+    "question": "Identify Airbnb's founders and its founding month and year.",
+    "expected_answer_summary": "Brian Chesky, Nathan Blecharczyk, and Joe Gebbia founded Airbnb, which YC dates to August 2008.",
+    "expected_claims": [
+      "Brian Chesky founded Airbnb.",
+      "Nathan Blecharczyk founded Airbnb.",
+      "Joe Gebbia founded Airbnb.",
+      "Airbnb was founded in August 2008."
+    ],
+    "required_answer_terms": [
+      "brian chesky",
+      "nathan blecharczyk",
+      "joe gebbia",
+      "august 2008"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Airbnb: Book accommodations around the world",
+        "url": "https://www.ycombinator.com/companies/airbnb",
+        "publisher": "Y Combinator",
+        "evidence": "YC names Brian Chesky, Nathan Blecharczyk, and Joe Gebbia as founders; it says Airbnb was founded in August 2008 in San Francisco and labels the batch W09 (Winter 2009).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-010",
+    "category": "identity",
+    "question": "State Airbnb's YC batch and listed founding date, then give the city where Airbnb says it was born.",
+    "expected_answer_summary": "YC lists Airbnb's batch as Winter 2009 and its founding date as August 2008; Airbnb says it was born in San Francisco in 2007.",
+    "expected_claims": [
+      "Airbnb attended YC's Winter 2009 batch.",
+      "YC lists Airbnb's founding date as August 2008.",
+      "Airbnb says it was born in 2007 at its hosts' San Francisco home."
+    ],
+    "required_answer_terms": [
+      "winter 2009",
+      "august 2008",
+      "san francisco"
+    ],
+    "acceptable_variants": {
+      "winter 2009": [
+        "w09"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Airbnb: Book accommodations around the world",
+        "url": "https://www.ycombinator.com/companies/airbnb",
+        "publisher": "Y Combinator",
+        "evidence": "YC lists Airbnb's founding date as August 2008 and its batch as W09 (Winter 2009); the page separately describes Airbnb as based in San Francisco.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      },
+      {
+        "title": "About us",
+        "url": "https://news.airbnb.com/about-us/",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb says it was born in 2007 when two hosts welcomed three guests to their San Francisco home.",
+        "accessed_date": "2026-08-25",
+        "supports_claims": [
+          2
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-011",
+    "category": "identity",
+    "question": "Who applied to Y Combinator to build Coinbase?",
+    "expected_answer_summary": "Brian Armstrong applied to YC for Coinbase.",
+    "expected_claims": [
+      "Brian Armstrong applied to YC for Coinbase."
+    ],
+    "required_answer_terms": [
+      "brian armstrong"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Coinbase: From YC to IPO",
+        "url": "https://www.ycombinator.com/blog/coinbase-from-yc-to-ipo",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Coinbase as a Summer 2012 company, says Brian Armstrong applied and started the batch, and says Fred Ehrsam was later added as a co-founder.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-012",
+    "category": "identity",
+    "question": "What Y Combinator batch was Coinbase part of?",
+    "expected_answer_summary": "Coinbase was in YC's Summer 2012 batch (S12).",
+    "expected_claims": [
+      "Coinbase attended YC's Summer 2012 batch."
+    ],
+    "required_answer_terms": [
+      "summer 2012"
+    ],
+    "acceptable_variants": {
+      "summer 2012": [
+        "s12"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Coinbase: From YC to IPO",
+        "url": "https://www.ycombinator.com/blog/coinbase-from-yc-to-ipo",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Coinbase as a Summer 2012 company, says Brian Armstrong applied and started the batch, and says Fred Ehrsam was later added as a co-founder.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-013",
+    "category": "identity",
+    "question": "When was Coinbase founded according to YC?",
+    "expected_answer_summary": "Coinbase was founded in June 2012.",
+    "expected_claims": [
+      "Coinbase was founded in June 2012."
+    ],
+    "required_answer_terms": [
+      "june 2012"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Coinbase: Buy, sell, and manage cryptocurrencies",
+        "url": "https://www.ycombinator.com/companies/coinbase",
+        "publisher": "Y Combinator",
+        "evidence": "YC says Coinbase was founded in June 2012 and describes it as a platform for buying, selling, and managing cryptocurrencies.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-014",
+    "category": "identity",
+    "question": "Which co-founder did Coinbase add after YC began?",
+    "expected_answer_summary": "Coinbase later added Fred Ehrsam as a co-founder.",
+    "expected_claims": [
+      "Fred Ehrsam was added as a Coinbase co-founder."
+    ],
+    "required_answer_terms": [
+      "fred ehrsam"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Coinbase: From YC to IPO",
+        "url": "https://www.ycombinator.com/blog/coinbase-from-yc-to-ipo",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Coinbase as a Summer 2012 company, says Brian Armstrong applied and started the batch, and says Fred Ehrsam was later added as a co-founder.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-015",
+    "category": "identity",
+    "question": "Name Coinbase's original YC applicant, later-added co-founder, and batch.",
+    "expected_answer_summary": "Brian Armstrong applied, Fred Ehrsam later joined as co-founder, and Coinbase was in Summer 2012.",
+    "expected_claims": [
+      "Brian Armstrong applied to YC for Coinbase.",
+      "Fred Ehrsam was added as a Coinbase co-founder.",
+      "Coinbase attended YC's Summer 2012 batch."
+    ],
+    "required_answer_terms": [
+      "brian armstrong",
+      "fred ehrsam",
+      "summer 2012"
+    ],
+    "acceptable_variants": {
+      "summer 2012": [
+        "s12"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Coinbase: From YC to IPO",
+        "url": "https://www.ycombinator.com/blog/coinbase-from-yc-to-ipo",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Coinbase as a Summer 2012 company, says Brian Armstrong applied and started the batch, and says Fred Ehrsam was later added as a co-founder.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-016",
+    "category": "identity",
+    "question": "Who founded Dropbox?",
+    "expected_answer_summary": "Drew Houston and Arash Ferdowsi founded Dropbox.",
+    "expected_claims": [
+      "Drew Houston founded Dropbox.",
+      "Arash Ferdowsi founded Dropbox."
+    ],
+    "required_answer_terms": [
+      "drew houston",
+      "arash ferdowsi"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Dropbox: Backup and share files in the cloud",
+        "url": "https://www.ycombinator.com/companies/dropbox",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Drew Houston and Arash Ferdowsi as founders, says Drew co-founded Dropbox in 2007, and labels the batch S07 (Summer 2007).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-017",
+    "category": "identity",
+    "question": "Which YC batch did Dropbox attend?",
+    "expected_answer_summary": "Dropbox attended YC's Summer 2007 batch (S07).",
+    "expected_claims": [
+      "Dropbox attended YC's Summer 2007 batch."
+    ],
+    "required_answer_terms": [
+      "summer 2007"
+    ],
+    "acceptable_variants": {
+      "summer 2007": [
+        "s07"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Dropbox: Backup and share files in the cloud",
+        "url": "https://www.ycombinator.com/companies/dropbox",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Drew Houston and Arash Ferdowsi as founders, says Drew co-founded Dropbox in 2007, and labels the batch S07 (Summer 2007).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-018",
+    "category": "identity",
+    "question": "In what year does YC's founder biography say Drew Houston co-founded Dropbox?",
+    "expected_answer_summary": "The YC biography says Drew Houston co-founded Dropbox in 2007.",
+    "expected_claims": [
+      "Drew Houston co-founded Dropbox in 2007."
+    ],
+    "required_answer_terms": [
+      "drew houston",
+      "2007"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Dropbox: Backup and share files in the cloud",
+        "url": "https://www.ycombinator.com/companies/dropbox",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Drew Houston and Arash Ferdowsi as founders, says Drew co-founded Dropbox in 2007, and labels the batch S07 (Summer 2007).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-019",
+    "category": "identity",
+    "question": "Name both Dropbox founders and give its YC batch.",
+    "expected_answer_summary": "Drew Houston and Arash Ferdowsi founded Dropbox, a Summer 2007 YC company.",
+    "expected_claims": [
+      "Drew Houston founded Dropbox.",
+      "Arash Ferdowsi founded Dropbox.",
+      "Dropbox attended YC's Summer 2007 batch."
+    ],
+    "required_answer_terms": [
+      "drew houston",
+      "arash ferdowsi",
+      "summer 2007"
+    ],
+    "acceptable_variants": {
+      "summer 2007": [
+        "s07"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Dropbox: Backup and share files in the cloud",
+        "url": "https://www.ycombinator.com/companies/dropbox",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Drew Houston and Arash Ferdowsi as founders, says Drew co-founded Dropbox in 2007, and labels the batch S07 (Summer 2007).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-020",
+    "category": "identity",
+    "question": "Which founder and year are named in YC's short history of Dropbox's start?",
+    "expected_answer_summary": "YC says Drew Houston co-founded Dropbox in 2007.",
+    "expected_claims": [
+      "Drew Houston co-founded Dropbox in 2007."
+    ],
+    "required_answer_terms": [
+      "drew houston",
+      "2007"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Dropbox: Backup and share files in the cloud",
+        "url": "https://www.ycombinator.com/companies/dropbox",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Drew Houston and Arash Ferdowsi as founders, says Drew co-founded Dropbox in 2007, and labels the batch S07 (Summer 2007).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-021",
+    "category": "identity",
+    "question": "Who founded DoorDash?",
+    "expected_answer_summary": "Tony Xu, Evan Moore, Andy Fang, and Stanley Tang founded DoorDash.",
+    "expected_claims": [
+      "Tony Xu founded DoorDash.",
+      "Andy Fang founded DoorDash.",
+      "Stanley Tang founded DoorDash.",
+      "Evan Moore founded DoorDash."
+    ],
+    "required_answer_terms": [
+      "tony xu",
+      "andy fang",
+      "stanley tang",
+      "evan moore"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "DoorDash: Restaurant delivery",
+        "url": "https://www.ycombinator.com/companies/doordash",
+        "publisher": "Y Combinator",
+        "evidence": "YC names Tony Xu, Andy Fang, and Stanley Tang as founders, says DoorDash was founded in 2013 in San Francisco, and labels the batch S13 (Summer 2013).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "title": "DoorDash CEO: Solving Problems of Time-Starved People",
+        "url": "https://www.gsb.stanford.edu/insights/doordash-ceo-solving-problems-time-starved-people",
+        "publisher": "Stanford Graduate School of Business",
+        "evidence": "Stanford says Tony Xu founded DoorDash with Evan Moore, Andy Fang, and Stanley Tang.",
+        "accessed_date": "2026-08-25",
+        "supports_claims": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "notes": "YC's profile lists three founders, while Stanford's account identifies the complete four-person founding team, including Evan Moore."
+  },
+  {
+    "id": "identity-022",
+    "category": "identity",
+    "question": "When and where does DoorDash's SEC filing say its journey began?",
+    "expected_answer_summary": "DoorDash's journey began on January 12, 2013, in Palo Alto, California.",
+    "expected_claims": [
+      "DoorDash's journey began on January 12, 2013.",
+      "DoorDash's founders launched their first website in Palo Alto, California."
+    ],
+    "required_answer_terms": [
+      "january 12, 2013",
+      "palo alto"
+    ],
+    "acceptable_variants": {
+      "january 12, 2013": [
+        "january 12 2013",
+        "2013-01-12"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "DoorDash Registration Statement Amendment No. 2 (Form S-1/A)",
+        "url": "https://www.sec.gov/Archives/edgar/data/1792789/000119312520309968/d752207ds1a.htm",
+        "publisher": "U.S. Securities and Exchange Commission",
+        "evidence": "DoorDash's filing says its journey began on January 12, 2013, when its founders launched a website displaying menus from local restaurants in Palo Alto, California; it separately lists principal executive offices in San Francisco.",
+        "accessed_date": "2026-08-25",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-023",
+    "category": "identity",
+    "question": "Which YC batch did DoorDash join?",
+    "expected_answer_summary": "DoorDash attended YC's Summer 2013 batch (S13).",
+    "expected_claims": [
+      "DoorDash attended YC's Summer 2013 batch."
+    ],
+    "required_answer_terms": [
+      "summer 2013"
+    ],
+    "acceptable_variants": {
+      "summer 2013": [
+        "s13"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "DoorDash: Restaurant delivery",
+        "url": "https://www.ycombinator.com/companies/doordash",
+        "publisher": "Y Combinator",
+        "evidence": "YC names Tony Xu, Andy Fang, and Stanley Tang as founders, says DoorDash was founded in 2013 in San Francisco, and labels the batch S13 (Summer 2013).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "identity-024",
+    "category": "identity",
+    "question": "Give DoorDash's founder names and founding year.",
+    "expected_answer_summary": "Tony Xu, Evan Moore, Andy Fang, and Stanley Tang founded DoorDash in 2013.",
+    "expected_claims": [
+      "Tony Xu founded DoorDash.",
+      "Andy Fang founded DoorDash.",
+      "Stanley Tang founded DoorDash.",
+      "Evan Moore founded DoorDash.",
+      "DoorDash was founded in 2013."
+    ],
+    "required_answer_terms": [
+      "tony xu",
+      "andy fang",
+      "stanley tang",
+      "evan moore",
+      "2013"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "DoorDash: Restaurant delivery",
+        "url": "https://www.ycombinator.com/companies/doordash",
+        "publisher": "Y Combinator",
+        "evidence": "YC names Tony Xu, Andy Fang, and Stanley Tang as founders, says DoorDash was founded in 2013 in San Francisco, and labels the batch S13 (Summer 2013).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2,
+          4
+        ]
+      },
+      {
+        "title": "DoorDash CEO: Solving Problems of Time-Starved People",
+        "url": "https://www.gsb.stanford.edu/insights/doordash-ceo-solving-problems-time-starved-people",
+        "publisher": "Stanford Graduate School of Business",
+        "evidence": "Stanford says Tony Xu founded DoorDash with Evan Moore, Andy Fang, and Stanley Tang.",
+        "accessed_date": "2026-08-25",
+        "supports_claims": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "notes": "The complete founding team is sourced from Stanford; YC supplies the founding year and three currently listed founders."
+  },
+  {
+    "id": "identity-025",
+    "category": "identity",
+    "question": "State when and where DoorDash's journey began and its YC batch.",
+    "expected_answer_summary": "DoorDash's journey began on January 12, 2013, in Palo Alto, California, and it attended YC's Summer 2013 batch.",
+    "expected_claims": [
+      "DoorDash's journey began on January 12, 2013.",
+      "DoorDash's founders launched their first website in Palo Alto, California.",
+      "DoorDash attended YC's Summer 2013 batch."
+    ],
+    "required_answer_terms": [
+      "january 12, 2013",
+      "palo alto",
+      "summer 2013"
+    ],
+    "acceptable_variants": {
+      "january 12, 2013": [
+        "january 12 2013",
+        "2013-01-12"
+      ],
+      "summer 2013": [
+        "s13"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "DoorDash Registration Statement Amendment No. 2 (Form S-1/A)",
+        "url": "https://www.sec.gov/Archives/edgar/data/1792789/000119312520309968/d752207ds1a.htm",
+        "publisher": "U.S. Securities and Exchange Commission",
+        "evidence": "DoorDash's filing says its journey began on January 12, 2013, when its founders launched a website displaying menus from local restaurants in Palo Alto, California; it separately lists principal executive offices in San Francisco.",
+        "accessed_date": "2026-08-25",
+        "supports_claims": [
+          0,
+          1
+        ]
+      },
+      {
+        "title": "DoorDash: Restaurant delivery",
+        "url": "https://www.ycombinator.com/companies/doordash",
+        "publisher": "Y Combinator",
+        "evidence": "YC labels DoorDash's batch S13 (Summer 2013) and separately describes the company as based in San Francisco.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          2
+        ]
+      }
+    ],
+    "notes": "Stable founder, founding, or YC-batch fact."
+  },
+  {
+    "id": "funding-001",
+    "category": "funding_status",
+    "question": "How much did Stripe's Series I raise?",
+    "expected_answer_summary": "Stripe's Series I raised more than $6.5 billion.",
+    "expected_claims": [
+      "Stripe's Series I raised more than $6.5 billion."
+    ],
+    "required_answer_terms": [
+      "series i",
+      "$6.5 billion"
+    ],
+    "acceptable_variants": {
+      "$6.5 billion": [
+        "6.5 billion dollars",
+        "$6.5b"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe announces Series I employee liquidity round",
+        "url": "https://stripe.com/newsroom/news/stripe-series-i-employee-liquidity",
+        "publisher": "Stripe",
+        "evidence": "Stripe says its Series I exceeded $6.5 billion at a $50 billion valuation, funded employee liquidity and tax obligations, retired shares to offset new issuance, and was not needed to run the business.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-002",
+    "category": "funding_status",
+    "question": "At what valuation did Stripe announce it had signed Series I fundraising agreements?",
+    "expected_answer_summary": "Stripe announced that it had signed agreements for a Series I fundraise at a $50 billion valuation.",
+    "expected_claims": [
+      "Stripe announced that it signed Series I fundraising agreements at a $50 billion valuation."
+    ],
+    "required_answer_terms": [
+      "series i",
+      "signed agreements",
+      "$50 billion"
+    ],
+    "acceptable_variants": {
+      "$50 billion": [
+        "50 billion dollars",
+        "$50b"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe announces Series I employee liquidity round",
+        "url": "https://stripe.com/newsroom/news/stripe-series-i-employee-liquidity",
+        "publisher": "Stripe",
+        "evidence": "Stripe announced that it had signed agreements for a Series I fundraise of more than $6.5 billion at a $50 billion valuation.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-003",
+    "category": "funding_status",
+    "question": "What was Stripe's stated purpose for the Series I funds?",
+    "expected_answer_summary": "The Series I provided employee liquidity and addressed employee withholding tax obligations.",
+    "expected_claims": [
+      "The Series I provided liquidity to current and former employees.",
+      "The Series I addressed employee withholding-tax obligations."
+    ],
+    "required_answer_terms": [
+      "employee liquidity",
+      "withholding tax"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe announces Series I employee liquidity round",
+        "url": "https://stripe.com/newsroom/news/stripe-series-i-employee-liquidity",
+        "publisher": "Stripe",
+        "evidence": "Stripe says the funds raised would provide liquidity to current and former employees and address employee withholding tax obligations related to equity awards.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-004",
+    "category": "funding_status",
+    "question": "Did Stripe say it needed its Series I capital to operate the business?",
+    "expected_answer_summary": "No. Stripe said it did not need the capital to run its business.",
+    "expected_claims": [
+      "Stripe did not need the Series I capital to run its business."
+    ],
+    "required_answer_terms": [
+      "did not need",
+      "run its business"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe announces Series I employee liquidity round",
+        "url": "https://stripe.com/newsroom/news/stripe-series-i-employee-liquidity",
+        "publisher": "Stripe",
+        "evidence": "Stripe says its Series I exceeded $6.5 billion at a $50 billion valuation, funded employee liquidity and tax obligations, retired shares to offset new issuance, and was not needed to run the business.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-005",
+    "category": "funding_status",
+    "question": "Summarize Stripe's Series I size, valuation, and employee-liquidity purpose.",
+    "expected_answer_summary": "Stripe's Series I raised more than $6.5 billion at a $50 billion valuation for employee liquidity and withholding tax obligations.",
+    "expected_claims": [
+      "Stripe's Series I raised more than $6.5 billion.",
+      "Stripe's Series I valuation was $50 billion.",
+      "The Series I provided liquidity to current and former employees.",
+      "The Series I addressed employee withholding-tax obligations."
+    ],
+    "required_answer_terms": [
+      "$6.5 billion",
+      "$50 billion",
+      "employee liquidity",
+      "withholding tax"
+    ],
+    "acceptable_variants": {
+      "$6.5 billion": [
+        "6.5 billion dollars",
+        "$6.5b"
+      ],
+      "$50 billion": [
+        "50 billion dollars",
+        "$50b"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe announces Series I employee liquidity round",
+        "url": "https://stripe.com/newsroom/news/stripe-series-i-employee-liquidity",
+        "publisher": "Stripe",
+        "evidence": "Stripe announced signed agreements for a Series I fundraise of more than $6.5 billion at a $50 billion valuation; it says the funds raised would provide liquidity to current and former employees and address employee withholding tax obligations.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-006",
+    "category": "funding_status",
+    "question": "How many shares were in Airbnb's priced IPO and at what public price?",
+    "expected_answer_summary": "Airbnb priced 51,323,531 shares at $68 per share.",
+    "expected_claims": [
+      "Airbnb's priced IPO included 51,323,531 shares.",
+      "Airbnb's IPO price was $68 per share."
+    ],
+    "required_answer_terms": [
+      "51,323,531",
+      "$68"
+    ],
+    "acceptable_variants": {
+      "51,323,531": [
+        "51323531"
+      ],
+      "$68": [
+        "68 dollars"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Airbnb Announces Pricing of Initial Public Offering",
+        "url": "https://investors.airbnb.com/press-releases/news-details/2020/Airbnb-Announces-Pricing-of-Initial-Public-Offering/default.aspx",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb priced 51,323,531 shares at $68, expected ABNB trading on Nasdaq on December 10, 2020, and expected about $3.4 billion in gross company proceeds.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-007",
+    "category": "funding_status",
+    "question": "On what date and exchange was ABNB expected to start trading?",
+    "expected_answer_summary": "ABNB was expected to begin Nasdaq trading on December 10, 2020.",
+    "expected_claims": [
+      "Airbnb expected trading to begin on December 10, 2020.",
+      "Airbnb expected its shares to trade on Nasdaq.",
+      "Airbnb's ticker is ABNB."
+    ],
+    "required_answer_terms": [
+      "december 10, 2020",
+      "nasdaq",
+      "abnb"
+    ],
+    "acceptable_variants": {
+      "december 10, 2020": [
+        "december 10 2020",
+        "2020-12-10"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Airbnb Announces Pricing of Initial Public Offering",
+        "url": "https://investors.airbnb.com/press-releases/news-details/2020/Airbnb-Announces-Pricing-of-Initial-Public-Offering/default.aspx",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb priced 51,323,531 shares at $68, expected ABNB trading on Nasdaq on December 10, 2020, and expected about $3.4 billion in gross company proceeds.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-008",
+    "category": "funding_status",
+    "question": "How much in gross proceeds did Airbnb expect from its IPO?",
+    "expected_answer_summary": "Airbnb expected approximately $3.4 billion in gross proceeds to the company.",
+    "expected_claims": [
+      "Airbnb expected approximately $3.4 billion in gross company proceeds."
+    ],
+    "required_answer_terms": [
+      "$3.4 billion"
+    ],
+    "acceptable_variants": {
+      "$3.4 billion": [
+        "3.4 billion dollars",
+        "$3.4b"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Airbnb Announces Pricing of Initial Public Offering",
+        "url": "https://investors.airbnb.com/press-releases/news-details/2020/Airbnb-Announces-Pricing-of-Initial-Public-Offering/default.aspx",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb priced 51,323,531 shares at $68, expected ABNB trading on Nasdaq on December 10, 2020, and expected about $3.4 billion in gross company proceeds.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact.",
+    "required_answer_patterns": [
+      "(?s)(?:(?:\\$3\\.4 billion|3\\.4 billion dollars|\\$3\\.4b)(?:(?!\\bnot\\b).){0,100}\\bgross (?:company |ipo )?proceeds\\b|\\bgross (?:company |ipo )?proceeds\\b(?:(?!\\bnot\\b).){0,100}(?:\\$3\\.4 billion|3\\.4 billion dollars|\\$3\\.4b))"
+    ]
+  },
+  {
+    "id": "funding-009",
+    "category": "funding_status",
+    "question": "How were Airbnb's 51,323,531 priced IPO shares split?",
+    "expected_answer_summary": "Airbnb sold 50,000,000 shares and selling stockholders sold 1,323,531.",
+    "expected_claims": [
+      "Airbnb sold 50,000,000 IPO shares.",
+      "Selling stockholders sold 1,323,531 Airbnb IPO shares."
+    ],
+    "required_answer_terms": [
+      "50,000,000",
+      "1,323,531"
+    ],
+    "acceptable_variants": {
+      "50,000,000": [
+        "50000000"
+      ],
+      "1,323,531": [
+        "1323531"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Airbnb Announces Pricing of Initial Public Offering",
+        "url": "https://investors.airbnb.com/press-releases/news-details/2020/Airbnb-Announces-Pricing-of-Initial-Public-Offering/default.aspx",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb announced 51,323,531 priced IPO shares: 50,000,000 sold by Airbnb and 1,323,531 sold by certain selling stockholders.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact.",
+    "required_answer_patterns": [
+      "(?s)(?:\\bairbnb\\b(?:(?!\\b(?:selling stockholders|not)\\b).){0,120}\\b(?:sold|offered)\\b(?:(?!\\bnot\\b).){0,30}(?:50,000,000|50000000)\\b|(?:50,000,000|50000000)\\b(?:(?!\\bnot\\b).){0,30}\\bshares\\b(?:(?!\\bnot\\b).){0,120}\\b(?:sold|offered) by airbnb\\b)",
+      "(?s)(?:\\bselling stockholders\\b(?:(?!\\bnot\\b).){0,80}\\b(?:sold|offered)\\b(?:(?!\\bnot\\b).){0,30}(?:1,323,531|1323531)\\b|(?:1,323,531|1323531)\\b(?:(?!\\bnot\\b).){0,30}\\bshares\\b(?:(?!\\bnot\\b).){0,80}\\b(?:sold|offered) by (?:the )?selling stockholders\\b)"
+    ]
+  },
+  {
+    "id": "funding-010",
+    "category": "funding_status",
+    "question": "Give Airbnb's IPO price, ticker, and expected first trading date.",
+    "expected_answer_summary": "Airbnb priced at $68, used ABNB, and expected trading on December 10, 2020.",
+    "expected_claims": [
+      "Airbnb's IPO price was $68 per share.",
+      "Airbnb's ticker is ABNB.",
+      "Airbnb expected trading to begin on December 10, 2020."
+    ],
+    "required_answer_terms": [
+      "$68",
+      "abnb",
+      "december 10, 2020"
+    ],
+    "acceptable_variants": {
+      "$68": [
+        "68 dollars"
+      ],
+      "december 10, 2020": [
+        "december 10 2020",
+        "2020-12-10"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Airbnb Announces Pricing of Initial Public Offering",
+        "url": "https://investors.airbnb.com/press-releases/news-details/2020/Airbnb-Announces-Pricing-of-Initial-Public-Offering/default.aspx",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb priced 51,323,531 shares at $68, expected ABNB trading on Nasdaq on December 10, 2020, and expected about $3.4 billion in gross company proceeds.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-011",
+    "category": "funding_status",
+    "question": "What listing method and date did Nasdaq announce it expected for Coinbase?",
+    "expected_answer_summary": "Nasdaq announced that Coinbase was expected to list through a direct listing on April 14, 2021.",
+    "expected_claims": [
+      "Nasdaq announced that Coinbase was expected to list through a direct listing.",
+      "Nasdaq announced that Coinbase was expected to list on April 14, 2021."
+    ],
+    "required_answer_terms": [
+      "direct listing",
+      "april 14, 2021"
+    ],
+    "acceptable_variants": {
+      "april 14, 2021": [
+        "april 14 2021",
+        "2021-04-14"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Nasdaq New Security Addition: Coinbase Global",
+        "url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ETA2021-28",
+        "publisher": "Nasdaq",
+        "evidence": "Nasdaq announced that Coinbase Class A stock was expected to list through a Direct Listing as COIN on April 14, 2021; Nasdaq set a $250 reference price and said it was not an offering price.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-012",
+    "category": "funding_status",
+    "question": "What exchange and ticker did Nasdaq say Coinbase was expected to use?",
+    "expected_answer_summary": "Nasdaq said Coinbase was expected to list on Nasdaq under COIN.",
+    "expected_claims": [
+      "Nasdaq said Coinbase was expected to list on Nasdaq.",
+      "Nasdaq said Coinbase was expected to use the ticker COIN."
+    ],
+    "required_answer_terms": [
+      "nasdaq",
+      "coin"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Nasdaq New Security Addition: Coinbase Global",
+        "url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ETA2021-28",
+        "publisher": "Nasdaq",
+        "evidence": "Nasdaq announced that Coinbase Class A stock was expected to list through a Direct Listing as COIN on April 14, 2021; Nasdaq set a $250 reference price and said it was not an offering price.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-013",
+    "category": "funding_status",
+    "question": "What reference price did Nasdaq set for Coinbase's direct listing?",
+    "expected_answer_summary": "Nasdaq set a $250 reference price.",
+    "expected_claims": [
+      "Nasdaq set Coinbase's reference price at $250."
+    ],
+    "required_answer_terms": [
+      "$250"
+    ],
+    "acceptable_variants": {
+      "$250": [
+        "250 dollars"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Nasdaq New Security Addition: Coinbase Global",
+        "url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ETA2021-28",
+        "publisher": "Nasdaq",
+        "evidence": "Nasdaq says Coinbase Class A stock would list directly as COIN on April 14, 2021; its $250 reference price was not an offering price.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-014",
+    "category": "funding_status",
+    "question": "Was Coinbase's $250 Nasdaq reference price an offering price?",
+    "expected_answer_summary": "No. Nasdaq explicitly said $250 was not an offering price.",
+    "expected_claims": [
+      "Coinbase's $250 reference price was not an offering price."
+    ],
+    "required_answer_terms": [
+      "$250",
+      "not an offering price"
+    ],
+    "acceptable_variants": {
+      "$250": [
+        "250 dollars"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Nasdaq New Security Addition: Coinbase Global",
+        "url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ETA2021-28",
+        "publisher": "Nasdaq",
+        "evidence": "Nasdaq says Coinbase Class A stock would list directly as COIN on April 14, 2021; its $250 reference price was not an offering price.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-015",
+    "category": "funding_status",
+    "question": "State the method, ticker, date, and reference price Nasdaq announced for Coinbase's expected listing.",
+    "expected_answer_summary": "Nasdaq expected Coinbase to use a direct listing as COIN on April 14, 2021, and set a $250 reference price.",
+    "expected_claims": [
+      "Nasdaq announced that Coinbase was expected to list through a direct listing.",
+      "Nasdaq said Coinbase was expected to use the ticker COIN.",
+      "Nasdaq announced that Coinbase was expected to list on April 14, 2021.",
+      "Nasdaq set Coinbase's reference price at $250."
+    ],
+    "required_answer_terms": [
+      "direct listing",
+      "coin",
+      "april 14, 2021",
+      "$250"
+    ],
+    "acceptable_variants": {
+      "april 14, 2021": [
+        "april 14 2021",
+        "2021-04-14"
+      ],
+      "$250": [
+        "250 dollars"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Nasdaq New Security Addition: Coinbase Global",
+        "url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ETA2021-28",
+        "publisher": "Nasdaq",
+        "evidence": "Nasdaq announced that Coinbase Class A stock was expected to list through a Direct Listing as COIN on April 14, 2021; Nasdaq set a $250 reference price and said it was not an offering price.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-016",
+    "category": "funding_status",
+    "question": "How many shares did Dropbox price in its IPO, and at what price?",
+    "expected_answer_summary": "Dropbox priced 36,000,000 shares at $21 each.",
+    "expected_claims": [
+      "Dropbox's IPO included 36,000,000 shares.",
+      "Dropbox's IPO price was $21 per share."
+    ],
+    "required_answer_terms": [
+      "36,000,000",
+      "$21"
+    ],
+    "acceptable_variants": {
+      "36,000,000": [
+        "36000000",
+        "36 million"
+      ],
+      "$21": [
+        "21 dollars"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Dropbox Announces Pricing of Initial Public Offering",
+        "url": "https://investors.dropbox.com/news-releases/news-release-details/dropbox-announces-pricing-initial-public-offering",
+        "publisher": "Dropbox",
+        "evidence": "Dropbox priced 36 million IPO shares at $21; DBX was expected to trade on Nasdaq on March 23, 2018, with 26,822,409 company shares and 9,177,591 selling-stockholder shares.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-017",
+    "category": "funding_status",
+    "question": "When and where was DBX expected to begin trading?",
+    "expected_answer_summary": "DBX was expected to begin Nasdaq trading on March 23, 2018.",
+    "expected_claims": [
+      "Dropbox expected trading to begin on March 23, 2018.",
+      "Dropbox expected its shares to trade on Nasdaq.",
+      "Dropbox's ticker is DBX."
+    ],
+    "required_answer_terms": [
+      "march 23, 2018",
+      "nasdaq",
+      "dbx"
+    ],
+    "acceptable_variants": {
+      "march 23, 2018": [
+        "march 23 2018",
+        "2018-03-23"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Dropbox Announces Pricing of Initial Public Offering",
+        "url": "https://investors.dropbox.com/news-releases/news-release-details/dropbox-announces-pricing-initial-public-offering",
+        "publisher": "Dropbox",
+        "evidence": "Dropbox priced 36 million IPO shares at $21; DBX was expected to trade on Nasdaq on March 23, 2018, with 26,822,409 company shares and 9,177,591 selling-stockholder shares.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-018",
+    "category": "funding_status",
+    "question": "How many Dropbox IPO shares came from Dropbox itself?",
+    "expected_answer_summary": "Dropbox offered 26,822,409 Class A shares.",
+    "expected_claims": [
+      "Dropbox offered 26,822,409 IPO shares."
+    ],
+    "required_answer_terms": [
+      "26,822,409"
+    ],
+    "acceptable_variants": {
+      "26,822,409": [
+        "26822409"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Dropbox Announces Pricing of Initial Public Offering",
+        "url": "https://investors.dropbox.com/news-releases/news-release-details/dropbox-announces-pricing-initial-public-offering",
+        "publisher": "Dropbox",
+        "evidence": "Dropbox priced 36 million IPO shares at $21; DBX was expected to trade on Nasdaq on March 23, 2018, with 26,822,409 company shares and 9,177,591 selling-stockholder shares.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-019",
+    "category": "funding_status",
+    "question": "How many Dropbox IPO shares came from selling stockholders?",
+    "expected_answer_summary": "Selling stockholders offered 9,177,591 Class A shares.",
+    "expected_claims": [
+      "Selling stockholders offered 9,177,591 Dropbox IPO shares."
+    ],
+    "required_answer_terms": [
+      "9,177,591"
+    ],
+    "acceptable_variants": {
+      "9,177,591": [
+        "9177591"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Dropbox Announces Pricing of Initial Public Offering",
+        "url": "https://investors.dropbox.com/news-releases/news-release-details/dropbox-announces-pricing-initial-public-offering",
+        "publisher": "Dropbox",
+        "evidence": "Dropbox priced 36 million IPO shares at $21; DBX was expected to trade on Nasdaq on March 23, 2018, with 26,822,409 company shares and 9,177,591 selling-stockholder shares.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-020",
+    "category": "funding_status",
+    "question": "Summarize Dropbox's IPO share count, price, ticker, and first trading date.",
+    "expected_answer_summary": "Dropbox priced 36 million shares at $21, with DBX expected to trade March 23, 2018.",
+    "expected_claims": [
+      "Dropbox's IPO included 36,000,000 shares.",
+      "Dropbox's IPO price was $21 per share.",
+      "Dropbox's ticker is DBX.",
+      "Dropbox expected trading to begin on March 23, 2018."
+    ],
+    "required_answer_terms": [
+      "36,000,000",
+      "$21",
+      "dbx",
+      "march 23, 2018"
+    ],
+    "acceptable_variants": {
+      "36,000,000": [
+        "36000000",
+        "36 million"
+      ],
+      "$21": [
+        "21 dollars"
+      ],
+      "march 23, 2018": [
+        "march 23 2018",
+        "2018-03-23"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Dropbox Announces Pricing of Initial Public Offering",
+        "url": "https://investors.dropbox.com/news-releases/news-release-details/dropbox-announces-pricing-initial-public-offering",
+        "publisher": "Dropbox",
+        "evidence": "Dropbox priced 36 million IPO shares at $21; DBX was expected to trade on Nasdaq on March 23, 2018, with 26,822,409 company shares and 9,177,591 selling-stockholder shares.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-021",
+    "category": "funding_status",
+    "question": "At what price and share count did DoorDash price its IPO?",
+    "expected_answer_summary": "DoorDash priced 33,000,000 Class A shares at $102 each.",
+    "expected_claims": [
+      "DoorDash's IPO included 33,000,000 Class A shares.",
+      "DoorDash's IPO price was $102 per share."
+    ],
+    "required_answer_terms": [
+      "33,000,000",
+      "$102"
+    ],
+    "acceptable_variants": {
+      "33,000,000": [
+        "33000000",
+        "33 million"
+      ],
+      "$102": [
+        "102 dollars"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "DoorDash Announces Pricing of Initial Public Offering",
+        "url": "https://ir.doordash.com/news/news-details/2020/DoorDash-Announces-Pricing-of-Initial-Public-Offering/default.aspx",
+        "publisher": "DoorDash",
+        "evidence": "DoorDash priced 33 million Class A shares at $102 and expected DASH to begin NYSE trading on December 9, 2020, with a December 11 closing.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-022",
+    "category": "funding_status",
+    "question": "What exchange and ticker did DoorDash announce for its IPO?",
+    "expected_answer_summary": "DoorDash announced NYSE trading under DASH.",
+    "expected_claims": [
+      "DoorDash expected its shares to trade on the NYSE.",
+      "DoorDash's ticker is DASH."
+    ],
+    "required_answer_terms": [
+      "nyse",
+      "dash"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "DoorDash Announces Pricing of Initial Public Offering",
+        "url": "https://ir.doordash.com/news/news-details/2020/DoorDash-Announces-Pricing-of-Initial-Public-Offering/default.aspx",
+        "publisher": "DoorDash",
+        "evidence": "DoorDash priced 33 million Class A shares at $102 and expected DASH to begin NYSE trading on December 9, 2020, with a December 11 closing.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-023",
+    "category": "funding_status",
+    "question": "When was DASH expected to begin trading?",
+    "expected_answer_summary": "DASH was expected to begin trading on December 9, 2020.",
+    "expected_claims": [
+      "DoorDash expected trading to begin on December 9, 2020."
+    ],
+    "required_answer_terms": [
+      "december 9, 2020"
+    ],
+    "acceptable_variants": {
+      "december 9, 2020": [
+        "december 9 2020",
+        "2020-12-09"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "DoorDash Announces Pricing of Initial Public Offering",
+        "url": "https://ir.doordash.com/news/news-details/2020/DoorDash-Announces-Pricing-of-Initial-Public-Offering/default.aspx",
+        "publisher": "DoorDash",
+        "evidence": "DoorDash priced 33 million Class A shares at $102 and expected DASH to begin NYSE trading on December 9, 2020, with a December 11 closing.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-024",
+    "category": "funding_status",
+    "question": "When was DoorDash's IPO expected to close?",
+    "expected_answer_summary": "DoorDash expected its IPO to close on December 11, 2020.",
+    "expected_claims": [
+      "DoorDash expected its IPO to close on December 11, 2020."
+    ],
+    "required_answer_terms": [
+      "december 11, 2020"
+    ],
+    "acceptable_variants": {
+      "december 11, 2020": [
+        "december 11 2020",
+        "2020-12-11"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "DoorDash Announces Pricing of Initial Public Offering",
+        "url": "https://ir.doordash.com/news/news-details/2020/DoorDash-Announces-Pricing-of-Initial-Public-Offering/default.aspx",
+        "publisher": "DoorDash",
+        "evidence": "DoorDash priced 33 million Class A shares at $102 and expected DASH to begin NYSE trading on December 9, 2020, with a December 11 closing.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "funding-025",
+    "category": "funding_status",
+    "question": "Give DoorDash's IPO price, share count, ticker, and expected trading date.",
+    "expected_answer_summary": "DoorDash priced 33 million shares at $102; DASH was expected to trade December 9, 2020.",
+    "expected_claims": [
+      "DoorDash's IPO included 33,000,000 Class A shares.",
+      "DoorDash's IPO price was $102 per share.",
+      "DoorDash's ticker is DASH.",
+      "DoorDash expected trading to begin on December 9, 2020."
+    ],
+    "required_answer_terms": [
+      "33,000,000",
+      "$102",
+      "dash",
+      "december 9, 2020"
+    ],
+    "acceptable_variants": {
+      "33,000,000": [
+        "33000000",
+        "33 million"
+      ],
+      "$102": [
+        "102 dollars"
+      ],
+      "december 9, 2020": [
+        "december 9 2020",
+        "2020-12-09"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "DoorDash Announces Pricing of Initial Public Offering",
+        "url": "https://ir.doordash.com/news/news-details/2020/DoorDash-Announces-Pricing-of-Initial-Public-Offering/default.aspx",
+        "publisher": "DoorDash",
+        "evidence": "DoorDash priced 33 million Class A shares at $102 and expected DASH to begin NYSE trading on December 9, 2020, with a December 11 closing.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "notes": "Stable historical financing or listing fact."
+  },
+  {
+    "id": "company-001",
+    "category": "company_facts",
+    "question": "What kind of payments is Stripe Terminal designed to accept?",
+    "expected_answer_summary": "Stripe Terminal accepts in-person payments.",
+    "expected_claims": [
+      "Stripe Terminal accepts in-person payments."
+    ],
+    "required_answer_terms": [
+      "in-person payments"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe Terminal documentation",
+        "url": "https://docs.stripe.com/terminal",
+        "publisher": "Stripe",
+        "evidence": "Stripe documents Terminal for in-person payments, unified online and in-person management, Connect integration, SDK and API options, Tap to Pay, and offline acceptance.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-002",
+    "category": "company_facts",
+    "question": "How does Stripe Terminal relate online and in-person payment management?",
+    "expected_answer_summary": "Terminal provides unified management of online payments and in-person payments.",
+    "expected_claims": [
+      "Stripe Terminal unifies management of online payments.",
+      "Stripe Terminal unifies management of in-person payments."
+    ],
+    "required_answer_terms": [
+      "online payments",
+      "in-person payments",
+      "unified"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe Terminal documentation",
+        "url": "https://docs.stripe.com/terminal",
+        "publisher": "Stripe",
+        "evidence": "Stripe documents Terminal for in-person payments, unified online and in-person management, Connect integration, SDK and API options, Tap to Pay, and offline acceptance.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-003",
+    "category": "company_facts",
+    "question": "Which mobile SDK platforms does Stripe Terminal document besides JavaScript?",
+    "expected_answer_summary": "Terminal offers SDKs for Android, iOS, and React Native.",
+    "expected_claims": [
+      "Stripe Terminal offers an Android SDK.",
+      "Stripe Terminal offers an iOS SDK.",
+      "Stripe Terminal offers a React Native SDK."
+    ],
+    "required_answer_terms": [
+      "android",
+      "ios",
+      "react native"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe Terminal documentation",
+        "url": "https://docs.stripe.com/terminal",
+        "publisher": "Stripe",
+        "evidence": "Stripe says Terminal supports SDK integrations for Android, iOS, JavaScript, and React Native, in addition to an API-based integration.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-004",
+    "category": "company_facts",
+    "question": "What devices can Stripe Terminal use for Tap to Pay?",
+    "expected_answer_summary": "Terminal supports Tap to Pay on compatible iPhone and Android devices.",
+    "expected_claims": [
+      "Stripe Terminal supports Tap to Pay on compatible iPhones.",
+      "Stripe Terminal supports Tap to Pay on compatible Android devices."
+    ],
+    "required_answer_terms": [
+      "tap to pay",
+      "iphone",
+      "android"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe Terminal documentation",
+        "url": "https://docs.stripe.com/terminal",
+        "publisher": "Stripe",
+        "evidence": "Stripe says Terminal's Tap to Pay accepts contactless payments using a compatible iPhone or Android device.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-005",
+    "category": "company_facts",
+    "question": "Can Stripe Terminal accept payments without reliable internet connectivity?",
+    "expected_answer_summary": "Yes. Terminal documents offline acceptance for intermittent, limited, or absent connectivity.",
+    "expected_claims": [
+      "Stripe Terminal can accept payments offline."
+    ],
+    "required_answer_terms": [
+      "offline"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe Terminal documentation",
+        "url": "https://docs.stripe.com/terminal",
+        "publisher": "Stripe",
+        "evidence": "Stripe documents Terminal for in-person payments, unified online and in-person management, Connect integration, SDK and API options, Tap to Pay, and offline acceptance.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-006",
+    "category": "company_facts",
+    "question": "How did Airbnb begin in 2007?",
+    "expected_answer_summary": "Two hosts welcomed three guests to their San Francisco home.",
+    "expected_claims": [
+      "Two hosts started Airbnb's 2007 origin story.",
+      "Three guests were welcomed in Airbnb's 2007 origin story.",
+      "The home was in San Francisco."
+    ],
+    "required_answer_terms": [
+      "two hosts",
+      "three guests",
+      "san francisco"
+    ],
+    "acceptable_variants": {
+      "two hosts": [
+        "2 hosts"
+      ],
+      "three guests": [
+        "3 guests"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "medium",
+    "sources": [
+      {
+        "title": "About us",
+        "url": "https://news.airbnb.com/about-us/",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb says it began in 2007 when two hosts welcomed three guests in San Francisco; it reports 5.5M+ hosts, 2.5B+ arrivals, 9M+ active listings, 150K+ cities and towns, and 220+ countries and regions.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-007",
+    "category": "company_facts",
+    "question": "What does Airbnb report for hosts and all-time guest arrivals?",
+    "expected_answer_summary": "Airbnb reports over 5.5 million hosts and over 2.5 billion guest arrivals.",
+    "expected_claims": [
+      "Airbnb reports more than 5.5 million hosts.",
+      "Airbnb reports more than 2.5 billion all-time guest arrivals."
+    ],
+    "required_answer_terms": [
+      "5.5 million",
+      "2.5 billion"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-25",
+    "volatility": "medium",
+    "sources": [
+      {
+        "title": "About us",
+        "url": "https://news.airbnb.com/about-us/",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb says it began in 2007 when two hosts welcomed three guests in San Francisco; it reports 5.5M+ hosts, 2.5B+ arrivals, 9M+ active listings, 150K+ cities and towns, and 220+ countries and regions.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact.",
+    "required_answer_patterns": [
+      "(?s)(?:(?:5\\.5 million|5\\.5m\\+?)(?:(?!\\b(?:arrivals|not)\\b).){0,40}\\bhosts\\b|\\bhosts\\b(?:(?!\\b(?:arrivals|not)\\b).){0,40}(?:5\\.5 million|5\\.5m\\+?))",
+      "(?s)(?:(?:2\\.5 billion|2\\.5b\\+?)(?:(?!\\b(?:hosts|not)\\b).){0,50}\\b(?:guest )?arrivals\\b|\\b(?:guest )?arrivals\\b(?:(?!\\b(?:hosts|not)\\b).){0,50}(?:2\\.5 billion|2\\.5b\\+?))"
+    ]
+  },
+  {
+    "id": "company-008",
+    "category": "company_facts",
+    "question": "How many active listings does Airbnb report worldwide?",
+    "expected_answer_summary": "Airbnb reports more than 9 million active listings worldwide.",
+    "expected_claims": [
+      "Airbnb reports more than 9 million active listings worldwide."
+    ],
+    "required_answer_terms": [
+      "9 million"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "medium",
+    "sources": [
+      {
+        "title": "About us",
+        "url": "https://news.airbnb.com/about-us/",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb says it began in 2007 when two hosts welcomed three guests in San Francisco; it reports 5.5M+ hosts, 2.5B+ arrivals, 9M+ active listings, 150K+ cities and towns, and 220+ countries and regions.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-009",
+    "category": "company_facts",
+    "question": "Across how many cities and countries or regions does Airbnb report listings?",
+    "expected_answer_summary": "Airbnb reports listings in over 150,000 cities and towns and over 220 countries and regions.",
+    "expected_claims": [
+      "Airbnb reports active listings in more than 150,000 cities and towns.",
+      "Airbnb reports listings in more than 220 countries and regions."
+    ],
+    "required_answer_terms": [
+      "150,000",
+      "220"
+    ],
+    "acceptable_variants": {
+      "150,000": [
+        "150k"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "medium",
+    "sources": [
+      {
+        "title": "About us",
+        "url": "https://news.airbnb.com/about-us/",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb says it began in 2007 when two hosts welcomed three guests in San Francisco; it reports 5.5M+ hosts, 2.5B+ arrivals, 9M+ active listings, 150K+ cities and towns, and 220+ countries and regions.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact.",
+    "required_answer_patterns": [
+      "(?s)(?:(?:150,000|150k\\+?)(?:(?!\\b(?:countries|not)\\b).){0,40}\\bcities(?: and towns)?\\b|\\bcities(?: and towns)?\\b(?:(?!\\b(?:countries|not)\\b).){0,40}(?:150,000|150k\\+?))",
+      "(?s)(?:\\b220\\+?\\b(?:(?!\\b(?:cities|not)\\b).){0,40}\\bcountries and regions\\b|\\bcountries and regions\\b(?:(?!\\b(?:cities|not)\\b).){0,40}\\b220\\+?\\b)"
+    ]
+  },
+  {
+    "id": "company-010",
+    "category": "company_facts",
+    "question": "What three kinds of offerings does Airbnb say hosts provide?",
+    "expected_answer_summary": "Airbnb hosts offer stays, experiences, and services.",
+    "expected_claims": [
+      "Airbnb hosts offer stays.",
+      "Airbnb hosts offer experiences.",
+      "Airbnb hosts offer services."
+    ],
+    "required_answer_terms": [
+      "stays",
+      "experiences",
+      "services"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-25",
+    "volatility": "medium",
+    "sources": [
+      {
+        "title": "About us",
+        "url": "https://news.airbnb.com/about-us/",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb says hosts offer unique stays, experiences, and services every day.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-011",
+    "category": "company_facts",
+    "question": "What is Coinbase's stated mission?",
+    "expected_answer_summary": "Coinbase's mission is to increase economic freedom in the world.",
+    "expected_claims": [
+      "Coinbase's mission is to increase economic freedom in the world."
+    ],
+    "required_answer_terms": [
+      "increase economic freedom"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Coinbase Investor Relations",
+        "url": "https://investor.coinbase.com/home/default.aspx",
+        "publisher": "Coinbase",
+        "evidence": "Coinbase states its economic-freedom mission and describes services for consumers, institutions, and developers, including trading, custody, prime brokerage, tools, APIs, and infrastructure.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-012",
+    "category": "company_facts",
+    "question": "What activities does Coinbase's trusted platform support?",
+    "expected_answer_summary": "The platform supports trading, secure crypto storage, and access to the onchain economy.",
+    "expected_claims": [
+      "Coinbase supports trading.",
+      "Coinbase securely stores crypto assets.",
+      "Coinbase provides access to the onchain economy."
+    ],
+    "required_answer_terms": [
+      "trading",
+      "storing crypto assets",
+      "onchain economy"
+    ],
+    "acceptable_variants": {
+      "storing crypto assets": [
+        "stores crypto assets",
+        "crypto storage"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Coinbase Investor Relations",
+        "url": "https://investor.coinbase.com/home/default.aspx",
+        "publisher": "Coinbase",
+        "evidence": "Coinbase says its trusted platform supports trading, securely storing crypto assets, and accessing the onchain economy.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-013",
+    "category": "company_facts",
+    "question": "How does Coinbase serve consumers?",
+    "expected_answer_summary": "Coinbase serves consumers through a suite of financial apps.",
+    "expected_claims": [
+      "Coinbase serves consumers through financial apps."
+    ],
+    "required_answer_terms": [
+      "consumers",
+      "financial apps"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Coinbase Investor Relations",
+        "url": "https://investor.coinbase.com/home/default.aspx",
+        "publisher": "Coinbase",
+        "evidence": "Coinbase says it serves consumers through its suite of financial apps.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-014",
+    "category": "company_facts",
+    "question": "How does Coinbase serve institutions?",
+    "expected_answer_summary": "Coinbase serves institutions through a full-service prime brokerage platform.",
+    "expected_claims": [
+      "Coinbase serves institutions through a full-service prime brokerage platform."
+    ],
+    "required_answer_terms": [
+      "institutions",
+      "prime brokerage"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Coinbase Investor Relations",
+        "url": "https://investor.coinbase.com/home/default.aspx",
+        "publisher": "Coinbase",
+        "evidence": "Coinbase states its economic-freedom mission and describes services for consumers, institutions, and developers, including trading, custody, prime brokerage, tools, APIs, and infrastructure.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-015",
+    "category": "company_facts",
+    "question": "What does Coinbase provide developers?",
+    "expected_answer_summary": "Coinbase provides developers tools, APIs, and infrastructure for crypto-based applications.",
+    "expected_claims": [
+      "Coinbase provides developers with tools.",
+      "Coinbase provides developers with APIs.",
+      "Coinbase provides developers with infrastructure for crypto-based applications."
+    ],
+    "required_answer_terms": [
+      "developers",
+      "tools",
+      "apis",
+      "infrastructure"
+    ],
+    "acceptable_variants": {
+      "apis": [
+        "api"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Coinbase Investor Relations",
+        "url": "https://investor.coinbase.com/home/default.aspx",
+        "publisher": "Coinbase",
+        "evidence": "Coinbase states its economic-freedom mission and describes services for consumers, institutions, and developers, including trading, custody, prime brokerage, tools, APIs, and infrastructure.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-016",
+    "category": "company_facts",
+    "question": "According to Dropbox's features-page summary, what does it say users can do with files and projects?",
+    "expected_answer_summary": "Dropbox's features-page summary says users can store files, share files, and collaborate on projects.",
+    "expected_claims": [
+      "Dropbox's features-page summary says users can store files.",
+      "Dropbox's features-page summary says users can share files.",
+      "Dropbox's features-page summary says users can collaborate on projects."
+    ],
+    "required_answer_terms": [
+      "store",
+      "share",
+      "collaborate"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "What is Dropbox? Secure Features Overview",
+        "url": "https://www.dropbox.com/features",
+        "publisher": "Dropbox",
+        "evidence": "Dropbox's page description says it keeps files safe while users store and share them and collaborate on projects, whether working alone or as part of a team.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-017",
+    "category": "company_facts",
+    "question": "Does Dropbox position its features for solo work, team work, or both?",
+    "expected_answer_summary": "Dropbox positions its features for working alone and as part of a team.",
+    "expected_claims": [
+      "Dropbox supports people working alone.",
+      "Dropbox supports people working as part of a team."
+    ],
+    "required_answer_terms": [
+      "alone",
+      "team"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "What is Dropbox? Secure Features Overview",
+        "url": "https://www.dropbox.com/features",
+        "publisher": "Dropbox",
+        "evidence": "Dropbox describes secure file storage, sharing, and project collaboration for people working alone or as part of a team.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-018",
+    "category": "company_facts",
+    "question": "What two examples appear in Dropbox's cited sharing-page description?",
+    "expected_answer_summary": "Dropbox explicitly mentions sharing large files and photos.",
+    "expected_claims": [
+      "Dropbox supports sharing large files.",
+      "Dropbox supports sharing photos."
+    ],
+    "required_answer_terms": [
+      "large files",
+      "photos"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Secure File Sharing",
+        "url": "https://www.dropbox.com/features/share",
+        "publisher": "Dropbox",
+        "evidence": "Dropbox says users can share files with anyone, including large files and photos, through its secure file-sharing product.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-019",
+    "category": "company_facts",
+    "question": "With whom does Dropbox say a user can share files?",
+    "expected_answer_summary": "Dropbox says users can share files with anyone.",
+    "expected_claims": [
+      "Dropbox lets users share files with anyone."
+    ],
+    "required_answer_terms": [
+      "share files",
+      "anyone"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Secure File Sharing",
+        "url": "https://www.dropbox.com/features/share",
+        "publisher": "Dropbox",
+        "evidence": "Dropbox says users can share files with anyone, including large files and photos, through its secure file-sharing product.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-020",
+    "category": "company_facts",
+    "question": "What priority does Dropbox emphasize for cloud backup?",
+    "expected_answer_summary": "Dropbox prioritizes data security while users back up data.",
+    "expected_claims": [
+      "Dropbox prioritizes data security.",
+      "Dropbox supports backing up data."
+    ],
+    "required_answer_terms": [
+      "data security",
+      "back up"
+    ],
+    "acceptable_variants": {
+      "back up": [
+        "backup"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Cloud Storage - Secure Online File Storage",
+        "url": "https://www.dropbox.com/features/cloud-storage",
+        "publisher": "Dropbox",
+        "evidence": "Dropbox presents cloud storage as a way to back up data with security as a priority.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-021",
+    "category": "company_facts",
+    "question": "What order conditions determine whether DashPass benefits apply?",
+    "expected_answer_summary": "Benefits require an eligible merchant and the minimum subtotal, excluding fees and taxes.",
+    "expected_claims": [
+      "DashPass benefits require an eligible merchant.",
+      "DashPass benefits require the minimum subtotal.",
+      "Fees are excluded from the DashPass subtotal.",
+      "Taxes are excluded from the DashPass subtotal."
+    ],
+    "required_answer_terms": [
+      "eligible merchant",
+      "minimum subtotal",
+      "fees",
+      "taxes"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-25",
+    "volatility": "medium",
+    "sources": [
+      {
+        "title": "What is DashPass?",
+        "url": "https://help.doordash.com/en-us/consumers/article/what-is-dashpass",
+        "publisher": "DoorDash",
+        "evidence": "DoorDash says DashPass benefits apply only to eligible orders from DashPass merchants that meet the minimum subtotal requirement, excluding fees and taxes.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-022",
+    "category": "company_facts",
+    "question": "What fee benefits do eligible DashPass orders receive?",
+    "expected_answer_summary": "Eligible orders receive $0 delivery fees and reduced service fees.",
+    "expected_claims": [
+      "Eligible DashPass orders receive $0 delivery fees.",
+      "Eligible DashPass orders receive reduced service fees."
+    ],
+    "required_answer_terms": [
+      "$0 delivery fees",
+      "reduced service fees"
+    ],
+    "acceptable_variants": {
+      "$0 delivery fees": [
+        "zero delivery fees",
+        "no delivery fee"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "medium",
+    "sources": [
+      {
+        "title": "What is DashPass?",
+        "url": "https://help.doordash.com/en-us/consumers/article/what-is-dashpass",
+        "publisher": "DoorDash",
+        "evidence": "DoorDash says eligible minimum-subtotal orders receive $0 delivery fees and reduced service fees; DashPass works on DoorDash and Caviar, is offered in the US and Canada, and costs $9.99 monthly or $96 annually.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-023",
+    "category": "company_facts",
+    "question": "In which countries is DashPass currently available according to DoorDash Help?",
+    "expected_answer_summary": "DashPass is available in the United States and Canada, with some areas excluded.",
+    "expected_claims": [
+      "DashPass is available in the United States.",
+      "DashPass is available in Canada.",
+      "Some areas are excluded from DashPass availability."
+    ],
+    "required_answer_terms": [
+      "united states",
+      "canada",
+      "some areas excluded"
+    ],
+    "acceptable_variants": {
+      "united states": [
+        "us",
+        "u.s."
+      ],
+      "some areas excluded": [
+        "some areas are excluded"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "medium",
+    "sources": [
+      {
+        "title": "What is DashPass?",
+        "url": "https://help.doordash.com/en-us/consumers/article/what-is-dashpass",
+        "publisher": "DoorDash",
+        "evidence": "DoorDash says DashPass is currently available in the United States and Canada with some areas excluded.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "company-024",
+    "category": "company_facts",
+    "question": "What monthly and annual DashPass prices does DoorDash list?",
+    "expected_answer_summary": "DoorDash lists DashPass at $9.99 per month and $96 per year.",
+    "expected_claims": [
+      "DashPass costs $9.99 per month.",
+      "DashPass costs $96 per year."
+    ],
+    "required_answer_terms": [
+      "$9.99",
+      "$96"
+    ],
+    "acceptable_variants": {
+      "$9.99": [
+        "9.99 dollars"
+      ],
+      "$96": [
+        "96 dollars"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "medium",
+    "sources": [
+      {
+        "title": "What is DashPass?",
+        "url": "https://help.doordash.com/en-us/consumers/article/what-is-dashpass",
+        "publisher": "DoorDash",
+        "evidence": "DoorDash says eligible minimum-subtotal orders receive $0 delivery fees and reduced service fees; DashPass works on DoorDash and Caviar, is offered in the US and Canada, and costs $9.99 monthly or $96 annually.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact.",
+    "required_answer_patterns": [
+      "(?s)(?:(?<!not )(?:\\$9\\.99|9\\.99 dollars)(?:(?!\\bnot\\b).){0,40}\\b(?:per )?month(?:ly)?\\b|\\b(?:per )?month(?:ly)?\\b(?:(?!\\bnot\\b).){0,40}(?<!not )(?:\\$9\\.99|9\\.99 dollars))",
+      "(?s)(?:(?<!not )(?:\\$96|96 dollars)(?:(?!\\bnot\\b).){0,40}\\b(?:per year|annually)\\b|\\b(?:per year|annually)\\b(?:(?!\\bnot\\b).){0,40}(?<!not )(?:\\$96|96 dollars))"
+    ]
+  },
+  {
+    "id": "company-025",
+    "category": "company_facts",
+    "question": "On which two services can subscribers redeem DashPass benefits?",
+    "expected_answer_summary": "Subscribers can redeem benefits on DoorDash and Caviar.",
+    "expected_claims": [
+      "DashPass benefits work on DoorDash.",
+      "DashPass benefits work on Caviar."
+    ],
+    "required_answer_terms": [
+      "doordash",
+      "caviar"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "medium",
+    "sources": [
+      {
+        "title": "What is DashPass?",
+        "url": "https://help.doordash.com/en-us/consumers/article/what-is-dashpass",
+        "publisher": "DoorDash",
+        "evidence": "DoorDash says eligible minimum-subtotal orders receive $0 delivery fees and reduced service fees; DashPass works on DoorDash and Caviar, is offered in the US and Canada, and costs $9.99 monthly or $96 annually.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      }
+    ],
+    "notes": "Official product, about, documentation, or investor-relations fact."
+  },
+  {
+    "id": "compound-001",
+    "category": "compound",
+    "question": "For Stripe, give both founders and the Series I amount.",
+    "expected_answer_summary": "Patrick Collison and John Collison founded Stripe; its Series I raised more than $6.5 billion.",
+    "expected_claims": [
+      "Patrick Collison founded Stripe.",
+      "John Collison founded Stripe.",
+      "Stripe's Series I raised more than $6.5 billion."
+    ],
+    "required_answer_terms": [
+      "patrick collison",
+      "john collison",
+      "$6.5 billion"
+    ],
+    "acceptable_variants": {
+      "$6.5 billion": [
+        "6.5 billion dollars",
+        "$6.5b"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe: Economic infrastructure for the internet",
+        "url": "https://www.ycombinator.com/companies/stripe",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Patrick Collison and John Collison as Stripe's founders, gives 2009 as its founding year, and labels its batch S09 (Summer 2009).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      },
+      {
+        "title": "Stripe announces Series I employee liquidity round",
+        "url": "https://stripe.com/newsroom/news/stripe-series-i-employee-liquidity",
+        "publisher": "Stripe",
+        "evidence": "Stripe says its Series I exceeded $6.5 billion at a $50 billion valuation, funded employee liquidity and tax obligations, retired shares to offset new issuance, and was not needed to run the business.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          2
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact."
+  },
+  {
+    "id": "compound-002",
+    "category": "compound",
+    "question": "Combine Stripe's 2024 payment volume with Terminal's payment setting.",
+    "expected_answer_summary": "Stripe's 2024 payment volume was $1.4 trillion, and Terminal accepts in-person payments.",
+    "expected_claims": [
+      "Stripe processed $1.4 trillion in total payment volume in 2024.",
+      "Stripe Terminal accepts in-person payments."
+    ],
+    "required_answer_terms": [
+      "$1.4 trillion",
+      "2024",
+      "in-person payments"
+    ],
+    "acceptable_variants": {
+      "$1.4 trillion": [
+        "1.4 trillion dollars",
+        "$1.4t"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe 2024 update",
+        "url": "https://stripe.com/newsroom/news/stripe-2024-update",
+        "publisher": "Stripe",
+        "evidence": "Stripe reports $1.4 trillion in 2024 payment volume, up 38%, and says Billing serves over 300,000 companies and manages nearly 200 million active subscriptions.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      },
+      {
+        "title": "Stripe Terminal documentation",
+        "url": "https://docs.stripe.com/terminal",
+        "publisher": "Stripe",
+        "evidence": "Stripe documents Terminal for in-person payments, unified online and in-person management, Connect integration, SDK and API options, Tap to Pay, and offline acceptance.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          1
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact.",
+    "required_answer_patterns": [
+      "(?s)(?:(?:\\$1\\.4 trillion|1\\.4 trillion dollars|\\$1\\.4t)(?:(?!\\bnot\\b).){0,60}\\b(?:2024 )?payment volume\\b|\\b(?:2024 )?payment volume\\b(?:(?!\\bnot\\b).){0,60}(?:\\$1\\.4 trillion|1\\.4 trillion dollars|\\$1\\.4t))",
+      "(?s)(?:\\bterminal\\b(?:(?!\\bnot\\b).){0,120}\\bin-person payments\\b|\\bin-person payments\\b(?:(?!\\bnot\\b).){0,120}\\bterminal\\b)"
+    ]
+  },
+  {
+    "id": "compound-003",
+    "category": "compound",
+    "question": "What was Stripe's YC batch, and can Terminal accept payments offline?",
+    "expected_answer_summary": "Stripe attended Summer 2009, and Terminal can accept payments offline.",
+    "expected_claims": [
+      "Stripe attended YC's Summer 2009 batch.",
+      "Stripe Terminal can accept payments offline."
+    ],
+    "required_answer_terms": [
+      "summer 2009",
+      "offline"
+    ],
+    "acceptable_variants": {
+      "summer 2009": [
+        "s09"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe: Economic infrastructure for the internet",
+        "url": "https://www.ycombinator.com/companies/stripe",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Patrick Collison and John Collison as Stripe's founders, gives 2009 as its founding year, and labels its batch S09 (Summer 2009).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      },
+      {
+        "title": "Stripe Terminal documentation",
+        "url": "https://docs.stripe.com/terminal",
+        "publisher": "Stripe",
+        "evidence": "Stripe documents Terminal for in-person payments, unified online and in-person management, Connect integration, SDK and API options, Tap to Pay, and offline acceptance.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          1
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact."
+  },
+  {
+    "id": "compound-004",
+    "category": "compound",
+    "question": "State Stripe's Series I valuation and its reported 2024 payment-volume growth.",
+    "expected_answer_summary": "Stripe's Series I valuation was $50 billion, and 2024 payment volume grew 38%.",
+    "expected_claims": [
+      "Stripe's Series I valuation was $50 billion.",
+      "Stripe's 2024 payment volume grew 38% year over year."
+    ],
+    "required_answer_terms": [
+      "$50 billion",
+      "38%"
+    ],
+    "acceptable_variants": {
+      "$50 billion": [
+        "50 billion dollars",
+        "$50b"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe announces Series I employee liquidity round",
+        "url": "https://stripe.com/newsroom/news/stripe-series-i-employee-liquidity",
+        "publisher": "Stripe",
+        "evidence": "Stripe says its Series I exceeded $6.5 billion at a $50 billion valuation, funded employee liquidity and tax obligations, retired shares to offset new issuance, and was not needed to run the business.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      },
+      {
+        "title": "Stripe 2024 update",
+        "url": "https://stripe.com/newsroom/news/stripe-2024-update",
+        "publisher": "Stripe",
+        "evidence": "Stripe reports $1.4 trillion in 2024 payment volume, up 38%, and says Billing serves over 300,000 companies and manages nearly 200 million active subscriptions.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          1
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact.",
+    "required_answer_patterns": [
+      "(?s)(?:\\bseries i\\b(?:(?!\\bnot\\b).){0,100}\\bvaluation\\b(?:(?!\\bnot\\b).){0,50}(?:\\$50 billion|50 billion dollars|\\$50b)|(?:\\$50 billion|50 billion dollars|\\$50b)(?:(?!\\bnot\\b).){0,50}\\bseries i\\b(?:(?!\\bnot\\b).){0,100}\\bvaluation\\b)",
+      "(?s)(?:\\b2024 payment volume\\b(?:(?!\\bnot\\b).){0,80}\\b(?:grew|growth|up)\\b(?:(?!\\bnot\\b).){0,40}38%|38%(?:(?!\\bnot\\b).){0,40}\\b(?:growth|increase)\\b(?:(?!\\bnot\\b).){0,80}\\b2024 payment volume\\b)"
+    ]
+  },
+  {
+    "id": "compound-005",
+    "category": "compound",
+    "question": "Name Stripe's founders and the two payment channels Terminal unifies.",
+    "expected_answer_summary": "Patrick Collison and John Collison founded Stripe; Terminal unifies online payments and in-person payments.",
+    "expected_claims": [
+      "Patrick Collison founded Stripe.",
+      "John Collison founded Stripe.",
+      "Stripe Terminal unifies management of online payments.",
+      "Stripe Terminal unifies management of in-person payments."
+    ],
+    "required_answer_terms": [
+      "patrick collison",
+      "john collison",
+      "online payments",
+      "in-person payments"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Stripe: Economic infrastructure for the internet",
+        "url": "https://www.ycombinator.com/companies/stripe",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Patrick Collison and John Collison as Stripe's founders, gives 2009 as its founding year, and labels its batch S09 (Summer 2009).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      },
+      {
+        "title": "Stripe Terminal documentation",
+        "url": "https://docs.stripe.com/terminal",
+        "publisher": "Stripe",
+        "evidence": "Stripe documents Terminal for in-person payments, unified online and in-person management, Connect integration, SDK and API options, Tap to Pay, and offline acceptance.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          2,
+          3
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact."
+  },
+  {
+    "id": "compound-006",
+    "category": "compound",
+    "question": "Give Airbnb's founders and its IPO price.",
+    "expected_answer_summary": "Brian Chesky, Nathan Blecharczyk, and Joe Gebbia founded Airbnb; the IPO price was $68.",
+    "expected_claims": [
+      "Brian Chesky founded Airbnb.",
+      "Nathan Blecharczyk founded Airbnb.",
+      "Joe Gebbia founded Airbnb.",
+      "Airbnb's IPO price was $68 per share."
+    ],
+    "required_answer_terms": [
+      "brian chesky",
+      "nathan blecharczyk",
+      "joe gebbia",
+      "$68"
+    ],
+    "acceptable_variants": {
+      "$68": [
+        "68 dollars"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Airbnb: Book accommodations around the world",
+        "url": "https://www.ycombinator.com/companies/airbnb",
+        "publisher": "Y Combinator",
+        "evidence": "YC names Brian Chesky, Nathan Blecharczyk, and Joe Gebbia as founders; it says Airbnb was founded in August 2008 in San Francisco and labels the batch W09 (Winter 2009).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "title": "Airbnb Announces Pricing of Initial Public Offering",
+        "url": "https://investors.airbnb.com/press-releases/news-details/2020/Airbnb-Announces-Pricing-of-Initial-Public-Offering/default.aspx",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb priced 51,323,531 shares at $68, expected ABNB trading on Nasdaq on December 10, 2020, and expected about $3.4 billion in gross company proceeds.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          3
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact."
+  },
+  {
+    "id": "compound-007",
+    "category": "compound",
+    "question": "How did Airbnb begin, and what ticker did it later use?",
+    "expected_answer_summary": "Airbnb began with two hosts welcoming three guests in San Francisco and later used ABNB.",
+    "expected_claims": [
+      "Two hosts started Airbnb's 2007 origin story.",
+      "Three guests were welcomed in Airbnb's 2007 origin story.",
+      "The home was in San Francisco.",
+      "Airbnb's ticker is ABNB."
+    ],
+    "required_answer_terms": [
+      "two hosts",
+      "three guests",
+      "san francisco",
+      "abnb"
+    ],
+    "acceptable_variants": {
+      "two hosts": [
+        "2 hosts"
+      ],
+      "three guests": [
+        "3 guests"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "About us",
+        "url": "https://news.airbnb.com/about-us/",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb says it began in 2007 when two hosts welcomed three guests in San Francisco; it reports 5.5M+ hosts, 2.5B+ arrivals, 9M+ active listings, 150K+ cities and towns, and 220+ countries and regions.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "title": "Airbnb Announces Pricing of Initial Public Offering",
+        "url": "https://investors.airbnb.com/press-releases/news-details/2020/Airbnb-Announces-Pricing-of-Initial-Public-Offering/default.aspx",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb priced 51,323,531 shares at $68, expected ABNB trading on Nasdaq on December 10, 2020, and expected about $3.4 billion in gross company proceeds.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          3
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact."
+  },
+  {
+    "id": "compound-008",
+    "category": "compound",
+    "question": "Report Airbnb's active-listing count and expected IPO gross proceeds.",
+    "expected_answer_summary": "Airbnb reports over 9 million active listings and expected about $3.4 billion in gross IPO proceeds.",
+    "expected_claims": [
+      "Airbnb reports more than 9 million active listings worldwide.",
+      "Airbnb expected approximately $3.4 billion in gross company proceeds."
+    ],
+    "required_answer_terms": [
+      "9 million",
+      "$3.4 billion"
+    ],
+    "acceptable_variants": {
+      "$3.4 billion": [
+        "3.4 billion dollars",
+        "$3.4b"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "About us",
+        "url": "https://news.airbnb.com/about-us/",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb says it began in 2007 when two hosts welcomed three guests in San Francisco; it reports 5.5M+ hosts, 2.5B+ arrivals, 9M+ active listings, 150K+ cities and towns, and 220+ countries and regions.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      },
+      {
+        "title": "Airbnb Announces Pricing of Initial Public Offering",
+        "url": "https://investors.airbnb.com/press-releases/news-details/2020/Airbnb-Announces-Pricing-of-Initial-Public-Offering/default.aspx",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb priced 51,323,531 shares at $68, expected ABNB trading on Nasdaq on December 10, 2020, and expected about $3.4 billion in gross company proceeds.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          1
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact.",
+    "required_answer_patterns": [
+      "(?s)(?:\\bairbnb\\b(?:(?!\\bnot\\b).){0,140}(?:9 million|9m\\+?)(?:(?!\\bnot\\b).){0,60}\\bactive listings\\b|\\bactive listings\\b(?:(?!\\bnot\\b).){0,60}(?:9 million|9m\\+?))",
+      "(?s)(?:(?:\\$3\\.4 billion|3\\.4 billion dollars|\\$3\\.4b)(?:(?!\\bnot\\b).){0,100}\\bgross (?:company |ipo )?proceeds\\b|\\bgross (?:company |ipo )?proceeds\\b(?:(?!\\bnot\\b).){0,100}(?:\\$3\\.4 billion|3\\.4 billion dollars|\\$3\\.4b))"
+    ]
+  },
+  {
+    "id": "compound-009",
+    "category": "compound",
+    "question": "What was Airbnb's YC batch, and what three kinds of host offerings does it describe?",
+    "expected_answer_summary": "Airbnb attended Winter 2009; hosts offer stays, experiences, and services.",
+    "expected_claims": [
+      "Airbnb attended YC's Winter 2009 batch.",
+      "Airbnb hosts offer stays.",
+      "Airbnb hosts offer experiences.",
+      "Airbnb hosts offer services."
+    ],
+    "required_answer_terms": [
+      "winter 2009",
+      "stays",
+      "experiences",
+      "services"
+    ],
+    "acceptable_variants": {
+      "winter 2009": [
+        "w09"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Airbnb: Book accommodations around the world",
+        "url": "https://www.ycombinator.com/companies/airbnb",
+        "publisher": "Y Combinator",
+        "evidence": "YC names Brian Chesky, Nathan Blecharczyk, and Joe Gebbia as founders; it says Airbnb was founded in August 2008 in San Francisco and labels the batch W09 (Winter 2009).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      },
+      {
+        "title": "About us",
+        "url": "https://news.airbnb.com/about-us/",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb says hosts offer unique stays, experiences, and services every day.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact."
+  },
+  {
+    "id": "compound-010",
+    "category": "compound",
+    "question": "Combine Airbnb's host count, guest-arrival count, and IPO share count.",
+    "expected_answer_summary": "Airbnb reports more than 5.5 million hosts and 2.5 billion arrivals; its priced IPO covered 51,323,531 shares.",
+    "expected_claims": [
+      "Airbnb reports more than 5.5 million hosts.",
+      "Airbnb reports more than 2.5 billion all-time guest arrivals.",
+      "Airbnb's priced IPO included 51,323,531 shares."
+    ],
+    "required_answer_terms": [
+      "5.5 million",
+      "2.5 billion",
+      "51,323,531"
+    ],
+    "acceptable_variants": {
+      "51,323,531": [
+        "51323531"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "About us",
+        "url": "https://news.airbnb.com/about-us/",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb says it began in 2007 when two hosts welcomed three guests in San Francisco; it reports 5.5M+ hosts, 2.5B+ arrivals, 9M+ active listings, 150K+ cities and towns, and 220+ countries and regions.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      },
+      {
+        "title": "Airbnb Announces Pricing of Initial Public Offering",
+        "url": "https://investors.airbnb.com/press-releases/news-details/2020/Airbnb-Announces-Pricing-of-Initial-Public-Offering/default.aspx",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb priced 51,323,531 shares at $68, expected ABNB trading on Nasdaq on December 10, 2020, and expected about $3.4 billion in gross company proceeds.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          2
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact.",
+    "required_answer_patterns": [
+      "(?s)(?:(?:5\\.5 million|5\\.5m\\+?)(?:(?!\\b(?:arrivals|not)\\b).){0,40}\\bhosts\\b|\\bhosts\\b(?:(?!\\b(?:arrivals|not)\\b).){0,40}(?:5\\.5 million|5\\.5m\\+?))",
+      "(?s)(?:(?:2\\.5 billion|2\\.5b\\+?)(?:(?!\\b(?:hosts|not)\\b).){0,50}\\b(?:guest )?arrivals\\b|\\b(?:guest )?arrivals\\b(?:(?!\\b(?:hosts|not)\\b).){0,50}(?:2\\.5 billion|2\\.5b\\+?))",
+      "(?s)(?:\\b(?:priced )?ipo\\b(?:(?!\\bnot\\b).){0,80}(?:51,323,531|51323531)\\b(?:(?!\\bnot\\b).){0,30}\\bshares\\b|(?:51,323,531|51323531)\\b(?:(?!\\bnot\\b).){0,30}\\bshares\\b(?:(?!\\bnot\\b).){0,80}\\b(?:priced )?ipo\\b)"
+    ]
+  },
+  {
+    "id": "compound-011",
+    "category": "compound",
+    "question": "Who applied to YC for Coinbase, which batch was it, and what listing method did Nasdaq expect?",
+    "expected_answer_summary": "Brian Armstrong applied; Coinbase attended Summer 2012, and Nasdaq expected it to use a direct listing.",
+    "expected_claims": [
+      "Brian Armstrong applied to YC for Coinbase.",
+      "Coinbase attended YC's Summer 2012 batch.",
+      "Nasdaq announced that Coinbase was expected to list through a direct listing."
+    ],
+    "required_answer_terms": [
+      "brian armstrong",
+      "summer 2012",
+      "direct listing"
+    ],
+    "acceptable_variants": {
+      "summer 2012": [
+        "s12"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Coinbase: From YC to IPO",
+        "url": "https://www.ycombinator.com/blog/coinbase-from-yc-to-ipo",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Coinbase as a Summer 2012 company, says Brian Armstrong applied and started the batch, and says Fred Ehrsam was later added as a co-founder.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      },
+      {
+        "title": "Nasdaq New Security Addition: Coinbase Global",
+        "url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ETA2021-28",
+        "publisher": "Nasdaq",
+        "evidence": "Nasdaq announced that Coinbase Class A stock was expected to list through a Direct Listing as COIN on April 14, 2021; Nasdaq set a $250 reference price and said it was not an offering price.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          2
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact."
+  },
+  {
+    "id": "compound-012",
+    "category": "compound",
+    "question": "When was Coinbase founded, and what is its stated mission?",
+    "expected_answer_summary": "Coinbase was founded in June 2012 and aims to increase economic freedom in the world.",
+    "expected_claims": [
+      "Coinbase was founded in June 2012.",
+      "Coinbase's mission is to increase economic freedom in the world."
+    ],
+    "required_answer_terms": [
+      "june 2012",
+      "increase economic freedom"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Coinbase: Buy, sell, and manage cryptocurrencies",
+        "url": "https://www.ycombinator.com/companies/coinbase",
+        "publisher": "Y Combinator",
+        "evidence": "YC says Coinbase was founded in June 2012 and describes it as a platform for buying, selling, and managing cryptocurrencies.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      },
+      {
+        "title": "Coinbase Investor Relations",
+        "url": "https://investor.coinbase.com/home/default.aspx",
+        "publisher": "Coinbase",
+        "evidence": "Coinbase states its economic-freedom mission and describes services for consumers, institutions, and developers, including trading, custody, prime brokerage, tools, APIs, and infrastructure.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          1
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact."
+  },
+  {
+    "id": "compound-013",
+    "category": "compound",
+    "question": "State Coinbase's mission and the ticker and listing date Nasdaq expected.",
+    "expected_answer_summary": "Coinbase seeks to increase economic freedom; Nasdaq expected COIN to list on April 14, 2021.",
+    "expected_claims": [
+      "Coinbase's mission is to increase economic freedom in the world.",
+      "Nasdaq said Coinbase was expected to use the ticker COIN.",
+      "Nasdaq announced that Coinbase was expected to list on April 14, 2021."
+    ],
+    "required_answer_terms": [
+      "increase economic freedom",
+      "coin",
+      "april 14, 2021"
+    ],
+    "acceptable_variants": {
+      "april 14, 2021": [
+        "april 14 2021",
+        "2021-04-14"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Coinbase Investor Relations",
+        "url": "https://investor.coinbase.com/home/default.aspx",
+        "publisher": "Coinbase",
+        "evidence": "Coinbase states its economic-freedom mission and describes services for consumers, institutions, and developers, including trading, custody, prime brokerage, tools, APIs, and infrastructure.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      },
+      {
+        "title": "Nasdaq New Security Addition: Coinbase Global",
+        "url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ETA2021-28",
+        "publisher": "Nasdaq",
+        "evidence": "Nasdaq announced that Coinbase Class A stock was expected to list through a Direct Listing as COIN on April 14, 2021; Nasdaq set a $250 reference price and said it was not an offering price.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          1,
+          2
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact."
+  },
+  {
+    "id": "compound-014",
+    "category": "compound",
+    "question": "How does Coinbase serve institutions, and what public-listing method did Nasdaq expect?",
+    "expected_answer_summary": "Coinbase serves institutions via prime brokerage, and Nasdaq expected it to use a direct listing.",
+    "expected_claims": [
+      "Coinbase serves institutions through a full-service prime brokerage platform.",
+      "Nasdaq announced that Coinbase was expected to list through a direct listing."
+    ],
+    "required_answer_terms": [
+      "institutions",
+      "prime brokerage",
+      "direct listing"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Coinbase Investor Relations",
+        "url": "https://investor.coinbase.com/home/default.aspx",
+        "publisher": "Coinbase",
+        "evidence": "Coinbase states its economic-freedom mission and describes services for consumers, institutions, and developers, including trading, custody, prime brokerage, tools, APIs, and infrastructure.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      },
+      {
+        "title": "Nasdaq New Security Addition: Coinbase Global",
+        "url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ETA2021-28",
+        "publisher": "Nasdaq",
+        "evidence": "Nasdaq announced that Coinbase Class A stock was expected to list through a Direct Listing as COIN on April 14, 2021; Nasdaq set a $250 reference price and said it was not an offering price.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          1
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact."
+  },
+  {
+    "id": "compound-015",
+    "category": "compound",
+    "question": "Which co-founder joined Coinbase later, and what developer resources does Coinbase provide?",
+    "expected_answer_summary": "Fred Ehrsam joined later as co-founder; Coinbase provides developers tools, APIs, and infrastructure.",
+    "expected_claims": [
+      "Fred Ehrsam was added as a Coinbase co-founder.",
+      "Coinbase provides developers with tools.",
+      "Coinbase provides developers with APIs.",
+      "Coinbase provides developers with infrastructure for crypto-based applications."
+    ],
+    "required_answer_terms": [
+      "fred ehrsam",
+      "tools",
+      "apis",
+      "infrastructure"
+    ],
+    "acceptable_variants": {
+      "apis": [
+        "api"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Coinbase: From YC to IPO",
+        "url": "https://www.ycombinator.com/blog/coinbase-from-yc-to-ipo",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Coinbase as a Summer 2012 company, says Brian Armstrong applied and started the batch, and says Fred Ehrsam was later added as a co-founder.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      },
+      {
+        "title": "Coinbase Investor Relations",
+        "url": "https://investor.coinbase.com/home/default.aspx",
+        "publisher": "Coinbase",
+        "evidence": "Coinbase states its economic-freedom mission and describes services for consumers, institutions, and developers, including trading, custody, prime brokerage, tools, APIs, and infrastructure.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact.",
+    "required_answer_patterns": [
+      "(?s)(?:\\bfred ehrsam\\b(?:(?!\\bnot\\b).){0,100}\\b(?:added|joined)\\b(?:(?!\\bnot\\b).){0,100}\\bco-?founder\\b|\\bco-?founder\\b(?:(?!\\bnot\\b).){0,100}\\bfred ehrsam\\b(?:(?!\\bnot\\b).){0,100}\\b(?:added|joined)\\b)"
+    ]
+  },
+  {
+    "id": "compound-016",
+    "category": "compound",
+    "question": "Name Dropbox's founders, YC batch, and IPO price.",
+    "expected_answer_summary": "Drew Houston and Arash Ferdowsi founded Dropbox; it attended Summer 2007 and priced its IPO at $21.",
+    "expected_claims": [
+      "Drew Houston founded Dropbox.",
+      "Arash Ferdowsi founded Dropbox.",
+      "Dropbox attended YC's Summer 2007 batch.",
+      "Dropbox's IPO price was $21 per share."
+    ],
+    "required_answer_terms": [
+      "drew houston",
+      "arash ferdowsi",
+      "summer 2007",
+      "$21"
+    ],
+    "acceptable_variants": {
+      "summer 2007": [
+        "s07"
+      ],
+      "$21": [
+        "21 dollars"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Dropbox: Backup and share files in the cloud",
+        "url": "https://www.ycombinator.com/companies/dropbox",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Drew Houston and Arash Ferdowsi as founders, says Drew co-founded Dropbox in 2007, and labels the batch S07 (Summer 2007).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "title": "Dropbox Announces Pricing of Initial Public Offering",
+        "url": "https://investors.dropbox.com/news-releases/news-release-details/dropbox-announces-pricing-initial-public-offering",
+        "publisher": "Dropbox",
+        "evidence": "Dropbox priced 36 million IPO shares at $21; DBX was expected to trade on Nasdaq on March 23, 2018, with 26,822,409 company shares and 9,177,591 selling-stockholder shares.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          3
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact."
+  },
+  {
+    "id": "compound-017",
+    "category": "compound",
+    "question": "According to Dropbox's features-page summary, what file and project activities does it mention, and what are Dropbox's ticker and expected trading date?",
+    "expected_answer_summary": "Dropbox's page says users can store files, share files, and collaborate on projects; DBX was expected to trade March 23, 2018.",
+    "expected_claims": [
+      "Dropbox's features-page summary says users can store files.",
+      "Dropbox's features-page summary says users can share files.",
+      "Dropbox's features-page summary says users can collaborate on projects.",
+      "Dropbox's ticker is DBX.",
+      "Dropbox expected trading to begin on March 23, 2018."
+    ],
+    "required_answer_terms": [
+      "store",
+      "share",
+      "collaborate",
+      "dbx",
+      "march 23, 2018"
+    ],
+    "acceptable_variants": {
+      "march 23, 2018": [
+        "march 23 2018",
+        "2018-03-23"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "What is Dropbox? Secure Features Overview",
+        "url": "https://www.dropbox.com/features",
+        "publisher": "Dropbox",
+        "evidence": "Dropbox's page description says it keeps files safe while users store and share them and collaborate on projects, whether working alone or as part of a team.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "title": "Dropbox Announces Pricing of Initial Public Offering",
+        "url": "https://investors.dropbox.com/news-releases/news-release-details/dropbox-announces-pricing-initial-public-offering",
+        "publisher": "Dropbox",
+        "evidence": "Dropbox priced 36 million IPO shares at $21; DBX was expected to trade on Nasdaq on March 23, 2018, with 26,822,409 company shares and 9,177,591 selling-stockholder shares.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          3,
+          4
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact."
+  },
+  {
+    "id": "compound-018",
+    "category": "compound",
+    "question": "Which founder does YC date to 2007, and what does Dropbox say about large-file sharing?",
+    "expected_answer_summary": "YC says Drew Houston co-founded Dropbox in 2007; Dropbox supports sharing large files.",
+    "expected_claims": [
+      "Drew Houston co-founded Dropbox in 2007.",
+      "Dropbox supports sharing large files."
+    ],
+    "required_answer_terms": [
+      "drew houston",
+      "2007",
+      "large files"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Dropbox: Backup and share files in the cloud",
+        "url": "https://www.ycombinator.com/companies/dropbox",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Drew Houston and Arash Ferdowsi as founders, says Drew co-founded Dropbox in 2007, and labels the batch S07 (Summer 2007).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      },
+      {
+        "title": "Secure File Sharing",
+        "url": "https://www.dropbox.com/features/share",
+        "publisher": "Dropbox",
+        "evidence": "Dropbox says users can share files with anyone, including large files and photos, through its secure file-sharing product.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          1
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact."
+  },
+  {
+    "id": "compound-019",
+    "category": "compound",
+    "question": "Who founded Dropbox, and does its product target solo and team work?",
+    "expected_answer_summary": "Drew Houston and Arash Ferdowsi founded Dropbox; its features support people working alone and as part of a team.",
+    "expected_claims": [
+      "Drew Houston founded Dropbox.",
+      "Arash Ferdowsi founded Dropbox.",
+      "Dropbox supports people working alone.",
+      "Dropbox supports people working as part of a team."
+    ],
+    "required_answer_terms": [
+      "drew houston",
+      "arash ferdowsi",
+      "alone",
+      "team"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Dropbox: Backup and share files in the cloud",
+        "url": "https://www.ycombinator.com/companies/dropbox",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Drew Houston and Arash Ferdowsi as founders, says Drew co-founded Dropbox in 2007, and labels the batch S07 (Summer 2007).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      },
+      {
+        "title": "What is Dropbox? Secure Features Overview",
+        "url": "https://www.dropbox.com/features",
+        "publisher": "Dropbox",
+        "evidence": "Dropbox describes secure file storage, sharing, and project collaboration for people working alone or as part of a team.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          2,
+          3
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact."
+  },
+  {
+    "id": "compound-020",
+    "category": "compound",
+    "question": "Give Dropbox's YC batch and the two sources of its priced IPO shares.",
+    "expected_answer_summary": "Dropbox attended Summer 2007; Dropbox offered 26,822,409 IPO shares and selling stockholders offered 9,177,591.",
+    "expected_claims": [
+      "Dropbox attended YC's Summer 2007 batch.",
+      "Dropbox offered 26,822,409 IPO shares.",
+      "Selling stockholders offered 9,177,591 Dropbox IPO shares."
+    ],
+    "required_answer_terms": [
+      "summer 2007",
+      "26,822,409",
+      "9,177,591"
+    ],
+    "acceptable_variants": {
+      "summer 2007": [
+        "s07"
+      ],
+      "26,822,409": [
+        "26822409"
+      ],
+      "9,177,591": [
+        "9177591"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Dropbox: Backup and share files in the cloud",
+        "url": "https://www.ycombinator.com/companies/dropbox",
+        "publisher": "Y Combinator",
+        "evidence": "YC identifies Drew Houston and Arash Ferdowsi as founders, says Drew co-founded Dropbox in 2007, and labels the batch S07 (Summer 2007).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      },
+      {
+        "title": "Dropbox Announces Pricing of Initial Public Offering",
+        "url": "https://investors.dropbox.com/news-releases/news-release-details/dropbox-announces-pricing-initial-public-offering",
+        "publisher": "Dropbox",
+        "evidence": "Dropbox priced 36 million IPO shares at $21; DBX was expected to trade on Nasdaq on March 23, 2018, with 26,822,409 company shares and 9,177,591 selling-stockholder shares.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          1,
+          2
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact.",
+    "required_answer_patterns": [
+      "(?s)(?:\\bdropbox\\b(?:(?!\\b(?:selling stockholders|not)\\b).){0,120}\\b(?:sold|offered)\\b(?:(?!\\bnot\\b).){0,30}(?:26,822,409|26822409)\\b|(?:26,822,409|26822409)\\b(?:(?!\\bnot\\b).){0,30}\\bshares\\b(?:(?!\\bnot\\b).){0,120}\\b(?:sold|offered) by dropbox\\b)",
+      "(?s)(?:\\bselling stockholders\\b(?:(?!\\bnot\\b).){0,80}\\b(?:sold|offered)\\b(?:(?!\\bnot\\b).){0,30}(?:9,177,591|9177591)\\b|(?:9,177,591|9177591)\\b(?:(?!\\bnot\\b).){0,30}\\bshares\\b(?:(?!\\bnot\\b).){0,80}\\b(?:sold|offered) by (?:the )?selling stockholders\\b)"
+    ]
+  },
+  {
+    "id": "compound-021",
+    "category": "compound",
+    "question": "Name DoorDash's founders and its IPO price.",
+    "expected_answer_summary": "Tony Xu, Evan Moore, Andy Fang, and Stanley Tang founded DoorDash; its IPO price was $102.",
+    "expected_claims": [
+      "Tony Xu founded DoorDash.",
+      "Andy Fang founded DoorDash.",
+      "Stanley Tang founded DoorDash.",
+      "Evan Moore founded DoorDash.",
+      "DoorDash's IPO price was $102 per share."
+    ],
+    "required_answer_terms": [
+      "tony xu",
+      "andy fang",
+      "stanley tang",
+      "evan moore",
+      "$102"
+    ],
+    "acceptable_variants": {
+      "$102": [
+        "102 dollars"
+      ]
+    },
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "DoorDash: Restaurant delivery",
+        "url": "https://www.ycombinator.com/companies/doordash",
+        "publisher": "Y Combinator",
+        "evidence": "YC names Tony Xu, Andy Fang, and Stanley Tang as founders, says DoorDash was founded in 2013 in San Francisco, and labels the batch S13 (Summer 2013).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "title": "DoorDash CEO: Solving Problems of Time-Starved People",
+        "url": "https://www.gsb.stanford.edu/insights/doordash-ceo-solving-problems-time-starved-people",
+        "publisher": "Stanford Graduate School of Business",
+        "evidence": "Stanford says Tony Xu founded DoorDash with Evan Moore, Andy Fang, and Stanley Tang.",
+        "accessed_date": "2026-08-25",
+        "supports_claims": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "title": "DoorDash Announces Pricing of Initial Public Offering",
+        "url": "https://ir.doordash.com/news/news-details/2020/DoorDash-Announces-Pricing-of-Initial-Public-Offering/default.aspx",
+        "publisher": "DoorDash",
+        "evidence": "DoorDash priced 33 million Class A shares at $102 and expected DASH to begin NYSE trading on December 9, 2020, with a December 11 closing.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          4
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact."
+  },
+  {
+    "id": "compound-022",
+    "category": "compound",
+    "question": "When and in which YC batch was DoorDash founded, and what DashPass fee benefits apply?",
+    "expected_answer_summary": "DoorDash was founded in 2013 and attended Summer 2013; eligible DashPass orders get $0 delivery fees and reduced service fees.",
+    "expected_claims": [
+      "DoorDash was founded in 2013.",
+      "DoorDash attended YC's Summer 2013 batch.",
+      "Eligible DashPass orders receive $0 delivery fees.",
+      "Eligible DashPass orders receive reduced service fees."
+    ],
+    "required_answer_terms": [
+      "2013",
+      "summer 2013",
+      "$0 delivery fees",
+      "reduced service fees"
+    ],
+    "acceptable_variants": {
+      "summer 2013": [
+        "s13"
+      ],
+      "$0 delivery fees": [
+        "zero delivery fees",
+        "no delivery fee"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "DoorDash: Restaurant delivery",
+        "url": "https://www.ycombinator.com/companies/doordash",
+        "publisher": "Y Combinator",
+        "evidence": "YC names Tony Xu, Andy Fang, and Stanley Tang as founders, says DoorDash was founded in 2013 in San Francisco, and labels the batch S13 (Summer 2013).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1
+        ]
+      },
+      {
+        "title": "What is DashPass?",
+        "url": "https://help.doordash.com/en-us/consumers/article/what-is-dashpass",
+        "publisher": "DoorDash",
+        "evidence": "DoorDash says eligible minimum-subtotal orders receive $0 delivery fees and reduced service fees; DashPass works on DoorDash and Caviar, is offered in the US and Canada, and costs $9.99 monthly or $96 annually.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          2,
+          3
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact."
+  },
+  {
+    "id": "compound-023",
+    "category": "compound",
+    "question": "Where is DashPass offered, including DoorDash's geographic qualification, and what ticker and exchange did DoorDash announce?",
+    "expected_answer_summary": "DashPass is offered in the United States and Canada with some areas excluded; DoorDash announced DASH on the NYSE.",
+    "expected_claims": [
+      "DashPass is available in the United States.",
+      "DashPass is available in Canada.",
+      "Some areas are excluded from DashPass availability.",
+      "DoorDash's ticker is DASH.",
+      "DoorDash expected its shares to trade on the NYSE."
+    ],
+    "required_answer_terms": [
+      "united states",
+      "canada",
+      "some areas excluded",
+      "dash",
+      "nyse"
+    ],
+    "acceptable_variants": {
+      "united states": [
+        "us",
+        "u.s."
+      ],
+      "some areas excluded": [
+        "some areas are excluded"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "What is DashPass?",
+        "url": "https://help.doordash.com/en-us/consumers/article/what-is-dashpass",
+        "publisher": "DoorDash",
+        "evidence": "DoorDash says DashPass is currently available in the United States and Canada with some areas excluded.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "title": "DoorDash Announces Pricing of Initial Public Offering",
+        "url": "https://ir.doordash.com/news/news-details/2020/DoorDash-Announces-Pricing-of-Initial-Public-Offering/default.aspx",
+        "publisher": "DoorDash",
+        "evidence": "DoorDash priced 33 million Class A shares at $102 and expected DASH to begin NYSE trading on December 9, 2020, with a December 11 closing.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          3,
+          4
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact."
+  },
+  {
+    "id": "compound-024",
+    "category": "compound",
+    "question": "Who founded DoorDash, and on which services do DashPass benefits work?",
+    "expected_answer_summary": "Tony Xu, Evan Moore, Andy Fang, and Stanley Tang founded DoorDash; DashPass works on DoorDash and Caviar.",
+    "expected_claims": [
+      "Tony Xu founded DoorDash.",
+      "Andy Fang founded DoorDash.",
+      "Stanley Tang founded DoorDash.",
+      "Evan Moore founded DoorDash.",
+      "DashPass benefits work on DoorDash.",
+      "DashPass benefits work on Caviar."
+    ],
+    "required_answer_terms": [
+      "tony xu",
+      "andy fang",
+      "stanley tang",
+      "evan moore",
+      "doordash",
+      "caviar"
+    ],
+    "acceptable_variants": {},
+    "as_of_date": "2026-08-24",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "DoorDash: Restaurant delivery",
+        "url": "https://www.ycombinator.com/companies/doordash",
+        "publisher": "Y Combinator",
+        "evidence": "YC names Tony Xu, Andy Fang, and Stanley Tang as founders, says DoorDash was founded in 2013 in San Francisco, and labels the batch S13 (Summer 2013).",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "title": "DoorDash CEO: Solving Problems of Time-Starved People",
+        "url": "https://www.gsb.stanford.edu/insights/doordash-ceo-solving-problems-time-starved-people",
+        "publisher": "Stanford Graduate School of Business",
+        "evidence": "Stanford says Tony Xu founded DoorDash with Evan Moore, Andy Fang, and Stanley Tang.",
+        "accessed_date": "2026-08-25",
+        "supports_claims": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "title": "What is DashPass?",
+        "url": "https://help.doordash.com/en-us/consumers/article/what-is-dashpass",
+        "publisher": "DoorDash",
+        "evidence": "DoorDash says eligible minimum-subtotal orders receive $0 delivery fees and reduced service fees; DashPass works on DoorDash and Caviar, is offered in the US and Canada, and costs $9.99 monthly or $96 annually.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          4,
+          5
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact."
+  },
+  {
+    "id": "compound-025",
+    "category": "compound",
+    "question": "Compare Airbnb, Dropbox, and DoorDash IPO prices with Coinbase's direct-listing reference price.",
+    "expected_answer_summary": "Airbnb priced at $68, Dropbox at $21, DoorDash at $102, and Coinbase had a $250 reference price that was not an offering price.",
+    "expected_claims": [
+      "Airbnb's IPO price was $68 per share.",
+      "Dropbox's IPO price was $21 per share.",
+      "DoorDash's IPO price was $102 per share.",
+      "Nasdaq set Coinbase's reference price at $250.",
+      "Coinbase's $250 reference price was not an offering price."
+    ],
+    "required_answer_terms": [
+      "airbnb",
+      "$68",
+      "dropbox",
+      "$21",
+      "doordash",
+      "$102",
+      "coinbase",
+      "$250",
+      "not an offering price"
+    ],
+    "acceptable_variants": {
+      "$68": [
+        "68 dollars"
+      ],
+      "$21": [
+        "21 dollars"
+      ],
+      "$102": [
+        "102 dollars"
+      ],
+      "$250": [
+        "250 dollars"
+      ]
+    },
+    "as_of_date": "2026-08-25",
+    "volatility": "low",
+    "sources": [
+      {
+        "title": "Airbnb Announces Pricing of Initial Public Offering",
+        "url": "https://investors.airbnb.com/press-releases/news-details/2020/Airbnb-Announces-Pricing-of-Initial-Public-Offering/default.aspx",
+        "publisher": "Airbnb",
+        "evidence": "Airbnb priced 51,323,531 shares at $68, expected ABNB trading on Nasdaq on December 10, 2020, and expected about $3.4 billion in gross company proceeds.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          0
+        ]
+      },
+      {
+        "title": "Dropbox Announces Pricing of Initial Public Offering",
+        "url": "https://investors.dropbox.com/news-releases/news-release-details/dropbox-announces-pricing-initial-public-offering",
+        "publisher": "Dropbox",
+        "evidence": "Dropbox priced 36 million IPO shares at $21; DBX was expected to trade on Nasdaq on March 23, 2018, with 26,822,409 company shares and 9,177,591 selling-stockholder shares.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          1
+        ]
+      },
+      {
+        "title": "DoorDash Announces Pricing of Initial Public Offering",
+        "url": "https://ir.doordash.com/news/news-details/2020/DoorDash-Announces-Pricing-of-Initial-Public-Offering/default.aspx",
+        "publisher": "DoorDash",
+        "evidence": "DoorDash priced 33 million Class A shares at $102 and expected DASH to begin NYSE trading on December 9, 2020, with a December 11 closing.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          2
+        ]
+      },
+      {
+        "title": "Nasdaq New Security Addition: Coinbase Global",
+        "url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ETA2021-28",
+        "publisher": "Nasdaq",
+        "evidence": "Nasdaq says Coinbase Class A stock would list directly as COIN on April 14, 2021; its $250 reference price was not an offering price.",
+        "accessed_date": "2026-08-24",
+        "supports_claims": [
+          3,
+          4
+        ]
+      }
+    ],
+    "notes": "Multi-part question whose required terms cover every requested fact.",
+    "required_answer_patterns": [
+      "(?s)(?:\\bairbnb\\b(?:(?!\\b(?:dropbox|doordash|coinbase|not)\\b).){0,100}(?:\\$68\\b|68 dollars)|(?:\\$68\\b|68 dollars)(?:(?!\\b(?:dropbox|doordash|coinbase|not)\\b).){0,100}\\bairbnb\\b)",
+      "(?s)(?:\\bdropbox\\b(?:(?!\\b(?:airbnb|doordash|coinbase|not)\\b).){0,100}(?:\\$21\\b|21 dollars)|(?:\\$21\\b|21 dollars)(?:(?!\\b(?:airbnb|doordash|coinbase|not)\\b).){0,100}\\bdropbox\\b)",
+      "(?s)(?:\\bdoordash\\b(?:(?!\\b(?:airbnb|dropbox|coinbase|not)\\b).){0,100}(?:\\$102\\b|102 dollars)|(?:\\$102\\b|102 dollars)(?:(?!\\b(?:airbnb|dropbox|coinbase|not)\\b).){0,100}\\bdoordash\\b)",
+      "(?s)(?:\\bcoinbase\\b(?:(?!\\b(?:airbnb|dropbox|doordash|not)\\b).){0,140}(?:\\$250\\b|250 dollars)|(?:\\$250\\b|250 dollars)(?:(?!\\b(?:airbnb|dropbox|doordash|not)\\b).){0,140}\\bcoinbase\\b).{0,140}\\breference price\\b.{0,140}\\bnot an offering price\\b"
+    ]
+  }
+]
