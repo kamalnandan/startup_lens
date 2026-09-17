@@ -321,12 +321,30 @@ EXAMPLE_QUERIES = {
     ],
 }
 
-METRIC_STYLES = {
+# The two graphs do not name the same things the same way, so one set of
+# labels cannot describe both. Naming the classic graph's Founder/Investor
+# nodes over the assertion graph's Person/Organisation nodes would print a
+# confident zero, which reads as "no data" rather than "wrong label".
+CLASSIC_METRIC_STYLES = {
     "Company": ("🏢", "Companies"),
     "Founder": ("👤", "Founders"),
     "Investor": ("💰", "Investors"),
     "Industry": ("🧭", "Industries"),
 }
+
+ASSERTION_METRIC_STYLES = {
+    "Company": ("🏢", "Companies"),
+    "Person": ("👤", "People"),
+    "Organisation": ("🏛️", "Organisations"),
+    "Fact": ("📌", "Facts"),
+}
+
+
+def metric_styles(engine_name: str) -> dict:
+    """Card labels for the engine that produced the counts."""
+    if engine_name == ASSERTION_ENGINE:
+        return ASSERTION_METRIC_STYLES
+    return CLASSIC_METRIC_STYLES
 
 
 if "history" not in st.session_state:
@@ -355,7 +373,10 @@ def fetch_graph_stats(base_url: str) -> dict:
     after a switch, which is the most quietly misleading thing this page
     could do.
     """
-    response = requests.get(f"{base_url}/status", timeout=5)
+    # An idle App Service takes several seconds to wake. A short timeout
+    # turns that wait into "API is currently offline", which is a worse lie
+    # than a slow page.
+    response = requests.get(f"{base_url}/status", timeout=15)
     response.raise_for_status()
     payload = response.json()
     if "graph_stats" in payload:
@@ -367,9 +388,9 @@ def fetch_graph_stats(base_url: str) -> dict:
             for name, count in payload.get("counts", {}).items()}
 
 
-def metric_cards(stats: dict) -> str:
+def metric_cards(stats: dict, styles: dict) -> str:
     cards = []
-    for node_type, (icon, label) in METRIC_STYLES.items():
+    for node_type, (icon, label) in styles.items():
         value = stats.get(node_type, 0)
         cards.append(
             '<div class="metric-card">'
@@ -471,7 +492,7 @@ with st.sidebar:
     try:
         sidebar_stats = fetch_graph_stats(engine_url)
         st.success("API connected")
-        for node_type in ("Company", "Founder", "Investor", "Industry"):
+        for node_type in metric_styles(engine_name):
             if node_type in sidebar_stats:
                 st.metric(node_type, f"{sidebar_stats[node_type]:,}")
     except requests.RequestException:
@@ -516,7 +537,8 @@ try:
 except requests.RequestException:
     graph_stats = {}
 
-st.markdown(metric_cards(graph_stats), unsafe_allow_html=True)
+st.markdown(metric_cards(graph_stats, metric_styles(active_engine()[0])),
+            unsafe_allow_html=True)
 
 st.markdown('<div class="section-title">✨ Questions founders actually ask</div>', unsafe_allow_html=True)
 tabs = st.tabs(list(EXAMPLE_QUERIES))
