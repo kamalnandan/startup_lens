@@ -4,7 +4,9 @@ Colorful Streamlit UI for querying the Neo4j startup knowledge graph.
 """
 
 import html
+import json
 import time
+from pathlib import Path
 
 import requests
 import streamlit as st
@@ -321,6 +323,43 @@ EXAMPLE_QUERIES = {
     ],
 }
 
+# The classic examples ask about batch, stage and Active/Dead/Acquired, which
+# are properties of the classic graph. The assertion graph holds extracted
+# sentences about 302 companies instead, so those buttons would return
+# nothing and read as a broken app rather than a different one. Every
+# question below was run against the assertion API and kept only if it came
+# back correct; the last group is kept deliberately unanswerable, because a
+# system that declines is the point rather than an embarrassment.
+ASSERTION_EXAMPLE_QUERIES = {
+    "🎯 Companies": [
+        "Who founded Airbnb?",
+        "What does DoorDash do?",
+        "When was Dropbox founded?",
+    ],
+    "💰 Funding & Exits": [
+        "Which investors invested in Coinbase?",
+        "Which companies were acquired?",
+        "Which companies went public?",
+    ],
+    "🌍 Markets & Places": [
+        "Which companies work on payments?",
+        "Which companies are headquartered in San Francisco?",
+        "How many employees does Stripe have?",
+    ],
+    "🛡️ Honest limits": [
+        "What is Coinbase's ticker symbol?",
+        "Who is the CEO of Instacart?",
+        "What is Airbnb's annual revenue?",
+    ],
+}
+
+
+def example_queries(engine_name: str) -> dict:
+    """Example buttons for the engine that has to answer them."""
+    if engine_name == ASSERTION_ENGINE:
+        return ASSERTION_EXAMPLE_QUERIES
+    return EXAMPLE_QUERIES
+
 # The two graphs do not name the same things the same way, so one set of
 # labels cannot describe both. Naming the classic graph's Founder/Investor
 # nodes over the assertion graph's Person/Organisation nodes would print a
@@ -402,6 +441,73 @@ def metric_cards(stats: dict, styles: dict) -> str:
     return '<div class="metric-grid">' + "".join(cards) + "</div>"
 
 
+def _column_label(name: str) -> str:
+    return name.replace("_", " ").strip().title()
+
+
+@st.cache_data(show_spinner=False)
+def company_names() -> dict:
+    """Map a company key to the name a reader would recognise.
+
+    Companies are keyed in the graph by the filename they were extracted
+    from, so an answer listing them shows 'gocardless' and 'wayup'. The
+    prose answer often escapes this because the model recovers the real name
+    from the evidence sentence, but a table built from the rows cannot.
+
+    The mapping is generated from the same corpus the graph was built from,
+    so it renames only keys that came from there. Anything unrecognised is
+    left exactly as the graph returned it rather than guessed at; a key like
+    'thread-2' has no real name to recover, and inventing one would be the
+    kind of confident filling-in this whole engine exists to avoid.
+    """
+    path = Path(__file__).with_name("company_names.json")
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def display_value(value):
+    """The readable name for a value, when the value is a known company key."""
+    if isinstance(value, str):
+        return company_names().get(value, value)
+    return value
+
+
+def render_table(parts: list) -> None:
+    """Show the rows behind a multi-row answer as a table.
+
+    The prose answer is written by a model summarising these same rows, so a
+    list of twenty companies arrives as a paragraph of twenty companies.
+    The table is built from the rows themselves rather than from the
+    sentence, so what is displayed cannot drift from what the graph returned.
+
+    Short results are left to the prose. Two rows reading '2007' and
+    'May 2007' are the same fact at two precisions, and a grid gives that
+    the weight of a finding.
+    """
+    tabular = [part for part in parts if len(part.get("rows") or []) >= 3]
+    for part in tabular:
+        rows = part["rows"]
+        # Evidence belongs under Sources, where it is shown next to the fact
+        # it supports. In a grid it is a wall of text that hides the answer.
+        columns = []
+        for row in rows:
+            for key in row:
+                if key != "evidence" and key not in columns:
+                    columns.append(key)
+        if not columns:
+            continue
+        if len(tabular) > 1:
+            st.caption(part["question"])
+        st.dataframe(
+            [{_column_label(column): display_value(row.get(column))
+              for column in columns} for row in rows],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+
 def render_sources(parts: list) -> None:
     """Show the sentence behind every fact in the answer.
 
@@ -418,7 +524,8 @@ def render_sources(parts: list) -> None:
             st.caption(part["question"])
             for row in part["rows"][:25]:
                 evidence = row.get("evidence")
-                values = ", ".join(str(value) for key, value in row.items()
+                values = ", ".join(str(display_value(value))
+                                   for key, value in row.items()
                                    if key != "evidence" and value is not None)
                 st.markdown(f"- **{values}**")
                 if evidence:
@@ -457,6 +564,7 @@ def render_result(result: dict) -> None:
                 "is given. Nothing here is inferred or filled in from "
                 "elsewhere.")
 
+    render_table(result.get("parts", []))
     render_sources(result.get("parts", []))
 
     # if result.get("cypher"):
@@ -541,8 +649,9 @@ st.markdown(metric_cards(graph_stats, metric_styles(active_engine()[0])),
             unsafe_allow_html=True)
 
 st.markdown('<div class="section-title">✨ Questions founders actually ask</div>', unsafe_allow_html=True)
-tabs = st.tabs(list(EXAMPLE_QUERIES))
-for tab, questions in zip(tabs, EXAMPLE_QUERIES.values()):
+examples = example_queries(active_engine()[0])
+tabs = st.tabs(list(examples))
+for tab, questions in zip(tabs, examples.values()):
     with tab:
         columns = st.columns(2)
         for index, question in enumerate(questions):
